@@ -212,8 +212,6 @@ public class LoginFragment extends Fragment implements LoginInterface {
                                 GoogleSignInAccount account = task.getResult(ApiException.class);
                                 ErrorLog.WriteDebugLog("firebaseAuthWithGoogle:" + account.getId());
                                 AccountInfo accountInfo = new AccountInfo();
-                                accountInfo.setShop_name("");
-                                accountInfo.setLogo("");
 
                                 ErrorLog.WriteDebugLog("firebaseAuthWithGoogle:" + account.getId());
                                 loginViewModel.loginWithGoogle(account.getIdToken(), accountInfo);

@@ -24,7 +24,6 @@ import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.OrderViewModel;
 import com.aix.mpagents.view_models.PushNotificationViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
-import com.aix.mpagents.views.fragments.dialogs.UserTypeDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -73,7 +72,6 @@ public class HomeFragment extends Fragment {
                     if(accountInfoViewModel == null){
                         accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
                         initShopInfo();
-                        accountInfoViewModel.getShopInfo();
                         initPendingOrderListener();
                     }
 
@@ -123,28 +121,26 @@ public class HomeFragment extends Fragment {
             @Override
             public void onChanged(AccountInfo accountInfo) {
                 if(accountInfo !=null) {
+                    String first_name = accountInfo.getFirst_name();
+                    String middle_name = accountInfo.getMiddle_name();
+                    String last_name = accountInfo.getLast_name();
+                    String full_name;
+                    if(middle_name.isEmpty()){
+                        full_name = first_name  + " " + last_name;
+                    }else{
+                        full_name = first_name + " " + middle_name + " " + last_name;
+                    }
+                    binding.textviewShopName.setText(full_name);
+                    binding.textViewSellerID.setText(accountInfo.getAgent_id());
 
-                    binding.textviewShopName.setText(accountInfo.getShop_name());
-                    binding.textViewSellerID.setText(accountInfo.getShop_id());
-
-                    Glide.with(requireContext()).load(Uri.parse(accountInfo.getLogo()))
+                    Glide.with(requireContext()).load(Uri.parse(accountInfo.getProfile_pic()))
                             .fitCenter()
                             .error(R.drawable.ic_baseline_photo_24).into((binding.imageViewProfilePic));
 
-                    if(!accountInfo.isIs_agent() && !accountInfo.isIs_corporate() && !accountInfo.isIs_individual()){
-                        ErrorLog.WriteDebugLog("AGENT TRUE");
-                        UserTypeDialog userTypeDialog = new UserTypeDialog();
-                        userTypeDialog.show(getChildFragmentManager(),"BUSINES TYPE DIALOG");
-                    }
                 }
             }
         });
-//        accountInfoViewModel.getProfileObservable().observe(getViewLifecycleOwner(), new Observer<AccountInfo>() {
-//            @Override
-//            public void onChanged(AccountInfo accountInfo) {
-//
-//            }
-//        });
+
     }
 
     private void initPendingOrderListener(){
