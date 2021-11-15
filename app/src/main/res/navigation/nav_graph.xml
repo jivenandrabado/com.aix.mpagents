@@ -143,6 +143,9 @@
         <action
             android:id="@+id/action_editProductFragment_to_categoryFragment"
             app:destination="@id/categoryFragment" />
+        <action
+            android:id="@+id/action_editProductFragment_to_productTypeFragment"
+            app:destination="@id/productTypeFragment" />
     </fragment>
     <fragment
         android:id="@+id/ordersFragment3"

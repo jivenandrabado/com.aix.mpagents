@@ -31,6 +31,7 @@ import com.aix.mpagents.interfaces.EditProductInterface;
 import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.Media;
 import com.aix.mpagents.models.ProductInfo;
+import com.aix.mpagents.models.ProductType;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.EditProductPhotoViewAdapter;
@@ -51,6 +52,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
     private List<String> deletePhotoList = new ArrayList<>();
     private Category categoryModel;
     private EditProductPhotoViewAdapter editProductPhotoViewAdapter;
+    private ProductType productTypeModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -96,11 +98,33 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
             }
         });
 
+        productViewModel.getSelectedProductType().observe(getViewLifecycleOwner(), new Observer<ProductType>() {
+            @Override
+            public void onChanged(ProductType productType) {
+                if(productType != null) {
+                    binding.textViewProductTypeValue.setText(productType.getName());
+                    productTypeModel = productType;
+                }
+            }
+        });
+
         productViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
             @Override
             public void onChanged(Category category) {
-                binding.textViewCategoryValue.setText(category.getCategory_name());
-                categoryModel = category;
+                if(category != null) {
+                    binding.textViewCategoryValue.setText(category.getCategory_name());
+                    if (productInfo.getCategory_name().isEmpty()) {
+                        binding.textViewCategoryValue.setText("");
+                    }
+                    categoryModel = category;
+                }
+            }
+        });
+
+        binding.textViewProductType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate(R.id.action_editProductFragment_to_productTypeFragment);
             }
         });
 
@@ -113,6 +137,8 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
         binding.editTextPrice.setText(String.valueOf(productInfo.getProduct_price()));
         binding.editTextDescription.setText(productInfo.getProduct_desc());
         binding.textViewCategoryValue.setText(productInfo.getCategory_name());
+
+        binding.textViewProductTypeValue.setText(productInfo.getProduct_type());
 
         productViewModel.getMedia(productInfo.getProduct_id());
         productViewModel.getMediaList().observe(getViewLifecycleOwner(), new Observer<List<Media>>() {
@@ -142,9 +168,12 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
                     ErrorLog.WriteDebugLog("PRODUCT UPDATED SUCCESS");
                     productViewModel.isProductUpdated().setValue(false);
                     navController.popBackStack(R.id.editProductFragment,true);
+
                 }
             }
         });
+
+
 
     }
 
@@ -166,6 +195,14 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
             productInfo.setProduct_desc(description);
             productInfo.setDateUpdated(new Date());
 
+            productInfo.setCategory_name(category);
+            productInfo.setCategory_id(categoryModel.getCategory_id());
+            productInfo.setIs_deleted(false);
+            productInfo.setIs_active(true);
+
+            productInfo.setProduct_type_id(productTypeModel.getProduct_type_id());
+            productInfo.setProduct_type(productTypeModel.getName());
+
             if(categoryModel!=null) {
                 productInfo.setCategory_name(category);
                 productInfo.setCategory_id(categoryModel.getCategory_id());
@@ -177,6 +214,8 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
 
             ErrorLog.WriteDebugLog("PRODUCT ID "+ productInfo.getProduct_id());
             productViewModel.updateProduct(productInfo,newPhotoList,deletePhotoList);
+            productViewModel.getSelectedCategory().setValue(null);
+            productViewModel.getSelectedProductType().setValue(null);
         }
     }
 

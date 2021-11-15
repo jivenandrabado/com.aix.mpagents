@@ -110,7 +110,32 @@
         android:text="@string/category"
         app:layout_constraintEnd_toEndOf="@+id/constraintLayout2"
         app:layout_constraintStart_toStartOf="@+id/constraintLayout2"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewProductType" />
+
+
+
+    <TextView
+        android:id="@+id/textViewProductType"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/custom_border_rounded_white"
+        android:drawableEnd="@drawable/ic_baseline_keyboard_arrow_right_24"
+        android:padding="16dp"
+        android:text="Type"
+        app:layout_constraintEnd_toEndOf="@+id/constraintLayout2"
+        app:layout_constraintStart_toStartOf="@+id/constraintLayout2"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+        />
+
+    <TextView
+        android:id="@+id/textViewProductTypeValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="64dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewProductType"
+        app:layout_constraintEnd_toEndOf="@+id/textViewProductType"
+        app:layout_constraintTop_toTopOf="@+id/textViewProductType" />
 
     <TextView
         android:id="@+id/textViewCategoryValue"
@@ -120,6 +145,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/textViewCategory"
         app:layout_constraintEnd_toEndOf="@+id/textViewCategory"
         app:layout_constraintTop_toTopOf="@+id/textViewCategory" />
+
 
     <Button
         android:id="@+id/buttonSubmit"
