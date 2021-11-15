@@ -53,11 +53,9 @@ public class FirebaseLoginRepo {
                                 ErrorLog.WriteDebugLog("signInWithEmail:success");
                                 //check if user exist
                                 AccountInfo accountInfo = new AccountInfo();
-                                accountInfo.setShop_email(email);
-                                accountInfo.setShop_name("");
-                                accountInfo.setLogo("");
+                                accountInfo.setEmail(email);
                                 accountInfo.setDate_created(new Date());
-                                accountInfo.setShop_id(mAuth.getUid());
+                                accountInfo.setAgent_id(mAuth.getUid());
                                 firebaseRegistrationRepo.checkUserExist(accountInfo,SigninENUM.NONE);
 
 
@@ -188,8 +186,6 @@ public class FirebaseLoginRepo {
                                 // Sign in success, update UI with the signed-in user's information
                                 ErrorLog.WriteDebugLog("signInWithCredential:success");
 //                                accountInfo.setShop_email(email);
-                                accountInfo.setShop_name("");
-                                accountInfo.setLogo("");
                                 accountInfo.setDate_created(new Date());
 
                                 firebaseRegistrationRepo.checkUserExist(accountInfo, SigninENUM.GOOGLE);

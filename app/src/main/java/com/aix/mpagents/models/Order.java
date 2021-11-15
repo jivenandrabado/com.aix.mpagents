@@ -21,13 +21,15 @@ public class Order {
 
     public String delivery_address;
 
-    public String merchant_id;
-    public String merchant_name;
+    public String owner_id;
+    public String owner_name;
 
     public String product_id;
     public String product_name;
     public double product_price;
     public String preview_image;
+    public boolean product_is_agent = true;
+
 
     public String mop_id;
     public String mop_option;
@@ -57,20 +59,20 @@ public class Order {
         this.delivery_address = delivery_address;
     }
 
-    public String getMerchant_id() {
-        return merchant_id;
+    public String getOwner_id() {
+        return owner_id;
     }
 
-    public void setMerchant_id(String merchant_id) {
-        this.merchant_id = merchant_id;
+    public void setOwner_id(String owner_id) {
+        this.owner_id = owner_id;
     }
 
-    public String getMerchant_name() {
-        return merchant_name;
+    public String getOwner_name() {
+        return owner_name;
     }
 
-    public void setMerchant_name(String merchant_name) {
-        this.merchant_name = merchant_name;
+    public void setOwner_name(String owner_name) {
+        this.owner_name = owner_name;
     }
 
     public String getProduct_id() {

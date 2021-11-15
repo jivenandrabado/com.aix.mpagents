@@ -35,23 +35,6 @@ public class UserTypeDialog extends DialogFragment {
 
         accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
 
-        binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Map<String,Object> userType = new HashMap<>();
-                userType.put("is_agent", binding.radioButtonIsAgent.isChecked());
-                userType.put("is_individual", binding.radioButtonIsIndividual.isChecked());
-                userType.put("is_corporate", binding.radioButtonIsCorporate.isChecked());
-                userType.put("is_mdm", false);
-
-                accountInfoViewModel.updateShopInfo(userType);
-
-                dismiss();
-
-            }
-        });
-
-
 
     }
 }

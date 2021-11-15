@@ -109,9 +109,7 @@ public class RegistrationFragment extends Fragment {
             confirmPassword = String.valueOf(binding.regConfirmPasswordEditText.getText());
 
             if(!isEmptyFields(email,password,confirmPassword)){
-                accountInfo.setShop_email(email);
-                accountInfo.setShop_name("");
-                accountInfo.setLogo("");
+                accountInfo.setEmail(email);
                 accountInfo.setDate_created(new Date());
 
                 registrationViewModel.registerUser(accountInfo,password);

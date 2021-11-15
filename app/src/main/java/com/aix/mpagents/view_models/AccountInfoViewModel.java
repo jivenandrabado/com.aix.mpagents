@@ -24,17 +24,16 @@ public class AccountInfoViewModel extends ViewModel {
         firebaseLoginRepo.logoutUser(activity);
     }
 
-    public void getShopInfo(){firebaseProfileRepo.getShopInfo();}
-
     public void addAccountInfoSnapshot(){firebaseProfileRepo.addAccountInfoSnaphotListener();}
     public void detachAccountInfoListener(){firebaseProfileRepo.detachAccountInfoListener();}
     public MutableLiveData<AccountInfo> getAccountInfo(){return firebaseProfileRepo.getAccountInfoMutableLiveData();}
 
 
-    public void updateShopInfo(Map<String,Object> account_info){firebaseProfileRepo.updateShopInfo(account_info);}
+    public void updateAgentInfo(Map<String,Object> account_info){firebaseProfileRepo.updateAgentInfo(account_info);}
     public MutableLiveData<AccountInfo> getProfileObservable(){return firebaseProfileRepo.getProfileObservable();}
     public MutableLiveData<Boolean> updateProfileSuccess(){return firebaseProfileRepo.updateProfileSuccess;}
     public MutableLiveData<String> getErrorMessage(){return firebaseProfileRepo.errorMessage;}
+
     public void uploadToFirebaseStorage(Uri path){
         firebaseProfileRepo.uploadToFirebaseStorage(path);
     }
