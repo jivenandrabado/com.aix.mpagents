@@ -89,6 +89,9 @@
         <action
             android:id="@+id/action_profileFragment_to_loginFragment3"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_businessProfileFragment_to_addGovernmentIDFragment"
+            app:destination="@id/addGovernmentIDFragment" />
     </fragment>
     <fragment
         android:id="@+id/shopAddressFragment"
@@ -159,6 +162,11 @@
         android:id="@+id/organizationFragment"
         android:name="com.aix.mpagents.views.fragments.account.organization.OrganizationFragment"
         android:label="My Organizations" />
+    <fragment
+        android:id="@+id/addGovernmentIDFragment"
+        android:name="com.aix.mpagents.views.fragments.account.AddGovernmentIDFragment"
+        android:label="Add Government ID"
+        tools:layout="@layout/fragment_add_government_i_d" />
 
 
 </navigation>

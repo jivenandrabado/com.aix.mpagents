@@ -23,6 +23,8 @@
     <color name="blue">#0000FF</color>
     <color name="navy">#000080</color>
 
+
+    <color name="transparent">#00000080</color>
 <!--    <color name="mpagents_base_color">#9B59B6</color>-->
     <color name="mpagents_base_color">#3d5a80</color>
 

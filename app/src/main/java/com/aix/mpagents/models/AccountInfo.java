@@ -15,6 +15,12 @@ public class AccountInfo {
     public boolean is_mdm = false;
     public String mobile_no = "";
     public String contact_person = "";
+    public String gov_id_no_primary = "";
+    public String gov_id_no_secondary = "";
+    public String gov_id_type_primary = "";
+    public String gov_id_type_secondary = "";
+    public String gov_id_primary = "";
+    public String gov_id_secondary = "";
 
     public String getShop_name() {
         return shop_name;
@@ -102,5 +108,53 @@ public class AccountInfo {
 
     public void setContact_person(String contact_person) {
         this.contact_person = contact_person;
+    }
+
+    public String getGov_id_no_primary() {
+        return gov_id_no_primary;
+    }
+
+    public void setGov_id_no_primary(String gov_id_no_primary) {
+        this.gov_id_no_primary = gov_id_no_primary;
+    }
+
+    public String getGov_id_no_secondary() {
+        return gov_id_no_secondary;
+    }
+
+    public void setGov_id_no_secondary(String gov_id_no_secondary) {
+        this.gov_id_no_secondary = gov_id_no_secondary;
+    }
+
+    public String getGov_id_type_primary() {
+        return gov_id_type_primary;
+    }
+
+    public void setGov_id_type_primary(String gov_id_type_primary) {
+        this.gov_id_type_primary = gov_id_type_primary;
+    }
+
+    public String getGov_id_type_secondary() {
+        return gov_id_type_secondary;
+    }
+
+    public void setGov_id_type_secondary(String gov_id_type_secondary) {
+        this.gov_id_type_secondary = gov_id_type_secondary;
+    }
+
+    public String getGov_id_primary() {
+        return gov_id_primary;
+    }
+
+    public void setGov_id_primary(String gov_id_primary) {
+        this.gov_id_primary = gov_id_primary;
+    }
+
+    public String getGov_id_secondary() {
+        return gov_id_secondary;
+    }
+
+    public void setGov_id_secondary(String gov_id_secondary) {
+        this.gov_id_secondary = gov_id_secondary;
     }
 }

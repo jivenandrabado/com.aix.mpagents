@@ -131,7 +131,9 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
             }
         });
 
-
+        binding.textViewAddGovernmentId.setOnClickListener(v -> {
+            navController.navigate(R.id.action_businessProfileFragment_to_addGovernmentIDFragment);
+        });
 
     }
 
