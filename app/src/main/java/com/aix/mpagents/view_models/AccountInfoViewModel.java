@@ -3,9 +3,11 @@ package com.aix.mpagents.view_models;
 import android.app.Activity;
 import android.net.Uri;
 
+import androidx.core.util.Supplier;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.aix.mpagents.interfaces.GovernmentIDInterface;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ShopAddress;
 import com.aix.mpagents.repositories.FirebaseLoginRepo;
@@ -18,7 +20,9 @@ public class AccountInfoViewModel extends ViewModel {
 
     private final FirebaseLoginRepo firebaseLoginRepo = new FirebaseLoginRepo();
     private final FirebaseProfileRepo firebaseProfileRepo = new FirebaseProfileRepo();
+
     private MutableLiveData<ShopAddress> selectedShopAddress = new MutableLiveData<>();
+    private MutableLiveData<String> selectedIdType = new MutableLiveData<>();
 
     public void logoutUser(Activity activity){
         firebaseLoginRepo.logoutUser(activity);
@@ -37,6 +41,11 @@ public class AccountInfoViewModel extends ViewModel {
     public MutableLiveData<String> getErrorMessage(){return firebaseProfileRepo.errorMessage;}
     public void uploadToFirebaseStorage(Uri path){
         firebaseProfileRepo.uploadToFirebaseStorage(path);
+
+    }
+
+    public void uploadIDtoFirebase(Uri path, GovernmentIDInterface handler){
+        firebaseProfileRepo.uploadIDtoFirebase(path,handler);
     }
 
     public void saveAddress(ShopAddress shopAddress){

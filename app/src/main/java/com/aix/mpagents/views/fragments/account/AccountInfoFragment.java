@@ -364,7 +364,6 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
                                 Uri imageUri = clipData.getItemAt(i).getUri();
                                 // your code for multiple image selection
                                 accountInfoViewModel.uploadToFirebaseStorage(imageUri);
-
                             }
                         } else {
                             Uri uri = data.getData();

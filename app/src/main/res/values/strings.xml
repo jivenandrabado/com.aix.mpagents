@@ -77,4 +77,11 @@
     <string name="feedback">Feedback</string>
     <string name="orders">Orders</string>
 
+
+    <string-array name="id_types">
+        <item>TIN ID</item>
+        <item>Driver License</item>
+        <item>SSS</item>
+        <item>Passport</item>
+    </string-array>
 </resources>

@@ -84,5 +84,7 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:5.13.0'
     //Circular imageview
     implementation 'com.mikhaellopez:circularimageview:4.3.0'
+    //Image Crop View
+    implementation "com.naver.android.helloyako:imagecropview:1.2.3"
 
 }
