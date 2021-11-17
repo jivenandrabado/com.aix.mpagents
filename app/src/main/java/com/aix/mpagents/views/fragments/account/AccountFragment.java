@@ -90,7 +90,7 @@ public class AccountFragment extends Fragment implements AccountInterface {
                     binding.textViewSellerID.setText(accountInfo.getShop_id());
 
                     initUserTypeViews(accountInfo);
-
+                    initVerificationStatus(accountInfo);
                     Glide.with(requireContext()).load(Uri.parse(accountInfo.getLogo()))
                             .fitCenter()
                             .error(R.drawable.ic_baseline_photo_24).into((binding.imageViewProfilePic));
@@ -110,6 +110,10 @@ public class AccountFragment extends Fragment implements AccountInterface {
             public void onClick(View view) {
                 navController.navigate(R.id.action_accountFragment2_to_profileFragment);
             }
+        });
+
+        binding.textViewVerifyAccount.setOnClickListener(v -> {
+            navController.navigate(R.id.action_accountFragment2_to_verificationDetailsFragment);
         });
 
         binding.textViewAddress.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +138,10 @@ public class AccountFragment extends Fragment implements AccountInterface {
                 navController.navigate(R.id.action_accountFragment2_to_organizationFragment);
             }
         });
+    }
+
+    private void initVerificationStatus(AccountInfo accountInfo) {
+        if(!accountInfo.getGov_id_primary().isEmpty()){}
     }
 
     private void initUserTypeViews(AccountInfo accountInfo) {

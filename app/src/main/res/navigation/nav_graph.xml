@@ -75,6 +75,9 @@
         <action
             android:id="@+id/action_accountFragment2_to_organizationFragment"
             app:destination="@id/organizationFragment" />
+        <action
+            android:id="@+id/action_accountFragment2_to_verificationDetailsFragment"
+            app:destination="@id/verificationDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/businessProfileFragment"
@@ -167,6 +170,14 @@
         android:name="com.aix.mpagents.views.fragments.account.AddGovernmentIDFragment"
         android:label="Add Government ID"
         tools:layout="@layout/fragment_add_government_i_d" />
+    <fragment
+        android:id="@+id/verificationDetailsFragment"
+        android:name="com.aix.mpagents.views.fragments.account.VerificationDetailsFragment"
+        android:label="Get Verified" >
+        <action
+            android:id="@+id/action_verificationDetailsFragment_to_businessProfileFragment"
+            app:destination="@id/businessProfileFragment" />
+    </fragment>
 
 
 </navigation>

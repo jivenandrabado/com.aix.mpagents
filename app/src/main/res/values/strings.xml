@@ -76,6 +76,7 @@
     <string name="customer_care">Customer Care</string>
     <string name="feedback">Feedback</string>
     <string name="orders">Orders</string>
+    <string name="upgrade_status_label">Upgrade to Fully Verified to gain full access on MAgents services.</string>
 
 
     <string-array name="id_types">
