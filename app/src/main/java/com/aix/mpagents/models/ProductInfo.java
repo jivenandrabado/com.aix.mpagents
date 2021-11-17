@@ -24,6 +24,12 @@ public class ProductInfo {
     public boolean is_active;
     public String preview_image;
 
+    public String product_type_id;
+    public String product_type;
+
+    public boolean product_is_agent = true;
+
+
     public String getCategory_name() {
         return category_name;
     }
@@ -152,5 +158,29 @@ public class ProductInfo {
 
     public void setPreview_image(String preview_image) {
         this.preview_image = preview_image;
+    }
+
+    public String getProduct_type_id() {
+        return product_type_id;
+    }
+
+    public void setProduct_type_id(String product_type_id) {
+        this.product_type_id = product_type_id;
+    }
+
+    public String getProduct_type() {
+        return product_type;
+    }
+
+    public void setProduct_type(String product_type) {
+        this.product_type = product_type;
+    }
+
+    public boolean isProduct_is_agent() {
+        return product_is_agent;
+    }
+
+    public void setProduct_is_agent(boolean product_is_agent) {
+        this.product_is_agent = product_is_agent;
     }
 }

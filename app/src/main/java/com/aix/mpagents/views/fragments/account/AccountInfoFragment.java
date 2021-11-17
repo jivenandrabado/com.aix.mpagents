@@ -14,6 +14,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -38,7 +39,6 @@ import com.aix.mpagents.utilities.ToastUtil;
 import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.fragments.dialogs.UploadDialog;
-import com.aix.mpagents.views.fragments.dialogs.UserTypeDialog;
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -155,43 +155,34 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
 
 
     private void initHasUser(AccountInfo accountInfo) {
-        binding.editTextShopName.setText(accountInfo.getShop_name());
-        binding.editTextShopEmail.setText(accountInfo.getShop_email());
+//        binding.editTextShopEmail.setText(accountInfo.getShop_email());
         binding.editAddGovernmentID.setText(accountInfo.getGov_id_type_primary());
-        if(!accountInfo.getGov_id_type_primary().isEmpty())
+        if(!accountInfo.getGov_id_type_primary().isEmpty()){
             binding.editAddGovernmentID.setHint("Government ID");
-
-        if(accountInfo.isIs_individual()){
-            binding.editUserType.setText("Individual");
-        }else if(accountInfo.isIs_corporate()){
-            binding.editUserType.setText("Corporate");
-        }else if(accountInfo.isIs_agent()){
-            binding.editUserType.setText("Agent");
         }
+
+//        if(accountInfo.isIs_individual()){
+//            binding.editUserType.setText("Individual");
+//        }else if(accountInfo.isIs_corporate()){
+//            binding.editUserType.setText("Corporate");
+//        }else if(accountInfo.isIs_agent()){
+//            binding.editUserType.setText("Agent");
+//        }
+        binding.editTextFirstName.setText(accountInfo.getFirst_name());
+        binding.editTextMiddleName.setText(accountInfo.getMiddle_name());
+        binding.editTextLastName.setText(accountInfo.getLast_name());
+
+        binding.editTextShopEmail.setText(accountInfo.getEmail());
 
         if(!accountInfo.getMobile_no().isEmpty()){
             binding.editMobileNo.setText(accountInfo.getMobile_no());
         }
 
-        if(!accountInfo.getContact_person().isEmpty()){
-            binding.editTextContactPerson.setText(accountInfo.getContact_person());
-        }
 
-        if(!accountInfo.getLogo().isEmpty()){
-            Glide.with(requireContext()).load(Uri.parse(accountInfo.getLogo()))
+        if(!accountInfo.getProfile_pic().isEmpty()){
+            Glide.with(requireContext()).load(Uri.parse(accountInfo.getProfile_pic()))
                     .fitCenter()
                     .error(R.drawable.ic_baseline_photo_24).into((binding.imageViewProfilePic));
-        }
-
-        //agent
-        if(accountInfo.isIs_agent()){
-            binding.textInputLayoutContactPerson.setVisibility(View.GONE);
-            binding.imageButtonContactPerson.setVisibility(View.GONE);
-            binding.textInputLayoutName.setHint("Agent Name");
-        }else{
-            binding.textInputLayoutName.setHint("Business Name");
-            binding.textInputLayoutContactPerson.setVisibility(View.VISIBLE);
-
         }
 
 
@@ -257,109 +248,81 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
         });
     }
 
-
     @Override
-    public void onLogoutClick() {
-        try{
-            accountInfoViewModel.logoutUser(requireActivity());
-//            navController.navigate(R.id.action_profileFragment_to_homeFragment2);
-
-        }catch (Exception e){
-            ErrorLog.WriteErrorLog(e);
-        }
+    public void onEditFirstName() {
+        enableViews(binding.editTextFirstName,binding.imageButtonEditFirstName);
     }
 
     @Override
-    public void onEditName() {
-        enableViewsName();
+    public void onEditMiddleName() {
+        enableViews(binding.editTextMiddleName,binding.imageButtonEditMiddleName);
+
     }
 
     @Override
-    public void onEditUserType() {
-        UserTypeDialog userTypeDialog = new UserTypeDialog();
-        userTypeDialog.show(getChildFragmentManager(),"USER TYPE DIALOG");
+    public void onEditLastName() {
+        enableViews(binding.editTextLastName,binding.imageButtonEditLastName);
     }
+
 
     @Override
     public void onEditMobile() {
-        enableViewsMobile();
+        enableViews(binding.editMobileNo,binding.imageButtonMobileNo);
+
     }
 
-    @Override
-    public void onEditContactPerson() {
-        enableViewsContactperson();
-    }
 
     private void onSave(){
         try {
             AccountInfo accountInfo = new AccountInfo();
-            accountInfo.setShop_name(binding.editTextShopName.getText().toString().trim());
             Map<String,Object> account_info = new HashMap<>();
 
-            if(binding.editTextShopName.isEnabled()) {
-                account_info.put("shop_name", accountInfo.getShop_name());
-                disableViewsName();
+            if(binding.editTextFirstName.isEnabled()) {
+                account_info.put("first_name", binding.editTextFirstName.getText().toString().trim());
+                disableViewsMobile(binding.editTextFirstName, binding.imageButtonEditFirstName);
+            }
+
+            if(binding.editTextMiddleName.isEnabled()) {
+                account_info.put("middle_name", binding.editTextMiddleName.getText().toString().trim());
+                disableViewsMobile(binding.editTextMiddleName, binding.imageButtonEditMiddleName);
+            }
+
+            if(binding.editTextLastName.isEnabled()) {
+                account_info.put("last_name", binding.editTextLastName.getText().toString().trim());
+                disableViewsMobile(binding.editTextLastName, binding.imageButtonEditLastName);
             }
 
             if(binding.editMobileNo.isEnabled()){
                 if(!isMobileNoValid(String.valueOf(binding.editMobileNo.getText()).trim())) {
                     account_info.put("mobile_no", String.valueOf(binding.editMobileNo.getText()).trim());
-                    disableViewsMobile();
+                    disableViewsMobile(binding.editMobileNo, binding.imageButtonMobileNo);
                 }
             }
 
-            if(binding.editTextContactPerson.isEnabled()){
-                account_info.put("contact_person", String.valueOf(binding.editTextContactPerson.getText()).trim());
-                disableViewsContactperson();
-            }
 
-            accountInfoViewModel.updateShopInfo(account_info);
+            accountInfoViewModel.updateAgentInfo(account_info);
 
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
         }
     }
 
-    private void enableViewsName(){
-        binding.editTextShopName.requestFocus();
+    private void enableViews(TextInputEditText textInputEditText, ImageButton imageButton){
+        textInputEditText.requestFocus();
+        textInputEditText.setEnabled(true);
+        imageButton.setVisibility(View.GONE);
+
         binding.buttonSave.setVisibility(View.VISIBLE);
-        binding.editTextShopName.setEnabled(true);
-        binding.imageButtonEditShopName.setVisibility(View.GONE);
     }
 
-    private void disableViewsName(){
+
+    private void disableViewsMobile(TextInputEditText textInputEditText, ImageButton imageButton){
         binding.buttonSave.setVisibility(View.GONE);
-        binding.editTextShopName.setEnabled(false);
-        binding.imageButtonEditShopName.setVisibility(View.VISIBLE);
+        textInputEditText.setEnabled(false);
+        imageButton.setVisibility(View.VISIBLE);
 
     }
 
-    private void enableViewsMobile(){
-        binding.editMobileNo.requestFocus();
-        binding.buttonSave.setVisibility(View.VISIBLE);
-        binding.editMobileNo.setEnabled(true);
-        binding.imageButtonMobileNo.setVisibility(View.GONE);
-    }
-
-    private void disableViewsMobile(){
-        binding.buttonSave.setVisibility(View.GONE);
-        binding.editMobileNo.setEnabled(false);
-        binding.imageButtonMobileNo.setVisibility(View.VISIBLE);
-
-    }
-
-    private void enableViewsContactperson(){
-        binding.buttonSave.setVisibility(View.VISIBLE);
-        binding.editTextContactPerson.setEnabled(true);
-        binding.imageButtonContactPerson.setVisibility(View.GONE);
-    }
-
-    private void disableViewsContactperson(){
-        binding.buttonSave.setVisibility(View.GONE);
-        binding.editTextContactPerson.setEnabled(false);
-        binding.imageButtonContactPerson.setVisibility(View.VISIBLE);
-
-    }
 
     private void chooseImage() {
         Intent intent = new Intent();

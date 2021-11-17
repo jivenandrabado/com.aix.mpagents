@@ -54,11 +54,9 @@ public class FirebaseLoginRepo {
                                 ErrorLog.WriteDebugLog("signInWithEmail:success");
                                 //check if user exist
                                 AccountInfo accountInfo = new AccountInfo();
-                                accountInfo.setShop_email(email);
-                                accountInfo.setShop_name("");
-                                accountInfo.setLogo("");
+                                accountInfo.setEmail(email);
                                 accountInfo.setDate_created(new Date());
-                                accountInfo.setShop_id(mAuth.getUid());
+                                accountInfo.setAgent_id(mAuth.getUid());
                                 firebaseRegistrationRepo.checkUserExist(accountInfo,SigninENUM.NONE);
                             } else {
                                 errorMessage.setValue(Objects.requireNonNull(task.getException()).getMessage());
@@ -187,15 +185,15 @@ public class FirebaseLoginRepo {
                                 // Sign in success, update UI with the signed-in user's information
                                 ErrorLog.WriteDebugLog("signInWithCredential:success");
 //                                accountInfo.setShop_email(email);
-
-                                accountInfo.setShop_name(StringUtils.capitalize(mAuth.getCurrentUser().getDisplayName()));
+                                accountInfo.setDate_created(new Date());
+//                                accountInfo.setFirst_name(StringUtils.capitalize(mAuth.getCurrentUser().getDisplayName()));
                                 if(mAuth.getCurrentUser().getPhoneNumber() != null){
                                     accountInfo.setMobile_no(mAuth.getCurrentUser().getPhoneNumber());
                                 }
-                                accountInfo.setLogo(mAuth.getCurrentUser().getPhotoUrl().toString());
-                                accountInfo.setShop_email(mAuth.getCurrentUser().getEmail());
+                                accountInfo.setProfile_pic(mAuth.getCurrentUser().getPhotoUrl().toString());
+                                accountInfo.setEmail(mAuth.getCurrentUser().getEmail());
                                 accountInfo.setDate_created(new Date());
-                                accountInfo.setShop_id(mAuth.getUid());
+                                accountInfo.setAgent_id(mAuth.getUid());
                                 firebaseRegistrationRepo.checkUserExist(accountInfo, SigninENUM.GOOGLE);
                             } else {
                                 ErrorLog.WriteErrorLog(task.getException());

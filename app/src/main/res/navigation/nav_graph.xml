@@ -124,6 +124,9 @@
         <action
             android:id="@+id/action_addProductFragment_to_categoryFragment"
             app:destination="@id/categoryFragment" />
+        <action
+            android:id="@+id/action_addProductFragment_to_productTypeFragment"
+            app:destination="@id/productTypeFragment" />
     </fragment>
     <fragment
         android:id="@+id/productListFragment"
@@ -166,6 +169,10 @@
         android:name="com.aix.mpagents.views.fragments.account.organization.OrganizationFragment"
         android:label="My Organizations" />
     <fragment
+        android:id="@+id/productTypeFragment"
+        android:name="com.aix.mpagents.views.fragments.products.ProductTypeFragment"
+        android:label="ProductTypeFragment" />
+    <fragment
         android:id="@+id/addGovernmentIDFragment"
         android:name="com.aix.mpagents.views.fragments.account.AddGovernmentIDFragment"
         android:label="Add Government ID"
@@ -178,6 +185,7 @@
             android:id="@+id/action_verificationDetailsFragment_to_businessProfileFragment"
             app:destination="@id/businessProfileFragment" />
     </fragment>
+
 
 
 </navigation>

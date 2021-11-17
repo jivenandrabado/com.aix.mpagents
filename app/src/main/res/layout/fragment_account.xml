@@ -24,7 +24,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:background="@color/mpagents_base_color"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp">
 
             <com.mikhaellopez.circularimageview.CircularImageView
                 android:id="@+id/imageViewProfilePic"
@@ -135,13 +137,15 @@
 
             <TextView
                 android:id="@+id/textViewSellerID"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:textColor="@color/white"
                 android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="@+id/textviewShopName"
                 app:layout_constraintStart_toStartOf="@+id/textviewShopName"
                 app:layout_constraintTop_toBottomOf="@+id/textviewShopName" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

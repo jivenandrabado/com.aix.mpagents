@@ -20,6 +20,7 @@ import com.aix.mpagents.models.Category;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.CategoryFirestoreAdapter;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 public class CategoryFragment extends Fragment implements CategoryInterface {
 
@@ -28,6 +29,7 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
     private ProductViewModel productViewModel;
     private CategoryFirestoreAdapter categoryFirestoreAdapter;
     private NavController navController;
+    private FirestoreRecyclerOptions firestoreRecyclerOptions;
 
 
     @Override
@@ -49,14 +51,18 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
     }
 
     private void initProductsRecyclerView(){
-        categoryFirestoreAdapter = new CategoryFirestoreAdapter(productViewModel.getCategoriesRecyclerOptions(),this);
-        categoryFirestoreAdapter.setHasStableIds(true);
+        if(productViewModel.getSelectedProductType().getValue() != null){
+            String product_type = productViewModel.getSelectedProductType().getValue().getName();
+            ErrorLog.WriteDebugLog("PRODUCT TYPE SELECTED " +product_type);
+            firestoreRecyclerOptions = productViewModel.getCategoriesRecyclerOptions(product_type);
+            categoryFirestoreAdapter = new CategoryFirestoreAdapter(firestoreRecyclerOptions,this);
+            categoryFirestoreAdapter.setHasStableIds(true);
 
-        binding.recyclerViewCategory.setAdapter(categoryFirestoreAdapter);
-        binding.recyclerViewCategory.setLayoutManager(new LinearLayoutManager(requireContext()));
-        //temporary fix for recyclerview
-        binding.recyclerViewCategory.setItemAnimator(null);
-
+            binding.recyclerViewCategory.setAdapter(categoryFirestoreAdapter);
+            binding.recyclerViewCategory.setLayoutManager(new LinearLayoutManager(requireContext()));
+            //temporary fix for recyclerview
+            binding.recyclerViewCategory.setItemAnimator(null);
+        }
     }
 
     @Override
@@ -81,5 +87,6 @@ public class CategoryFragment extends Fragment implements CategoryInterface {
         ErrorLog.WriteDebugLog("CATEGORY CLICK "+category.getCategory_name());
         productViewModel.getSelectedCategory().setValue(category);
         navController.popBackStack(R.id.categoryFragment,true);
+
     }
 }

@@ -125,7 +125,7 @@ public class AddGovernmentIDFragment extends Fragment {
         });
 
         binding.editTextIdNumber.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if(keyEvent.getAction() == EditorInfo.IME_ACTION_DONE)
+            if(i == EditorInfo.IME_ACTION_DONE)
                 saveID();
             return true;
         });
@@ -159,9 +159,9 @@ public class AddGovernmentIDFragment extends Fragment {
 
     private void fileUploadedView(Map<String, Object> account_info) {
         disableCropGesture(true);
-        account_info.put("gov_id_no_primary",binding.editTextIdType.getText().toString());
+        account_info.put("gov_id_no_primary",binding.editTextIdNumber.getText().toString());
         account_info.put("gov_id_type_primary",binding.editTextIdType.getText().toString());
-        accountInfoViewModel.updateShopInfo(account_info);
+        accountInfoViewModel.updateAgentInfo(account_info);
         uploadDialog.dismiss();
         Toast.makeText(requireContext(), "Government ID submitted!", Toast.LENGTH_SHORT).show();
         requireActivity().onBackPressed();

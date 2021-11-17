@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <data>
+
+        <variable
+            name="product_type"
+            type="com.aix.mpagents.models.ProductType" />
+
+        <variable
+            name="productTypeInterface"
+            type="com.aix.mpagents.interfaces.ProductTypeInterface" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:paddingTop="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        >
+
+        <TextView
+            android:id="@+id/textViewCategoryname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custom_border_rounded_white"
+            android:text="@{product_type.name}"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:padding="8dp"
+            android:paddingTop="4dp"
+            android:paddingStart="16dp"
+            android:onClick="@{()-> productTypeInterface.onProductTypeClick(product_type)}"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

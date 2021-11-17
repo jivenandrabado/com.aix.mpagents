@@ -32,14 +32,14 @@ public class FirebaseRegistrationRepo {
 
     public void registerUser(String password, AccountInfo accountInfo){
         try{
-            mAuth.createUserWithEmailAndPassword(accountInfo.getShop_email(), password)
+            mAuth.createUserWithEmailAndPassword(accountInfo.getEmail(), password)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 ErrorLog.WriteDebugLog("registration success");
                                 ErrorLog.WriteDebugLog("Saving user info...");
-                                accountInfo.setShop_id(Objects.requireNonNull(task.getResult().getUser()).getUid());
+                                accountInfo.setAgent_id(Objects.requireNonNull(task.getResult().getUser()).getUid());
 
                                 saveRegistrationToUsers(accountInfo,password, SigninENUM.NONE);
                                 isRegistered.setValue(true);
@@ -60,7 +60,7 @@ public class FirebaseRegistrationRepo {
 
     public void saveRegistrationToUsers(AccountInfo accountInfo, String password, SigninENUM signinENUM){
         try {
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(accountInfo.getShop_id()).set(accountInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(accountInfo.getAgent_id()).set(accountInfo).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
@@ -68,7 +68,7 @@ public class FirebaseRegistrationRepo {
                             case NONE:
                                 ErrorLog.WriteDebugLog("Logging in to mpagents");
                                 if(mAuth.getCurrentUser() != null) {
-                                    firebaseLoginRepo.loginUserUsernamePassword(accountInfo.getShop_email(), password);
+                                    firebaseLoginRepo.loginUserUsernamePassword(accountInfo.getEmail(), password);
                                 }
                                 break;
                             case GOOGLE:
@@ -92,7 +92,7 @@ public class FirebaseRegistrationRepo {
     public void checkUserExist(AccountInfo accountInfo, SigninENUM signinENUM){
         try{
 
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(accountInfo.getShop_id()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(accountInfo.getAgent_id()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){

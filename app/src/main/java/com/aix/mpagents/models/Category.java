@@ -7,7 +7,7 @@ public class Category {
     public String category_name;
     public Date dateCreated;
     public Date dateUpdated;
-    public String id;
+    public String category_id;
 
     public String getCategory_name() {
         return category_name;
@@ -33,11 +33,11 @@ public class Category {
         this.dateUpdated = dateUpdated;
     }
 
-    public String getId() {
-        return id;
+    public String getCategory_id() {
+        return category_id;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setCategory_id(String category_id) {
+        this.category_id = category_id;
     }
 }

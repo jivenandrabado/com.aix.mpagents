@@ -41,7 +41,7 @@ public class FirebaseProfileRepo {
     public final MutableLiveData<Boolean> updateProfileSuccess = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private StorageReference storageRef = storage.getReference();
+    private StorageReference storageRef = storage.getReference().child("MPAgents");
     private final MutableLiveData<Boolean> isAddressUpdated = new MutableLiveData<>();
     private ListenerRegistration accountInfoListener;
     private MutableLiveData<AccountInfo> accountInfoMutableLiveData = new MutableLiveData<>();
@@ -56,37 +56,13 @@ public class FirebaseProfileRepo {
     }
 
 
-    public void getShopInfo() {
-        try{
-            ErrorLog.WriteDebugLog("get user info "+ Objects.requireNonNull(userId));
-
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()){
-                        task.getResult();
-                        AccountInfo accountInfo = task.getResult().toObject(AccountInfo.class);
-                        userInfoMutableLiveData.setValue(accountInfo);
-
-                    }else {
-                        ErrorLog.WriteDebugLog(task.getException());
-                        errorMessage.setValue(Objects.requireNonNull(task.getException()).getMessage());
-                    }
-                }
-            });
-
-        }catch (Exception e){
-            ErrorLog.WriteErrorLog(e);
-        }
-    }
-
     public MutableLiveData<AccountInfo> getProfileObservable(){
         return userInfoMutableLiveData;
     }
 
-    public void updateShopInfo(Map<String,Object> account_info) {
+    public void updateAgentInfo(Map<String,Object> account_info) {
         try{
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).update(account_info).addOnCompleteListener(new OnCompleteListener<Void>() {
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).update(account_info).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
@@ -116,10 +92,10 @@ public class FirebaseProfileRepo {
                                     .addOnSuccessListener(uri -> {
                                             ErrorLog.WriteDebugLog("SUCCESS UPLOAD " + uri);
                                             AccountInfo accountInfo = new AccountInfo();
-                                            accountInfo.setLogo(String.valueOf(uri));
+                                            accountInfo.setProfile_pic(String.valueOf(uri));
                                             Map<String,Object> account_info = new HashMap<>();
-                                            account_info.put("gov_id_primary", accountInfo.getLogo());
-                                            updateShopInfo(account_info);
+                                            account_info.put("gov_id_primary", accountInfo.getProfile_pic());
+                                            updateAgentInfo(account_info);
                                             resultHandler.onIdUploaded(uri.toString());
                                         }
                                     )
@@ -148,18 +124,19 @@ public class FirebaseProfileRepo {
                         public void onSuccess(Uri uri) {
                             ErrorLog.WriteDebugLog("SUCCESS UPLOAD " + uri);
                             AccountInfo accountInfo = new AccountInfo();
-                            accountInfo.setLogo(String.valueOf(uri));
+                            accountInfo.setProfile_pic(String.valueOf(uri));
 
                             Map<String,Object> account_info = new HashMap<>();
-                            account_info.put("logo", accountInfo.getLogo());
+                            account_info.put("profile_pic", accountInfo.getProfile_pic());
 
-                            updateShopInfo(account_info);
+                            updateAgentInfo(account_info);
                         }
                     });
                 }
             });
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
+            ErrorLog.WriteDebugLog("ERROR "+ e);
         }
 
     }
@@ -167,10 +144,10 @@ public class FirebaseProfileRepo {
 
     public void saveAddress(ShopAddress shopAddress) {
         try{
-            String address_id = db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            String address_id = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document().getId();
             shopAddress.setAddress_id(address_id);
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(address_id).set(shopAddress)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -188,7 +165,7 @@ public class FirebaseProfileRepo {
     public void updateAddress(ShopAddress shopAddress) {
         try{
 
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(shopAddress.getAddress_id()).set(shopAddress)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -208,7 +185,7 @@ public class FirebaseProfileRepo {
             Map<String,Object> addressMap = new HashMap<>();
             addressMap.put("is_deleted", true);
             addressMap.put("date_deleted", new Date());
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(shopAddress.getAddress_id()).update(addressMap)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -228,7 +205,7 @@ public class FirebaseProfileRepo {
     }
 
     public FirestoreRecyclerOptions getShopAddressFirestoreRecyclerOptions() {
-        Query query = db.collection(FirestoreConstants.MPARTNER_MERCHANTS)
+        Query query = db.collection(FirestoreConstants.MPARTNER_AGENTS)
                 .document(userId)
                 .collection(FirestoreConstants.MPARTNER_ADDRESSES)
                 .whereEqualTo("is_deleted",false);
@@ -240,7 +217,7 @@ public class FirebaseProfileRepo {
     public void addAccountInfoSnaphotListener() {
 
         try{
-        accountInfoListener = db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId))
+        accountInfoListener = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId))
                 .addSnapshotListener((value, error) -> {
                     if(value.exists()) {
                         accountInfoMutableLiveData.setValue(value.toObject(AccountInfo.class));

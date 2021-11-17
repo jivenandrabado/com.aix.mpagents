@@ -64,7 +64,7 @@ public class AccountFragment extends Fragment implements AccountInterface {
                 if(aBoolean){
                     if(!Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).isAnonymous()) {
                         ErrorLog.WriteDebugLog("Display user profile");
-                        accountInfoViewModel.getShopInfo();
+                        accountInfoViewModel.addAccountInfoSnapshot();
 
                     }else{
                         ErrorLog.WriteDebugLog("Init anonymous user");
@@ -81,22 +81,34 @@ public class AccountFragment extends Fragment implements AccountInterface {
         });
 
 
-        accountInfoViewModel.getProfileObservable().observe(getViewLifecycleOwner(), new Observer<AccountInfo>() {
+        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), new Observer<AccountInfo>() {
             @Override
             public void onChanged(AccountInfo accountInfo) {
                 if(accountInfo !=null) {
+                    String first_name = accountInfo.getFirst_name();
+                    String middle_name = accountInfo.getMiddle_name();
+                    String last_name = accountInfo.getLast_name();
+                    String full_name;
+                    if(middle_name.isEmpty()){
+                        full_name = first_name  + " " + last_name;
+                    }else{
+                        full_name = first_name + " " + middle_name + " " + last_name;
+                    }
+                    binding.textviewShopName.setText(full_name);
+                    binding.textViewSellerID.setText(accountInfo.getAgent_id());
 
-                    binding.textviewShopName.setText(accountInfo.getShop_name());
-                    binding.textViewSellerID.setText(accountInfo.getShop_id());
+                    binding.textviewShopName.setText(accountInfo.getFirst_name() + " " + accountInfo.getMiddle_name() + " " + accountInfo.getLast_name());
+                    binding.textViewSellerID.setText(accountInfo.getAgent_id());
 
                     initUserTypeViews(accountInfo);
                     initVerificationStatus(accountInfo);
-                    Glide.with(requireContext()).load(Uri.parse(accountInfo.getLogo()))
+                    Glide.with(requireContext()).load(Uri.parse(accountInfo.getProfile_pic()))
                             .fitCenter()
                             .error(R.drawable.ic_baseline_photo_24).into((binding.imageViewProfilePic));
                 }
             }
         });
+
 
         binding.textViewBusinessInformation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,15 +158,14 @@ public class AccountFragment extends Fragment implements AccountInterface {
 
     private void initUserTypeViews(AccountInfo accountInfo) {
 
-        if(accountInfo.isIs_agent()) {
-            binding.textViewOrganization.setVisibility(View.VISIBLE);
-            binding.view4.setVisibility(View.VISIBLE);
-        }else{
-            binding.textViewOrganization.setVisibility(View.GONE);
-            binding.view4.setVisibility(View.GONE);
-        }
+//        if(accountInfo.isIs_agent()) {
+//            binding.textViewOrganization.setVisibility(View.VISIBLE);
+//            binding.view4.setVisibility(View.VISIBLE);
+//        }else{
+//            binding.textViewOrganization.setVisibility(View.GONE);
+//            binding.view4.setVisibility(View.GONE);
+//        }
     }
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         menu.clear();

@@ -2,10 +2,9 @@ package com.aix.mpagents.interfaces;
 
 public interface AccountInfoInterface {
 
-    void onLogoutClick();
-    void onEditName();
-    void onEditUserType();
+    void onEditFirstName();
+    void onEditMiddleName();
+    void onEditLastName();
     void onEditMobile();
-    void onEditContactPerson();
 
 }

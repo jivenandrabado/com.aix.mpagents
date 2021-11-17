@@ -9,6 +9,7 @@ import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.Media;
 import com.aix.mpagents.models.ProductInfo;
+import com.aix.mpagents.models.ProductType;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.FirestoreConstants;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -53,7 +54,7 @@ public class FirebaseProductRepo {
     public void addProduct(ProductInfo productInfo, List<String> photoList){
         try{
             //get shop info
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
@@ -65,7 +66,7 @@ public class FirebaseProductRepo {
                         //add merchant info
                         productInfo.setProduct_id(doc_id);
                         productInfo.setMerchant_id(userId);
-                        productInfo.setMerchant_name(accountInfo.getShop_name());
+                        productInfo.setMerchant_name(accountInfo.getFirst_name()+" "+accountInfo.getMiddle_name() + " " + accountInfo.getLast_name());
                         productInfo.setMerchant_address(null);
                         productInfo.setPreview_image("");
 
@@ -217,10 +218,28 @@ public class FirebaseProductRepo {
                 .build();
     }
 
-    public FirestoreRecyclerOptions getCategoriesRecyclerOptions() {
-        Query query = db.collection(FirestoreConstants.MPARTNER_CATEGORY);
+    public FirestoreRecyclerOptions getCategoriesRecyclerOptions(String product_type) {
+        Query query = null;
+        if(product_type.equalsIgnoreCase("product")){
+            ErrorLog.WriteDebugLog("IS PRODUCT");
+            query = db.collection(FirestoreConstants.MPARTNER_PRODUCT_CATEGORY);
+        }else if(product_type.equalsIgnoreCase("service")) {
+            ErrorLog.WriteDebugLog("IS Service");
+
+            query = db.collection(FirestoreConstants.MPARTNER_SERVICE_CATEGORY);
+        }else{
+            ErrorLog.WriteDebugLog("IS ERROR");
+
+        }
         return new FirestoreRecyclerOptions.Builder<Category>()
                 .setQuery(query, Category.class)
+                .build();
+    }
+
+    public FirestoreRecyclerOptions getProductTypeRecyclerOptions() {
+        Query query = db.collection(FirestoreConstants.MPARTNER_PRODUCT_TYPE);
+        return new FirestoreRecyclerOptions.Builder<ProductType>()
+                .setQuery(query, ProductType.class)
                 .build();
     }
 
