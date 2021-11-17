@@ -100,11 +100,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:visibility="invisible"
-                            app:gridLeftRightMargin="0dp"
-                            app:gridTopBottomMargin="0dp"
                             app:outsideLayerColor="@color/white"
-                            app:setInnerGridMode="off"
-                            app:setOuterGridMode="off" />
+                            app:setInnerGridMode="on"
+                            app:setOuterGridMode="on" />
 
                     </RelativeLayout>
 

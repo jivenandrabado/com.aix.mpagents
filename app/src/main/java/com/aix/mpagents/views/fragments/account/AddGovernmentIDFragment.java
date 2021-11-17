@@ -1,6 +1,7 @@
 package com.aix.mpagents.views.fragments.account;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -15,10 +16,13 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Environment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aix.mpagents.R;
@@ -119,6 +123,12 @@ public class AddGovernmentIDFragment extends Fragment {
         binding.editTextIdType.setOnClickListener(v -> {
             new IdTypeDialog(adapter,binding.editTextIdType).show(requireActivity().getSupportFragmentManager(), "ID_TYPE_SELECTOR");
         });
+
+        binding.editTextIdNumber.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if(keyEvent.getAction() == EditorInfo.IME_ACTION_DONE)
+                saveID();
+            return true;
+        });
     }
 
     public void saveID(){
@@ -139,16 +149,22 @@ public class AddGovernmentIDFragment extends Fragment {
             accountInfoViewModel.uploadIDtoFirebase(selectedIDUri, new GovernmentIDInterface(){
                 @Override
                 public void onIdUploaded(String link) {
-                    disableCropGesture(true);
-                    account_info.put("gov_id_no_primary",binding.editTextIdType.getText().toString());
-                    account_info.put("gov_id_type_primary",binding.editTextIdType.getText().toString());
-                    accountInfoViewModel.updateShopInfo(account_info);
-                    uploadDialog.dismiss();
+                    fileUploadedView(account_info);
                 }
                 @Override
                 public void onError(String error) { }
             });
         };
+    }
+
+    private void fileUploadedView(Map<String, Object> account_info) {
+        disableCropGesture(true);
+        account_info.put("gov_id_no_primary",binding.editTextIdType.getText().toString());
+        account_info.put("gov_id_type_primary",binding.editTextIdType.getText().toString());
+        accountInfoViewModel.updateShopInfo(account_info);
+        uploadDialog.dismiss();
+        Toast.makeText(requireContext(), "Government ID submitted!", Toast.LENGTH_SHORT).show();
+        requireActivity().onBackPressed();
     }
 
     private Uri generateUriFromBitmap(Bitmap croppedImage) throws IOException {

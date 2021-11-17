@@ -195,18 +195,48 @@
             app:layout_constraintTop_toTopOf="@+id/textInputLayout6"
             android:onClick="@{() -> accountInfoInterface.onEditMobile()}"/>
 
-        <TextView
-            android:id="@+id/textViewAddGovernmentId"
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:drawableEnd="@drawable/ic_baseline_keyboard_arrow_right_24"
-            android:padding="16dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="8dp"
-            android:text="Add Government ID"
-            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayout6"
+            app:layout_constraintStart_toStartOf="@+id/textInputLayout6"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout6">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editAddGovernmentID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:clickable="true"
+                android:focusable="false"
+                android:textColor="@color/silver"
+                android:inputType="number"
+                android:hint="Add Government ID" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_baseline_keyboard_arrow_right_24"
+            app:layout_constraintBottom_toBottomOf="@+id/textInputLayout7"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayout7"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout6" />
+<!--        <TextView-->
+<!--            android:id="@+id/textViewAddGovernmentId"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="@color/white"-->
+<!--            android:drawableEnd="@drawable/ic_baseline_keyboard_arrow_right_24"-->
+<!--            android:padding="16dp"-->
+<!--            android:paddingStart="16dp"-->
+<!--            android:paddingEnd="8dp"-->
+<!--            android:text="Add Government ID"-->
+<!--            android:textSize="16sp"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/textInputLayout6" />-->
 
         <Button
             android:id="@+id/buttonSave"

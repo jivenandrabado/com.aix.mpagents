@@ -1,7 +1,9 @@
 package com.aix.mpagents.views.fragments.account;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +40,7 @@ import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.fragments.dialogs.UploadDialog;
 import com.aix.mpagents.views.fragments.dialogs.UserTypeDialog;
 import com.bumptech.glide.Glide;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.HashMap;
@@ -131,8 +134,21 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
             }
         });
 
-        binding.textViewAddGovernmentId.setOnClickListener(v -> {
-            navController.navigate(R.id.action_businessProfileFragment_to_addGovernmentIDFragment);
+        binding.editAddGovernmentID.setOnClickListener(v -> {
+            if(((TextInputEditText) v).getText().toString().isEmpty())
+                navController.navigate(R.id.action_businessProfileFragment_to_addGovernmentIDFragment);
+            else {
+                AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
+                alert.setTitle("Government ID")
+                        .setMessage("It seems that you already submitted an ID,\n Do you want to submit new ID?")
+                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+                            navController.navigate(R.id.action_businessProfileFragment_to_addGovernmentIDFragment);
+                        })
+                        .setNegativeButton("No",(dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        })
+                        .show();
+            }
         });
 
     }
@@ -141,6 +157,9 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
     private void initHasUser(AccountInfo accountInfo) {
         binding.editTextShopName.setText(accountInfo.getShop_name());
         binding.editTextShopEmail.setText(accountInfo.getShop_email());
+        binding.editAddGovernmentID.setText(accountInfo.getGov_id_type_primary());
+        if(!accountInfo.getGov_id_type_primary().isEmpty())
+            binding.editAddGovernmentID.setHint("Government ID");
 
         if(accountInfo.isIs_individual()){
             binding.editUserType.setText("Individual");
