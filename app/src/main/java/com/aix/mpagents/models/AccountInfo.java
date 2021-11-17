@@ -1,5 +1,7 @@
 package com.aix.mpagents.models;
 
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.Date;
 
 public class AccountInfo {
@@ -35,9 +37,19 @@ public class AccountInfo {
     public String gov_id_secondary = "";
     public String gov_id_type_primary = "";
     public String gov_id_type_secondary = "";
+    public String agent_status = "";
+
 
     public String getGov_id_type_secondary() {
         return gov_id_type_secondary;
+    }
+
+    public String getAgent_status() {
+        return agent_status;
+    }
+
+    public void setAgent_status(String agent_status) {
+        this.agent_status = agent_status;
     }
 
     public void setGov_id_type_secondary(String gov_id_type_secondary) {

@@ -18,4 +18,6 @@ public class UserSharedViewModel extends ViewModel {
     public FirebaseAuth.AuthStateListener initAuthListener(){
        return firebaseLoginRepo.initFirebaseAuthListener();
     }
+
+
 }
