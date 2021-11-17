@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.SigninENUM;
+import com.aix.mpagents.utilities.StringUtils;
 import com.aix.mpagents.utilities.ToastUtil;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -59,8 +60,6 @@ public class FirebaseLoginRepo {
                                 accountInfo.setDate_created(new Date());
                                 accountInfo.setShop_id(mAuth.getUid());
                                 firebaseRegistrationRepo.checkUserExist(accountInfo,SigninENUM.NONE);
-
-
                             } else {
                                 errorMessage.setValue(Objects.requireNonNull(task.getException()).getMessage());
                                 isUserLoggedIn.setValue(false);
@@ -188,20 +187,24 @@ public class FirebaseLoginRepo {
                                 // Sign in success, update UI with the signed-in user's information
                                 ErrorLog.WriteDebugLog("signInWithCredential:success");
 //                                accountInfo.setShop_email(email);
-                                accountInfo.setShop_name("");
-                                accountInfo.setLogo("");
+
+                                accountInfo.setShop_name(StringUtils.capitalize(mAuth.getCurrentUser().getDisplayName()));
+                                if(mAuth.getCurrentUser().getPhoneNumber() != null){
+                                    accountInfo.setMobile_no(mAuth.getCurrentUser().getPhoneNumber());
+                                }
+                                accountInfo.setLogo(mAuth.getCurrentUser().getPhotoUrl().toString());
+                                accountInfo.setShop_email(mAuth.getCurrentUser().getEmail());
                                 accountInfo.setDate_created(new Date());
-
+                                accountInfo.setShop_id(mAuth.getUid());
                                 firebaseRegistrationRepo.checkUserExist(accountInfo, SigninENUM.GOOGLE);
-
                             } else {
                                 ErrorLog.WriteErrorLog(task.getException());
                                 errorMessage.setValue(Objects.requireNonNull(task.getException()).getMessage());
-
                             }
                         }
                     });
         }catch (Exception e){
+            System.out.println("loginWithGoogle" + e.getLocalizedMessage());
             ErrorLog.WriteErrorLog(e);
         }
     }

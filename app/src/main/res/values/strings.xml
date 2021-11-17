@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MPAgents</string>
+    <string name="app_name">MAgents</string>
 
     <!--    Login-->
     <string name="email">Email</string>
