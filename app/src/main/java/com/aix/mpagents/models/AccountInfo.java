@@ -31,9 +31,18 @@ public class AccountInfo {
 
     public String gov_id_no_primary = "";
     public String gov_id_no_secondary = "";
-    public String gov_id_primamry = "";
+    public String gov_id_primary = "";
     public String gov_id_secondary = "";
+    public String gov_id_type_primary = "";
+    public String gov_id_type_secondary = "";
 
+    public String getGov_id_type_secondary() {
+        return gov_id_type_secondary;
+    }
+
+    public void setGov_id_type_secondary(String gov_id_type_secondary) {
+        this.gov_id_type_secondary = gov_id_type_secondary;
+    }
 
     public String getAgent_id() {
         return agent_id;
@@ -99,13 +108,7 @@ public class AccountInfo {
         this.date_updated = date_updated;
     }
 
-    public String getGov_id_no_primary() {
-        return gov_id_no_primary;
-    }
 
-    public void setGov_id_no_primary(String gov_id_no_primary) {
-        this.gov_id_no_primary = gov_id_no_primary;
-    }
 
     public String getGov_id_no_secondary() {
         return gov_id_no_secondary;
@@ -113,14 +116,6 @@ public class AccountInfo {
 
     public void setGov_id_no_secondary(String gov_id_no_secondary) {
         this.gov_id_no_secondary = gov_id_no_secondary;
-    }
-
-    public String getGov_id_primamry() {
-        return gov_id_primamry;
-    }
-
-    public void setGov_id_primamry(String gov_id_primamry) {
-        this.gov_id_primamry = gov_id_primamry;
     }
 
     public String getGov_id_secondary() {
@@ -138,4 +133,29 @@ public class AccountInfo {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getGov_id_no_primary() {
+        return gov_id_no_primary;
+    }
+
+    public void setGov_id_no_primary(String gov_id_no_primary) {
+        this.gov_id_no_primary = gov_id_no_primary;
+    }
+
+    public String getGov_id_type_primary() {
+        return gov_id_type_primary;
+    }
+
+    public void setGov_id_type_primary(String gov_id_type_primary) {
+        this.gov_id_type_primary = gov_id_type_primary;
+    }
+
+    public String getGov_id_primary() {
+        return gov_id_primary;
+    }
+
+    public void setGov_id_primary(String gov_id_primary) {
+        this.gov_id_primary = gov_id_primary;
+    }
+
 }

@@ -94,6 +94,7 @@ public class LoginFragment extends Fragment implements LoginInterface {
 
     private void initLoginListener(){
         userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), aBoolean -> {
+            System.out.println("LOGIN_initLoginListener" + aBoolean);
             if (aBoolean) {
                 if (progressDialogFragment.getTag() != null && progressDialogFragment.getTag().equals(dialogLoginTag)) {
                     progressDialogFragment.dismiss();
@@ -205,7 +206,6 @@ public class LoginFragment extends Fragment implements LoginInterface {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             Intent data = result.getData();
                             ErrorLog.WriteDebugLog("Activity result received" + data);
-
                             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
                             try {
                                 // Google Sign In was successful, authenticate with Firebase

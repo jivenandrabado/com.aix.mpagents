@@ -1,7 +1,9 @@
 package com.aix.mpagents.views.fragments.account;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -132,12 +134,40 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
             }
         });
 
-
+        binding.editAddGovernmentID.setOnClickListener(v -> {
+            if(((TextInputEditText) v).getText().toString().isEmpty())
+                navController.navigate(R.id.action_businessProfileFragment_to_addGovernmentIDFragment);
+            else {
+                AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
+                alert.setTitle("Government ID")
+                        .setMessage("It seems that you already submitted an ID,\n Do you want to submit new ID?")
+                        .setPositiveButton("Yes", (dialogInterface, i) -> {
+                            navController.navigate(R.id.action_businessProfileFragment_to_addGovernmentIDFragment);
+                        })
+                        .setNegativeButton("No",(dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        })
+                        .show();
+            }
+        });
 
     }
 
 
     private void initHasUser(AccountInfo accountInfo) {
+//        binding.editTextShopEmail.setText(accountInfo.getShop_email());
+        binding.editAddGovernmentID.setText(accountInfo.getGov_id_type_primary());
+        if(!accountInfo.getGov_id_type_primary().isEmpty()){
+            binding.editAddGovernmentID.setHint("Government ID");
+        }
+
+//        if(accountInfo.isIs_individual()){
+//            binding.editUserType.setText("Individual");
+//        }else if(accountInfo.isIs_corporate()){
+//            binding.editUserType.setText("Corporate");
+//        }else if(accountInfo.isIs_agent()){
+//            binding.editUserType.setText("Agent");
+//        }
         binding.editTextFirstName.setText(accountInfo.getFirst_name());
         binding.editTextMiddleName.setText(accountInfo.getMiddle_name());
         binding.editTextLastName.setText(accountInfo.getLast_name());
@@ -316,7 +346,6 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
                                 Uri imageUri = clipData.getItemAt(i).getUri();
                                 // your code for multiple image selection
                                 accountInfoViewModel.uploadToFirebaseStorage(imageUri);
-
                             }
                         } else {
                             Uri uri = data.getData();

@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.SigninENUM;
+import com.aix.mpagents.utilities.StringUtils;
 import com.aix.mpagents.utilities.ToastUtil;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -57,8 +58,6 @@ public class FirebaseLoginRepo {
                                 accountInfo.setDate_created(new Date());
                                 accountInfo.setAgent_id(mAuth.getUid());
                                 firebaseRegistrationRepo.checkUserExist(accountInfo,SigninENUM.NONE);
-
-
                             } else {
                                 errorMessage.setValue(Objects.requireNonNull(task.getException()).getMessage());
                                 isUserLoggedIn.setValue(false);
@@ -187,17 +186,23 @@ public class FirebaseLoginRepo {
                                 ErrorLog.WriteDebugLog("signInWithCredential:success");
 //                                accountInfo.setShop_email(email);
                                 accountInfo.setDate_created(new Date());
-
+//                                accountInfo.setFirst_name(StringUtils.capitalize(mAuth.getCurrentUser().getDisplayName()));
+                                if(mAuth.getCurrentUser().getPhoneNumber() != null){
+                                    accountInfo.setMobile_no(mAuth.getCurrentUser().getPhoneNumber());
+                                }
+                                accountInfo.setProfile_pic(mAuth.getCurrentUser().getPhotoUrl().toString());
+                                accountInfo.setEmail(mAuth.getCurrentUser().getEmail());
+                                accountInfo.setDate_created(new Date());
+                                accountInfo.setAgent_id(mAuth.getUid());
                                 firebaseRegistrationRepo.checkUserExist(accountInfo, SigninENUM.GOOGLE);
-
                             } else {
                                 ErrorLog.WriteErrorLog(task.getException());
                                 errorMessage.setValue(Objects.requireNonNull(task.getException()).getMessage());
-
                             }
                         }
                     });
         }catch (Exception e){
+            System.out.println("loginWithGoogle" + e.getLocalizedMessage());
             ErrorLog.WriteErrorLog(e);
         }
     }

@@ -3,8 +3,10 @@ package com.aix.mpagents.repositories;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Supplier;
 import androidx.lifecycle.MutableLiveData;
 
+import com.aix.mpagents.interfaces.GovernmentIDInterface;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ShopAddress;
 import com.aix.mpagents.utilities.ErrorLog;
@@ -78,9 +80,34 @@ public class FirebaseProfileRepo {
         }
     }
 
+    public void uploadIDtoFirebase(Uri path, GovernmentIDInterface resultHandler){
+        try {
+            StorageReference mediaRef = storageRef.child("MPAgents/" + userId + "/" + path.getLastPathSegment());
+//            InputStream stream = new FileInputStream(new File(path));
+
+            UploadTask uploadTask = mediaRef.putFile(path);
+            uploadTask.addOnFailureListener(e -> ErrorLog.WriteDebugLog("FAILED TO UPLOAD " + e))
+                    .addOnSuccessListener(taskSnapshot ->
+                            mediaRef.getDownloadUrl()
+                                    .addOnSuccessListener(uri -> {
+                                            ErrorLog.WriteDebugLog("SUCCESS UPLOAD " + uri);
+                                            AccountInfo accountInfo = new AccountInfo();
+                                            accountInfo.setProfile_pic(String.valueOf(uri));
+                                            Map<String,Object> account_info = new HashMap<>();
+                                            account_info.put("gov_id_primary", accountInfo.getProfile_pic());
+                                            updateAgentInfo(account_info);
+                                            resultHandler.onIdUploaded(uri.toString());
+                                        }
+                                    )
+                            );
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
+
     public void uploadToFirebaseStorage(Uri path) {
         try {
-            StorageReference mediaRef = storageRef.child(userId + "/" + path.getLastPathSegment());
+            StorageReference mediaRef = storageRef.child("MPAgents/" + userId + "/" + path.getLastPathSegment());
 //            InputStream stream = new FileInputStream(new File(path));
 
             UploadTask uploadTask = mediaRef.putFile(path);

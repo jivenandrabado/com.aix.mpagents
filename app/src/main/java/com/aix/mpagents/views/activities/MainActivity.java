@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
                 || destination.getId() == R.id.addProductFragment
                 || destination.getId() == R.id.editProductFragment
                 || destination.getId() == R.id.ordersFragment3
-                || destination.getId() == R.id.organizationFragment){
+                || destination.getId() == R.id.organizationFragment
+                || destination.getId() == R.id.addGovernmentIDFragment){
                     bottomNavigationView.setVisibility(View.GONE);
                 }else{
 

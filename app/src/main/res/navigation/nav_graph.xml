@@ -75,6 +75,9 @@
         <action
             android:id="@+id/action_accountFragment2_to_organizationFragment"
             app:destination="@id/organizationFragment" />
+        <action
+            android:id="@+id/action_accountFragment2_to_verificationDetailsFragment"
+            app:destination="@id/verificationDetailsFragment" />
     </fragment>
     <fragment
         android:id="@+id/businessProfileFragment"
@@ -89,6 +92,9 @@
         <action
             android:id="@+id/action_profileFragment_to_loginFragment3"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_businessProfileFragment_to_addGovernmentIDFragment"
+            app:destination="@id/addGovernmentIDFragment" />
     </fragment>
     <fragment
         android:id="@+id/shopAddressFragment"
@@ -166,6 +172,20 @@
         android:id="@+id/productTypeFragment"
         android:name="com.aix.mpagents.views.fragments.products.ProductTypeFragment"
         android:label="ProductTypeFragment" />
+    <fragment
+        android:id="@+id/addGovernmentIDFragment"
+        android:name="com.aix.mpagents.views.fragments.account.AddGovernmentIDFragment"
+        android:label="Add Government ID"
+        tools:layout="@layout/fragment_add_government_i_d" />
+    <fragment
+        android:id="@+id/verificationDetailsFragment"
+        android:name="com.aix.mpagents.views.fragments.account.VerificationDetailsFragment"
+        android:label="Get Verified" >
+        <action
+            android:id="@+id/action_verificationDetailsFragment_to_businessProfileFragment"
+            app:destination="@id/businessProfileFragment" />
+    </fragment>
+
 
 
 </navigation>
