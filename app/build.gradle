@@ -86,5 +86,7 @@ dependencies {
     implementation 'com.mikhaellopez:circularimageview:4.3.0'
     //Image Crop View
     implementation "com.naver.android.helloyako:imagecropview:1.2.3"
+    //Places API
+    implementation 'com.google.android.libraries.places:places:2.5.0'
 
 }
