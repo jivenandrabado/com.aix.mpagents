@@ -12,6 +12,7 @@ import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ShopAddress;
 import com.aix.mpagents.repositories.FirebaseLoginRepo;
 import com.aix.mpagents.repositories.FirebaseProfileRepo;
+import com.aix.mpagents.utilities.AgentStatusENUM;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 import java.util.Map;
@@ -29,7 +30,14 @@ public class AccountInfoViewModel extends ViewModel {
 
     public void addAccountInfoSnapshot(){firebaseProfileRepo.addAccountInfoSnaphotListener();}
     public void detachAccountInfoListener(){firebaseProfileRepo.detachAccountInfoListener();}
-    public MutableLiveData<AccountInfo> getAccountInfo(){return firebaseProfileRepo.getAccountInfoMutableLiveData();}
+
+    public MutableLiveData<AgentStatusENUM> getAgentStatus(){
+        return firebaseProfileRepo.getAgentStatus();
+    }
+
+    public MutableLiveData<AccountInfo> getAccountInfo(){
+        return firebaseProfileRepo.getAccountInfoMutableLiveData();
+    }
 
 
     public void updateAgentInfo(Map<String,Object> account_info){firebaseProfileRepo.updateAgentInfo(account_info);}

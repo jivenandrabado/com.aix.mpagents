@@ -10,11 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.DialogAddProductRequirementsBinding;
+import com.aix.mpagents.view_models.AccountInfoViewModel;
+import com.aix.mpagents.view_models.UserSharedViewModel;
 
 public class AddProductsRequirementsDialog extends DialogFragment {
 
@@ -25,6 +28,14 @@ public class AddProductsRequirementsDialog extends DialogFragment {
     private Boolean hasPhone;
     private Boolean hasBank;
     private Boolean hasGovId;
+    private AccountInfoViewModel accountInfoViewModel;
+    private UserSharedViewModel userSharedViewModel;
+
+    @Override
+    public void onDestroy() {
+        accountInfoViewModel.detachAccountInfoListener();
+        super.onDestroy();
+    }
 
     public AddProductsRequirementsDialog(Boolean isEmailVerified, Boolean hasPhone, Boolean hasBank, Boolean hasGovId, NavController navController) {
         this.isEmailVerified = isEmailVerified;
@@ -40,6 +51,8 @@ public class AddProductsRequirementsDialog extends DialogFragment {
         binding = DialogAddProductRequirementsBinding.inflate(inflater, container, false);
         binding.setView(this);
         binding.setLifecycleOwner(this);
+        accountInfoViewModel = new ViewModelProvider(this).get(AccountInfoViewModel.class);
+        userSharedViewModel = new ViewModelProvider(this).get(UserSharedViewModel.class);
         isProcessDone(isEmailVerified, binding.imageViewEmailVerifiedIndicator);
         isProcessDone(hasPhone, binding.imageViewContactNumberIndicator);
         isProcessDone(hasBank, binding.imageViewBankIndicator);
@@ -57,6 +70,29 @@ public class AddProductsRequirementsDialog extends DialogFragment {
         binding.textViewContactNumber.setOnClickListener(toEditAccount);
         binding.textViewGovID.setOnClickListener(toEditAccount);
         binding.textViewBank.setOnClickListener(toEditAccount);
+
+        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result -> {
+            if(result) accountInfoViewModel.addAccountInfoSnapshot();
+            else accountInfoViewModel.detachAccountInfoListener();
+        });
+
+        accountInfoViewModel.getAgentStatus().observe(getViewLifecycleOwner(), result -> {
+            String agentStatus = "";
+            switch (result){
+                case SEMI:
+                    agentStatus = "You are a Semi-verified User";
+                    break;
+                case FULLY:
+                    agentStatus = "You are a Fully Verified User";
+                    break;
+                case BASIC:
+                default:
+                    agentStatus = "You are a Basic User";
+                    break;
+            }
+            System.out.println("getAgentStatus " + agentStatus);
+            binding.textViewAgentStatus.setText(agentStatus);
+        });
     }
 
     @Override

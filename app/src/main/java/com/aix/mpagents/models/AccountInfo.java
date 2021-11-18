@@ -170,4 +170,8 @@ public class AccountInfo {
         this.gov_id_primary = gov_id_primary;
     }
 
+    public String getFullName(){
+        return getFirst_name() + " " + getMiddle_name() + " " + getLast_name();
+    }
+
 }
