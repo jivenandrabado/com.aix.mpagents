@@ -1,5 +1,9 @@
 package com.aix.mpagents.views.fragments.account;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -7,8 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -20,6 +29,15 @@ import com.aix.mpagents.databinding.FragmentAddAddressfragmentBinding;
 import com.aix.mpagents.models.ShopAddress;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.AccountInfoViewModel;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+import com.google.firebase.firestore.GeoPoint;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class AddAddressfragment extends Fragment {
 
@@ -27,7 +45,19 @@ public class AddAddressfragment extends Fragment {
     private AccountInfoViewModel accountInfoViewModel;
     private boolean is_business;
     private NavController navController;
-    private String cityMuni, barangay, street, num;
+    private String address;
+    private GeoPoint latLong;
+
+    private ActivityResultLauncher<Intent> placesActivityResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() == Activity.RESULT_OK){
+                    Place place = Autocomplete.getPlaceFromIntent(result.getData());
+                    binding.editTextAddress.setText(place.getName());
+                    latLong = new GeoPoint(place.getLatLng().latitude, place.getLatLng().longitude);
+                }
+            }
+    );
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,6 +73,7 @@ public class AddAddressfragment extends Fragment {
 
         accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
         navController = Navigation.findNavController(view);
+        Places.initialize(requireContext().getApplicationContext(), requireContext().getString(R.string.places_api_key));
         initAddressView();
 
         accountInfoViewModel.isAddressUpdated().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
@@ -56,6 +87,17 @@ public class AddAddressfragment extends Fragment {
             }
         });
 
+        binding.editTextAddress.setOnClickListener(v -> {
+            List<Place.Field> fieldList = Arrays.asList(
+                    Place.Field.ADDRESS,
+                    Place.Field.LAT_LNG,
+                    Place.Field.NAME);
+            Intent intent = new Autocomplete.IntentBuilder(
+                    AutocompleteActivityMode.FULLSCREEN,
+                    fieldList
+            ).build(requireContext());
+            placesActivityResult.launch(intent);
+        });
 
 
     }
@@ -66,10 +108,7 @@ public class AddAddressfragment extends Fragment {
                 @Override
                 public void onChanged(ShopAddress shopAddress) {
                     if(shopAddress!=null) {
-                        binding.editTextCity.setText(shopAddress.getShop_citymun());
-                        binding.editTextBarangay.setText(shopAddress.getShop_barangay());
-                        binding.editTextNum.setText(shopAddress.getShop_blkbldgnumber());
-                        binding.editTextStreet.setText(shopAddress.getShop_street());
+                        binding.editTextAddress.setText(shopAddress.getAddress_name());
                         binding.textViewDelete.setVisibility(View.VISIBLE);
                         binding.switchBusinessAddress.setChecked(shopAddress.isIs_business());
 
@@ -110,19 +149,13 @@ public class AddAddressfragment extends Fragment {
     private void saveAddress(){
         ErrorLog.WriteDebugLog("SAVE ADDRESS");
 
-        cityMuni = String.valueOf(binding.editTextCity.getText()).trim();
-        barangay = String.valueOf(binding.editTextBarangay.getText()).trim();
-        street = String.valueOf(binding.editTextStreet.getText()).trim();
-        num = String.valueOf(binding.editTextNum.getText()).trim();
+        address = String.valueOf(binding.editTextAddress.getText()).trim();
         is_business = binding.switchBusinessAddress.isChecked();
 
-        if(!isEmptyFields(cityMuni,barangay,street, num)) {
+        if(!isEmptyFields(address)) {
             ShopAddress shopAddress = new ShopAddress();
-            shopAddress.setShop_citymun(cityMuni);
-            shopAddress.setShop_barangay(barangay);
-            shopAddress.setShop_street(street);
-            shopAddress.setShop_blkbldgnumber(num);
-            shopAddress.setLatLng(null);
+            shopAddress.setAddress_name(address);
+            shopAddress.setLatLng(latLong);
             shopAddress.setIs_business(is_business);
             shopAddress.setIs_deleted(false);
 
@@ -132,37 +165,22 @@ public class AddAddressfragment extends Fragment {
 
     private void updateAddress(ShopAddress shopAddress){
         ErrorLog.WriteDebugLog("UPDATE ADDRESS");
-        cityMuni = String.valueOf(binding.editTextCity.getText()).trim();
-        barangay = String.valueOf(binding.editTextBarangay.getText()).trim();
-        street = String.valueOf(binding.editTextStreet.getText()).trim();
-        num = String.valueOf(binding.editTextNum.getText()).trim();
+        address = String.valueOf(binding.editTextAddress.getText()).trim();
         is_business = binding.switchBusinessAddress.isChecked();
 
-        if(!isEmptyFields(cityMuni,barangay,street, num)) {
-            shopAddress.setShop_citymun(cityMuni);
-            shopAddress.setShop_barangay(barangay);
-            shopAddress.setShop_street(street);
-            shopAddress.setShop_blkbldgnumber(num);
-            shopAddress.setLatLng(null);
+        if(!isEmptyFields(address)) {
+            shopAddress.setAddress_name(address);
+            shopAddress.setLatLng(latLong);
             shopAddress.setIs_business(is_business);
 
             accountInfoViewModel.updateAddress(shopAddress);
         }
     }
 
-    private boolean isEmptyFields(String cityMun, String barangay, String street, String num){
+    private boolean isEmptyFields(String address){
 
-        if (TextUtils.isEmpty(cityMun)){
-            Toast.makeText(requireContext(), "Empty City/Municipality", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (TextUtils.isEmpty(barangay)){
-            Toast.makeText(requireContext(), "Empty Barangay", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (TextUtils.isEmpty(street)) {
-            Toast.makeText(requireContext(), "Empty Street", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (TextUtils.isEmpty(num)) {
-            Toast.makeText(requireContext(), "Empty Bldg./Blk Num", Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(address)){
+            Toast.makeText(requireContext(), "Empty Address", Toast.LENGTH_LONG).show();
             return true;
         }else{
             return false;

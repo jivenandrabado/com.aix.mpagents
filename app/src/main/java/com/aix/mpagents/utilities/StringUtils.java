@@ -20,4 +20,16 @@ public class StringUtils {
         }
         return builder.toString();
     }
+
+    public static String getFistName(@NonNull String input) {
+        String[] words = input.toLowerCase().split(" ");
+        if(!words[0].isEmpty()) return words[0];
+        else return "";
+    }
+
+    public static String getLastName(@NonNull String input) {
+        String[] words = input.toLowerCase().split(" ");
+        if(!words[words.length - 1].isEmpty()) return words[words.length - 1];
+        else return "";
+    }
 }

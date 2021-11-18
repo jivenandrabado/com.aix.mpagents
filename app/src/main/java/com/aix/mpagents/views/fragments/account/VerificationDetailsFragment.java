@@ -3,10 +3,12 @@ package com.aix.mpagents.views.fragments.account;
 import static com.aix.mpagents.utilities.AgentStatusENUM.*;
 
 import android.app.Dialog;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentVerificationDetailsBinding;
@@ -81,6 +84,13 @@ public class VerificationDetailsFragment extends Fragment {
 
     private void initListeners() {
 
+        binding.constraintLayoutSetGovId.setOnClickListener(v -> {
+            navController.navigate(R.id.action_verificationDetailsFragment_to_addGovernmentIDFragment);
+        });
+        binding.constraintLayoutSetInfo.setOnClickListener(v -> {
+            navController.navigate(R.id.action_verificationDetailsFragment_to_businessProfileFragment);
+        });
+
         userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -101,27 +111,36 @@ public class VerificationDetailsFragment extends Fragment {
             }
         });
 
+        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), result -> {
+            setEnableButtonForSetInfo(!result.getFullName().trim().isEmpty() &&
+                    !result.getMobile_no().isEmpty());
+            setEnableButtonForID(!result.getGov_id_primary().isEmpty());
+        });
+
         accountInfoViewModel.getAgentStatus().observe(getViewLifecycleOwner(), result -> {
             String agentStatus = "";
+            View.OnClickListener verificationPage = v -> { };
             switch (result){
                 case SEMI:
                     agentStatus = "You are a Semi-verified User";
+                    verificationPage = v -> { binding.constraintLayoutSetGovId.performClick(); };
                     break;
                 case FULLY:
-                    agentStatus = "You are a Fully Verified User";
+                    Toast.makeText(requireContext(), "Your are now Fully Verified.", Toast.LENGTH_SHORT).show();
+                    requireActivity().onBackPressed();
                     break;
                 case BASIC:
                 default:
+                    verificationPage = v -> { binding.constraintLayoutSetInfo.performClick(); };
                     agentStatus = "You are a Basic User";
                     break;
             }
             System.out.println("getAgentStatus " + agentStatus);
             binding.textViewAgentVerificationStatus.setText(agentStatus);
+            binding.buttonVerificationPage.setOnClickListener(verificationPage);
         });
 
-        binding.buttonVerificationPage.setOnClickListener(v -> {
-            navController.navigate(R.id.action_verificationDetailsFragment_to_businessProfileFragment);
-        });
+
 
         binding.textViewSeeListOfID.setOnClickListener(v -> {
             Dialog dialog = new Dialog(requireContext());
@@ -135,6 +154,28 @@ public class VerificationDetailsFragment extends Fragment {
             dialog.setCanceledOnTouchOutside(true);
             dialog.show();
         });
+    }
+
+    private void setEnableButtonForID(boolean hasId) {
+        if(hasId) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                binding.imageViewGovIdImage.setForeground(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_check_circle_outline_24));
+                binding.constraintLayoutSetGovId.setEnabled(false);
+            }
+        }else {
+            binding.constraintLayoutSetGovId.setEnabled(true);
+        }
+    }
+
+    private void setEnableButtonForSetInfo(boolean hasInfo) {
+        if(hasInfo) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                binding.imageViewFillUpImage.setForeground(ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_check_circle_outline_24));
+                binding.constraintLayoutSetInfo.setEnabled(false);
+            }
+        }else {
+            binding.constraintLayoutSetInfo.setEnabled(true);
+        }
     }
 
     @Override

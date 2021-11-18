@@ -28,14 +28,8 @@ public class ShopAddressFirestoreAdapter extends FirestoreRecyclerAdapter<ShopAd
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull ShopAddress shopAddress) {
         holder.binding.setShopAddress(shopAddress);
         holder.binding.setShopAddressInterface(shopAddressInterface);
-        String street = shopAddress.getShop_blkbldgnumber() + " " + shopAddress.getShop_street();
-        String barangay = "Barangay " + shopAddress.getShop_barangay();
-        String city = shopAddress.getShop_citymun();
         String addressType;
-        holder.binding.textViewBlkNumAndStreet.setText(street);
-        holder.binding.textViewBarangay.setText(barangay);
-        holder.binding.textViewCity.setText(city);
-
+        holder.binding.textViewAddress.setText(shopAddress.getAddress_name()    );
         if(shopAddress.isIs_business()){
             addressType= "(Business)";
         }else{

@@ -237,19 +237,15 @@ public class FirebaseProfileRepo {
     private void setAccountStatus(AccountInfo accountInfo) {
         try {
             if(!accountInfo.getGov_id_primary().isEmpty()){
-                if(!accountInfo.getFullName().isEmpty()){
+                if(!accountInfo.getFullName().trim().isEmpty() &&
+                !accountInfo.getMobile_no().isEmpty()){
                     agentStatus.setValue(AgentStatusENUM.FULLY);
-                    System.out.println("getAgentStatus FULLY");
                 }else{
                     agentStatus.setValue(AgentStatusENUM.BASIC);
-                    System.out.println("getAgentStatus BASIC1" );
                 }
-            }else if(!accountInfo.getFullName().isEmpty()){
                 agentStatus.setValue(AgentStatusENUM.SEMI);
-                System.out.println("getAgentStatus SEMI" );
             }else {
                 agentStatus.setValue(AgentStatusENUM.BASIC);
-                System.out.println("getAgentStatus BASIC2" );
             }
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
