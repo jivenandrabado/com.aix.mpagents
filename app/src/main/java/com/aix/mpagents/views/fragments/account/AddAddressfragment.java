@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,7 @@ import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,6 +49,7 @@ public class AddAddressfragment extends Fragment {
     private NavController navController;
     private String address;
     private GeoPoint latLong;
+    private List<ShopAddress> addresses = new ArrayList<>();
 
     private ActivityResultLauncher<Intent> placesActivityResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -87,6 +90,10 @@ public class AddAddressfragment extends Fragment {
             }
         });
 
+        accountInfoViewModel.getAllAddresses().observe(getViewLifecycleOwner(), result -> {
+            addresses = result;
+        });
+
         binding.editTextAddress.setOnClickListener(v -> {
             List<Place.Field> fieldList = Arrays.asList(
                     Place.Field.ADDRESS,
@@ -98,7 +105,6 @@ public class AddAddressfragment extends Fragment {
             ).build(requireContext());
             placesActivityResult.launch(intent);
         });
-
 
     }
 
@@ -159,6 +165,7 @@ public class AddAddressfragment extends Fragment {
             shopAddress.setIs_business(is_business);
             shopAddress.setIs_deleted(false);
 
+            isAddressDefault(shopAddress);
             accountInfoViewModel.saveAddress(shopAddress);
         }
     }
@@ -172,8 +179,17 @@ public class AddAddressfragment extends Fragment {
             shopAddress.setAddress_name(address);
             shopAddress.setLatLng(latLong);
             shopAddress.setIs_business(is_business);
-
+            isAddressDefault(shopAddress);
             accountInfoViewModel.updateAddress(shopAddress);
+        }
+    }
+
+    private void isAddressDefault(ShopAddress shopAddress) {
+        if(shopAddress.is_business){
+            for(ShopAddress address : addresses){
+                address.setIs_business(false);
+                accountInfoViewModel.updateAddressForDefault(address);
+            }
         }
     }
 

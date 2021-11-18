@@ -2,6 +2,9 @@ package com.aix.mpagents.views.fragments.products;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,6 +23,7 @@ import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
+import com.google.android.material.tabs.TabLayout;
 
 
 public class ProductListFragment extends Fragment implements ProductInterface {
@@ -89,4 +93,5 @@ public class ProductListFragment extends Fragment implements ProductInterface {
         productsBottomSheetDialog.dismiss();
         navController.navigate(R.id.action_productListFragment_to_editProductFragment);
     }
+
 }

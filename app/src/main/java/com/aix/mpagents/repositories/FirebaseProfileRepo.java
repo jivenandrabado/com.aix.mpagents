@@ -23,12 +23,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -47,6 +50,7 @@ public class FirebaseProfileRepo {
     private final MutableLiveData<Boolean> isAddressUpdated = new MutableLiveData<>();
     private ListenerRegistration accountInfoListener;
     private MutableLiveData<AccountInfo> accountInfoMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<ShopAddress>> allAddresses = new MutableLiveData<>();
 
 
     public FirebaseProfileRepo() {
@@ -182,6 +186,22 @@ public class FirebaseProfileRepo {
         }
     }
 
+    public void updateAddressForDefault(ShopAddress shopAddress) {
+        try{
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+                    .document(shopAddress.getAddress_id()).set(shopAddress)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            ErrorLog.WriteDebugLog("SUCCESS ADDRESS UPDATE");
+                        }
+                    });
+
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
+
     public void deleteAddress(ShopAddress shopAddress) {
         try{
             Map<String,Object> addressMap = new HashMap<>();
@@ -234,6 +254,8 @@ public class FirebaseProfileRepo {
         }
     }
 
+
+
     private void setAccountStatus(AccountInfo accountInfo) {
         try {
             if(!accountInfo.getGov_id_primary().isEmpty()){
@@ -264,5 +286,26 @@ public class FirebaseProfileRepo {
 
     public MutableLiveData<AgentStatusENUM> getAgentStatus() {
         return agentStatus;
+    }
+
+    public MutableLiveData<List<ShopAddress>> getAllAddresses() {
+        try{
+            List<ShopAddress> addresses = new ArrayList<>();
+            db.collection(FirestoreConstants.MPARTNER_AGENTS)
+                    .document(userId)
+                    .collection(FirestoreConstants.MPARTNER_ADDRESSES).get().addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    for(DocumentSnapshot document: task.getResult().getDocuments()){
+                        addresses.add(document.toObject(ShopAddress.class));
+                        allAddresses.setValue(addresses);
+                    }
+                }else {
+                    ErrorLog.WriteErrorLog(task.getException());
+                }
+            });
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+        return allAddresses;
     }
 }
