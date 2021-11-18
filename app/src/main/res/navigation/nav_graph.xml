@@ -190,6 +190,9 @@
         <action
             android:id="@+id/action_verificationDetailsFragment_to_businessProfileFragment"
             app:destination="@id/businessProfileFragment" />
+        <action
+            android:id="@+id/action_verificationDetailsFragment_to_addGovernmentIDFragment"
+            app:destination="@id/addGovernmentIDFragment" />
     </fragment>
 
 

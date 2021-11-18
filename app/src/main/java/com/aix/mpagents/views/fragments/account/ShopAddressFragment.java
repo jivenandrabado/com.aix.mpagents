@@ -70,16 +70,16 @@ public class ShopAddressFragment extends Fragment implements ShopAddressInterfac
         });
     }
 
-    public Boolean isEmpty(ShopAddress shopAddress){
-        if(shopAddress.getShop_citymun().isEmpty() || shopAddress.getShop_barangay().isEmpty()
-                || shopAddress.getShop_street().isEmpty()|| shopAddress.getShop_blkbldgnumber().isEmpty())
-        {
-            return true;
-        }else{
-            return false;
-        }
-
-    }
+//    public Boolean isEmpty(ShopAddress shopAddress){
+//        if(shopAddress.getShop_citymun().isEmpty() || shopAddress.getShop_barangay().isEmpty()
+//                || shopAddress.getShop_street().isEmpty()|| shopAddress.getShop_blkbldgnumber().isEmpty())
+//        {
+//            return true;
+//        }else{
+//            return false;
+//        }
+//
+//    }
 
     @Override
     public void onDestroy() {

@@ -186,7 +186,8 @@ public class FirebaseLoginRepo {
                                 ErrorLog.WriteDebugLog("signInWithCredential:success");
 //                                accountInfo.setShop_email(email);
                                 accountInfo.setDate_created(new Date());
-//                                accountInfo.setFirst_name(StringUtils.capitalize(mAuth.getCurrentUser().getDisplayName()));
+                                accountInfo.setFirst_name(StringUtils.capitalize(StringUtils.getFistName(mAuth.getCurrentUser().getDisplayName())));
+                                accountInfo.setLast_name(StringUtils.capitalize(StringUtils.getLastName(mAuth.getCurrentUser().getDisplayName())));
                                 if(mAuth.getCurrentUser().getPhoneNumber() != null){
                                     accountInfo.setMobile_no(mAuth.getCurrentUser().getPhoneNumber());
                                 }
