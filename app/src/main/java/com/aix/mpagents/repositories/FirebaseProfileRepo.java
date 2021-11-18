@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.aix.mpagents.interfaces.GovernmentIDInterface;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ShopAddress;
+import com.aix.mpagents.utilities.AgentStatusENUM;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.FirestoreConstants;
 import com.aix.mpagents.utilities.ToastUtil;
@@ -38,6 +39,7 @@ public class FirebaseProfileRepo {
     private FirebaseFirestore db;
     private String userId;
     private final MutableLiveData<AccountInfo> userInfoMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<AgentStatusENUM> agentStatus = new MutableLiveData<>();
     public final MutableLiveData<Boolean> updateProfileSuccess = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -220,11 +222,35 @@ public class FirebaseProfileRepo {
         accountInfoListener = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId))
                 .addSnapshotListener((value, error) -> {
                     if(value.exists()) {
-                        accountInfoMutableLiveData.setValue(value.toObject(AccountInfo.class));
+                        AccountInfo accountInfo = value.toObject(AccountInfo.class);
+                        accountInfoMutableLiveData.setValue(accountInfo);
+                        setAccountStatus(accountInfo);
                     }
 
                 });
 
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
+
+    private void setAccountStatus(AccountInfo accountInfo) {
+        try {
+            if(!accountInfo.getGov_id_primary().isEmpty()){
+                if(!accountInfo.getFullName().isEmpty()){
+                    agentStatus.setValue(AgentStatusENUM.FULLY);
+                    System.out.println("getAgentStatus FULLY");
+                }else{
+                    agentStatus.setValue(AgentStatusENUM.BASIC);
+                    System.out.println("getAgentStatus BASIC1" );
+                }
+            }else if(!accountInfo.getFullName().isEmpty()){
+                agentStatus.setValue(AgentStatusENUM.SEMI);
+                System.out.println("getAgentStatus SEMI" );
+            }else {
+                agentStatus.setValue(AgentStatusENUM.BASIC);
+                System.out.println("getAgentStatus BASIC2" );
+            }
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
         }
@@ -238,5 +264,9 @@ public class FirebaseProfileRepo {
 
     public MutableLiveData<AccountInfo> getAccountInfoMutableLiveData(){
         return accountInfoMutableLiveData;
+    }
+
+    public MutableLiveData<AgentStatusENUM> getAgentStatus() {
+        return agentStatus;
     }
 }

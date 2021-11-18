@@ -77,7 +77,7 @@
                         android:layout_height="15dp"
                         android:layout_alignParentStart="true"
                         android:src="@drawable/ic_baseline_check_24"
-                        app:tint="@color/mpagents_base_color"/>
+                        app:tint="@color/mpagents_base_color" />
 
                     <com.mikhaellopez.circularimageview.CircularImageView
                         android:id="@+id/circularImageSemiVerifiedIndicator"

@@ -80,6 +80,20 @@ public class AccountFragment extends Fragment implements AccountInterface {
             }
         });
 
+        accountInfoViewModel.getAgentStatus().observe(getViewLifecycleOwner(), result -> {
+            switch (result){
+                case FULLY:
+                    binding.textViewVerifyAccount.setVisibility(View.GONE);
+                    binding.circularImageFullyVerifiedIndicator.setImageResource(R.drawable.ic_baseline_check_24);
+                    binding.circularImageSemiVerifiedIndicator.setImageResource(R.drawable.ic_baseline_check_24);
+                    break;
+                case SEMI:
+                    binding.circularImageSemiVerifiedIndicator.setImageResource(R.drawable.ic_baseline_check_24);
+                    break;
+            }
+            binding.circularImageBasicLevelIndicator.setImageResource(R.drawable.ic_baseline_check_24);
+        });
+
 
         accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), new Observer<AccountInfo>() {
             @Override
