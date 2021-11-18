@@ -1,18 +1,22 @@
 package com.aix.mpagents.models;
 
-import com.google.type.LatLng;
+
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.Date;
 
 public class ShopAddress {
 
 
-    public LatLng latLng;
+    public GeoPoint latLng;
     public String address_id;
     public String address_name;
     public boolean is_deleted;
     public Date date_deleted;
     public boolean is_business;
+
+    public ShopAddress() {
+    }
 
     public String getAddress_name() {
         return address_name;
@@ -22,11 +26,11 @@ public class ShopAddress {
         this.address_name = address_name;
     }
 
-    public LatLng getLatLng() {
+    public GeoPoint getLatLng() {
         return latLng;
     }
 
-    public void setLatLng(LatLng latLng) {
+    public void setLatLng(GeoPoint latLng) {
         this.latLng = latLng;
     }
 
