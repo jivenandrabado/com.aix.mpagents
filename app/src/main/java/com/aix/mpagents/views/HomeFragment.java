@@ -1,5 +1,6 @@
 package com.aix.mpagents.views;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.OrderViewModel;
 import com.aix.mpagents.view_models.PushNotificationViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
+import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -36,7 +38,7 @@ public class HomeFragment extends Fragment {
     private AccountInfoViewModel accountInfoViewModel;
     private OrderViewModel orderViewModel;
     private PushNotificationViewModel pushNotificationViewModel;
-
+    private AccountInfo mAccountInfo;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,18 +66,11 @@ public class HomeFragment extends Fragment {
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
                     ErrorLog.WriteDebugLog("User logged in");
-                    if(accountInfoViewModel != null){
-                        initShopInfo();
-                        initPendingOrderListener();
-
-                    }
                     if(accountInfoViewModel == null){
                         accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
-                        initShopInfo();
-                        initPendingOrderListener();
                     }
-
-
+                    initShopInfo();
+                    initPendingOrderListener();
                 }else{
                     navController.navigate(R.id.action_homeFragment_to_loginFragment);
                     ErrorLog.WriteDebugLog("User logged out");
@@ -87,7 +82,19 @@ public class HomeFragment extends Fragment {
         binding.buttonAddProducts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!mAccountInfo.getEmail().isEmpty() &&
+                    !mAccountInfo.getMobile_no().isEmpty() &&
+                    !mAccountInfo.getGov_id_primary().isEmpty())
                 navController.navigate(R.id.action_homeFragment_to_addProductFragment);
+                else{
+                    new AddProductsRequirementsDialog(
+                            !mAccountInfo.getEmail().isEmpty(),
+                            !mAccountInfo.getMobile_no().isEmpty(),
+                            false,
+                            !mAccountInfo.getGov_id_primary().isEmpty(),
+                            navController
+                    ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+                }
             }
         });
 
@@ -121,6 +128,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onChanged(AccountInfo accountInfo) {
                 if(accountInfo !=null) {
+                    mAccountInfo= accountInfo;
                     String first_name = accountInfo.getFirst_name();
                     String middle_name = accountInfo.getMiddle_name();
                     String last_name = accountInfo.getLast_name();

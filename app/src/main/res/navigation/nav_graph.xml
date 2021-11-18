@@ -60,6 +60,12 @@
         <action
             android:id="@+id/action_homeFragment_to_ordersFragment3"
             app:destination="@id/ordersFragment3" />
+        <action
+            android:id="@+id/action_homeFragment_to_verificationDetailsFragment"
+            app:destination="@id/verificationDetailsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_businessProfileFragment"
+            app:destination="@id/businessProfileFragment" />
 
     </fragment>
     <fragment

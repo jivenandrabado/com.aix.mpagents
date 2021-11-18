@@ -3,7 +3,7 @@ package com.aix.mpagents.utilities;
 public class FirestoreConstants {
 
 
-    private static String db_ = "test_";
+    private static String db_ = "prod_";
     //Merchant
     public static String MPARTNER_AGENTS = db_+"agents";
     public static String MPARTNER_ADDRESSES = "addressses";
