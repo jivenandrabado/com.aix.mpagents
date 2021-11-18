@@ -107,6 +107,5 @@ public class ShopAddressFragment extends Fragment implements ShopAddressInterfac
     public void onAddressClick(ShopAddress shopAddress) {
         accountInfoViewModel.getSelectedShopAddress().setValue(shopAddress);
         navController.navigate(R.id.action_shopAddressFragment_to_addAddressfragment);
-
     }
 }

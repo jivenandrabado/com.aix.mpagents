@@ -27,7 +27,7 @@ public class AddAddressfragment extends Fragment {
     private AccountInfoViewModel accountInfoViewModel;
     private boolean is_business;
     private NavController navController;
-    private String cityMuni, barangay, street, num;
+    private String address;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,10 +66,7 @@ public class AddAddressfragment extends Fragment {
                 @Override
                 public void onChanged(ShopAddress shopAddress) {
                     if(shopAddress!=null) {
-                        binding.editTextCity.setText(shopAddress.getShop_citymun());
-                        binding.editTextBarangay.setText(shopAddress.getShop_barangay());
-                        binding.editTextNum.setText(shopAddress.getShop_blkbldgnumber());
-                        binding.editTextStreet.setText(shopAddress.getShop_street());
+                        binding.editTextAddress.setText(shopAddress.getAddress_name());
                         binding.textViewDelete.setVisibility(View.VISIBLE);
                         binding.switchBusinessAddress.setChecked(shopAddress.isIs_business());
 
@@ -110,18 +107,12 @@ public class AddAddressfragment extends Fragment {
     private void saveAddress(){
         ErrorLog.WriteDebugLog("SAVE ADDRESS");
 
-        cityMuni = String.valueOf(binding.editTextCity.getText()).trim();
-        barangay = String.valueOf(binding.editTextBarangay.getText()).trim();
-        street = String.valueOf(binding.editTextStreet.getText()).trim();
-        num = String.valueOf(binding.editTextNum.getText()).trim();
+        address = String.valueOf(binding.editTextAddress.getText()).trim();
         is_business = binding.switchBusinessAddress.isChecked();
 
-        if(!isEmptyFields(cityMuni,barangay,street, num)) {
+        if(!isEmptyFields(address)) {
             ShopAddress shopAddress = new ShopAddress();
-            shopAddress.setShop_citymun(cityMuni);
-            shopAddress.setShop_barangay(barangay);
-            shopAddress.setShop_street(street);
-            shopAddress.setShop_blkbldgnumber(num);
+            shopAddress.setAddress_name(address);
             shopAddress.setLatLng(null);
             shopAddress.setIs_business(is_business);
             shopAddress.setIs_deleted(false);
@@ -132,17 +123,11 @@ public class AddAddressfragment extends Fragment {
 
     private void updateAddress(ShopAddress shopAddress){
         ErrorLog.WriteDebugLog("UPDATE ADDRESS");
-        cityMuni = String.valueOf(binding.editTextCity.getText()).trim();
-        barangay = String.valueOf(binding.editTextBarangay.getText()).trim();
-        street = String.valueOf(binding.editTextStreet.getText()).trim();
-        num = String.valueOf(binding.editTextNum.getText()).trim();
+        address = String.valueOf(binding.editTextAddress.getText()).trim();
         is_business = binding.switchBusinessAddress.isChecked();
 
-        if(!isEmptyFields(cityMuni,barangay,street, num)) {
-            shopAddress.setShop_citymun(cityMuni);
-            shopAddress.setShop_barangay(barangay);
-            shopAddress.setShop_street(street);
-            shopAddress.setShop_blkbldgnumber(num);
+        if(!isEmptyFields(address)) {
+            shopAddress.setAddress_name(address);
             shopAddress.setLatLng(null);
             shopAddress.setIs_business(is_business);
 
@@ -150,19 +135,10 @@ public class AddAddressfragment extends Fragment {
         }
     }
 
-    private boolean isEmptyFields(String cityMun, String barangay, String street, String num){
+    private boolean isEmptyFields(String address){
 
-        if (TextUtils.isEmpty(cityMun)){
+        if (TextUtils.isEmpty(address)){
             Toast.makeText(requireContext(), "Empty City/Municipality", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (TextUtils.isEmpty(barangay)){
-            Toast.makeText(requireContext(), "Empty Barangay", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (TextUtils.isEmpty(street)) {
-            Toast.makeText(requireContext(), "Empty Street", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (TextUtils.isEmpty(num)) {
-            Toast.makeText(requireContext(), "Empty Bldg./Blk Num", Toast.LENGTH_LONG).show();
             return true;
         }else{
             return false;
