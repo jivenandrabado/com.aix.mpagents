@@ -21,6 +21,7 @@ public class AccountInfoViewModel extends ViewModel {
     private final FirebaseLoginRepo firebaseLoginRepo = new FirebaseLoginRepo();
     private final FirebaseProfileRepo firebaseProfileRepo = new FirebaseProfileRepo();
 
+    private final MutableLiveData<ShopAddress> selectedShopAddress = new MutableLiveData<>();
 
     public void logoutUser(Activity activity){
         firebaseLoginRepo.logoutUser(activity);

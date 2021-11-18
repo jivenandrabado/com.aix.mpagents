@@ -25,6 +25,7 @@ import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.OrderViewModel;
 import com.aix.mpagents.view_models.PushNotificationViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
+import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -81,7 +82,19 @@ public class HomeFragment extends Fragment {
         binding.buttonAddProducts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!mAccountInfo.getEmail().isEmpty() &&
+                    !mAccountInfo.getMobile_no().isEmpty() &&
+                    !mAccountInfo.getGov_id_primary().isEmpty())
                 navController.navigate(R.id.action_homeFragment_to_addProductFragment);
+                else{
+                    new AddProductsRequirementsDialog(
+                            !mAccountInfo.getEmail().isEmpty(),
+                            !mAccountInfo.getMobile_no().isEmpty(),
+                            false,
+                            !mAccountInfo.getGov_id_primary().isEmpty(),
+                            navController
+                    ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+                }
             }
         });
 
