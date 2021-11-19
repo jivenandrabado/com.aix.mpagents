@@ -9,4 +9,6 @@ public interface ProductInterface {
     void onOnlineProduct(ProductInfo productInfo);
     void onInactiveProduct(ProductInfo productInfo);
     void onShareProduct(ProductInfo productInfo);
+    void onEmptyProduct();
+    void onNotEmptyProduct();
 }

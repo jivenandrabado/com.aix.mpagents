@@ -14,6 +14,7 @@ import com.aix.mpagents.databinding.ItemProductsBinding;
 import com.aix.mpagents.interfaces.ProductInterface;
 import com.aix.mpagents.models.ProductInfo;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
@@ -39,7 +40,7 @@ public class ProductsFirestoreAdapter extends FirestoreRecyclerAdapter<ProductIn
 
         Glide.with(context).load(Uri.parse(model.getPreview_image()))
 //                .apply(requestOptions)
-//                .transition(DrawableTransitionOptions.withCrossFade())
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .centerInside()
                 .error(R.drawable.ic_baseline_photo_24).into(holder.binding.imageView);
     }
@@ -52,12 +53,18 @@ public class ProductsFirestoreAdapter extends FirestoreRecyclerAdapter<ProductIn
         return new ViewHolder(binding);
     }
 
-
     public class ViewHolder extends RecyclerView.ViewHolder {
         ItemProductsBinding binding;
         public ViewHolder(ItemProductsBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
+    }
+
+    @Override
+    public void onDataChanged() {
+        if(getItemCount() == 0) productInterface.onEmptyProduct();
+        else productInterface.onNotEmptyProduct();
+        super.onDataChanged();
     }
 }

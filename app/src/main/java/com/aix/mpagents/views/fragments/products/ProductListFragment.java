@@ -176,6 +176,16 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     }
 
     @Override
+    public void onEmptyProduct() {
+        binding.linearLayoutNoDataAvailable.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onNotEmptyProduct() {
+        binding.linearLayoutNoDataAvailable.setVisibility(View.GONE);
+    }
+
+    @Override
     public void onTabSelected(TabLayout.Tab tab) {
         switch (tab.getId()){
             case R.id.online:
