@@ -6,4 +6,6 @@ public interface ProductInterface {
 
     void onProductClick(ProductInfo productInfo);
     void onEditProduct(ProductInfo productInfo);
+    void onOnlineProduct(ProductInfo productInfo);
+    void onInactiveProduct(ProductInfo productInfo);
 }

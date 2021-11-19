@@ -208,14 +208,19 @@ public class FirebaseProductRepo {
 
     }
 
-    public FirestoreRecyclerOptions getProductRecyclerOptions() {
-        Query query = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
-                .whereEqualTo("merchant_id", userId)
-                .whereEqualTo("is_deleted",false)
-                .orderBy("dateCreated");
-        return new FirestoreRecyclerOptions.Builder<ProductInfo>()
-                .setQuery(query, ProductInfo.class)
-                .build();
+    public FirestoreRecyclerOptions getProductRecyclerOptions(String status) {
+        try{
+            Query query = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
+                    .whereEqualTo("merchant_id", userId)
+                    .whereEqualTo("product_status", status)
+                    .orderBy("dateCreated");
+            return new FirestoreRecyclerOptions.Builder<ProductInfo>()
+                    .setQuery(query, ProductInfo.class)
+                    .build();
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+            return null;
+        }
     }
 
     public FirestoreRecyclerOptions getCategoriesRecyclerOptions(String product_type) {
@@ -255,6 +260,22 @@ public class FirebaseProductRepo {
                 if(task.isSuccessful()){
                     ErrorLog.WriteDebugLog("PRODUCT DELETED");
                     isProductDeleted.setValue(true);
+                }else{
+                    ErrorLog.WriteErrorLog(task.getException());
+                }
+            }
+        });
+    }
+
+    public void changeProductStatus(ProductInfo productInfo, String status) {
+        Map<String, Object> productDelete = new HashMap<>();
+        productDelete.put("product_status",status);
+        db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(productInfo.getProduct_id())
+                .update(productDelete).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    ErrorLog.WriteDebugLog("PRODUCT "+ status);
                 }else{
                     ErrorLog.WriteErrorLog(task.getException());
                 }
@@ -386,4 +407,6 @@ public class FirebaseProductRepo {
         });
 
     }
+
+
 }

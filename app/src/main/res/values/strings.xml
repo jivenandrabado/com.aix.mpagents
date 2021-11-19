@@ -79,6 +79,8 @@
     <string name="upgrade_status_label">Upgrade to Fully Verified to gain full access on MAgents services.</string>
 
     <string name="places_api_key">AIzaSyAwpadNKq1dNkmRcS9oHxfXwX_xhnBQSKk</string>
+    <string name="online">Online</string>
+    <string name="inactive">Inactive</string>
 
     <string-array name="id_types">
         <item>TIN ID</item>

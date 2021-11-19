@@ -27,8 +27,8 @@ public class ProductViewModel extends ViewModel {
         return productRepo.getIsProductSaved();
     }
 
-    public FirestoreRecyclerOptions getProductRecyclerOptions(){
-        return productRepo.getProductRecyclerOptions();
+    public FirestoreRecyclerOptions getProductRecyclerOptions(String status){
+        return productRepo.getProductRecyclerOptions(status);
     }
 
     public FirestoreRecyclerOptions getCategoriesRecyclerOptions(String product_type){
@@ -68,6 +68,10 @@ public class ProductViewModel extends ViewModel {
         productRepo.updateProduct(productInfo,newPhotoList,deletePhotoList);
     }
 
+    public void changeProductStatus(ProductInfo productInfo, String status) {
+        productRepo.changeProductStatus(productInfo,status);
+    }
+
     public MutableLiveData<Boolean> isProductUpdated(){
         return productRepo.getIsProductUpdated();
     }
@@ -75,4 +79,6 @@ public class ProductViewModel extends ViewModel {
     public MutableLiveData<ProductType> getSelectedProductType(){
         return selectedProductType;
     }
+
+
 }

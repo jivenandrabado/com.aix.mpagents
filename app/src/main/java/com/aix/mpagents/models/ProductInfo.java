@@ -6,6 +6,10 @@ import java.util.Date;
 
 public class ProductInfo {
 
+    public static class Status{
+        public static String ONLINE = "online";
+        public static String INACTIVE = "inactive";
+    }
 
     public String category_name;
     public String category_id;
@@ -17,6 +21,7 @@ public class ProductInfo {
     public String product_name;
     public Double product_price;
     public String product_desc;
+    public String product_status;
     public int rating;
     public int sold;
     public String product_id;
@@ -29,6 +34,14 @@ public class ProductInfo {
 
     public boolean product_is_agent = true;
 
+
+    public String getProduct_status() {
+        return product_status;
+    }
+
+    public void setProduct_status(String product_status) {
+        this.product_status = product_status;
+    }
 
     public String getCategory_name() {
         return category_name;
