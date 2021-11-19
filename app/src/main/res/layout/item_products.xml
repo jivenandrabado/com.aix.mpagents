@@ -61,14 +61,26 @@
                 android:id="@+id/textViewProductName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
                 android:text="@{productInfo.product_name}"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/imageShareProduct"
                 app:layout_constraintStart_toStartOf="@+id/guideline1"
                 app:layout_constraintTop_toTopOf="@+id/imageView" />
 
+            <ImageView
+                android:id="@+id/imageShareProduct"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="W, 1:1"
+                android:background="@drawable/ic_baseline_share_24"
+                android:backgroundTint="@color/mpagents_base_color"
+                app:layout_constraintBottom_toBottomOf="@+id/textViewProductName"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:onClick="@{() -> productInterface.onShareProduct(productInfo)}"
+                android:layout_marginRight="8dp"
+                app:layout_constraintTop_toTopOf="@+id/imageView" />
 
             <TextView
                 android:id="@+id/textViewProductPrice"

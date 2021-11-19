@@ -1,7 +1,9 @@
 package com.aix.mpagents.views.fragments.products;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -9,7 +11,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -39,6 +47,15 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     private ProductsBottomSheetDialog productsBottomSheetDialog;
     private NavController navController;
     private HashMap<Integer,String> tabs = new HashMap<>();
+    
+    private ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if(result.getResultCode() == Activity.RESULT_OK){
+                    Toast.makeText(requireContext(), "Product shared!", Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,6 +73,11 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
         navController = Navigation.findNavController(view);
         initProductsRecyclerView();
         initTabs();
+
+
+        binding.buttonAddProduct.setOnClickListener(v -> {
+            navController.navigate(R.id.action_productListFragment_to_addProductFragment);
+        });
     }
 
     private void initTabs() {
@@ -142,6 +164,15 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             dialog.dismiss();
         };
         askAlert(productInfo,onclick, ProductInfo.Status.INACTIVE);
+    }
+
+    @Override
+    public void onShareProduct(ProductInfo productInfo) {
+        Intent share = new Intent();
+        share.setAction(Intent.ACTION_SEND);
+        share.putExtra(Intent.EXTRA_TEXT, "https://sample.url/" + productInfo.getProduct_id());
+        share.setType("text/plain");
+        onShareResult.launch(Intent.createChooser(share, "Share via..."));
     }
 
     @Override

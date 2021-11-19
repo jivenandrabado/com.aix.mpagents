@@ -3,6 +3,7 @@ package com.aix.mpagents.views.adapters;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -30,7 +31,11 @@ public class ProductsFirestoreAdapter extends FirestoreRecyclerAdapter<ProductIn
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull ProductInfo model) {
         holder.binding.setProductInfo(model);
         holder.binding.setProductInterface(productInterface);
-        holder.binding.ratingBar.setRating(model.getRating());
+//        holder.binding.ratingBar.setRating(model.getRating());
+        holder.binding.imageShareProduct.setVisibility(
+                model.getProduct_status().equalsIgnoreCase(ProductInfo.Status.INACTIVE) ?
+                        View.INVISIBLE : View.VISIBLE
+        );
 
         Glide.with(context).load(Uri.parse(model.getPreview_image()))
 //                .apply(requestOptions)

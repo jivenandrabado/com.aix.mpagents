@@ -142,6 +142,9 @@
         <action
             android:id="@+id/action_productListFragment_to_editProductFragment"
             app:destination="@id/editProductFragment" />
+        <action
+            android:id="@+id/action_productListFragment_to_addProductFragment"
+            app:destination="@id/addProductFragment" />
     </fragment>
     <fragment
         android:id="@+id/categoryFragment"
