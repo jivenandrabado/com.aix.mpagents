@@ -158,7 +158,8 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
             productInfo.setCategory_id(categoryModel.getCategory_id());
             productInfo.setIs_deleted(false);
             productInfo.setIs_active(true);
-            productInfo.setProduct_status(ProductInfo.Status.INACTIVE);
+            productInfo.setProduct_status(ProductInfo.Status.DRAFT);
+            productInfo.setSearch_name(product_name.toLowerCase() + " " + description.toLowerCase() );
 
             productInfo.setProduct_type_id(productTypeModel.getProduct_type_id());
             productInfo.setProduct_type(productTypeModel.getName());

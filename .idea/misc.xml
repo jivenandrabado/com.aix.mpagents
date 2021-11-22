@@ -18,22 +18,27 @@
         <entry key="app/src/main/res/layout/fragment_account_information.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_add_addressfragment.xml" value="0.24375" />
         <entry key="app/src/main/res/layout/fragment_add_government_i_d.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_add_product.xml" value="0.14375" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_order_details.xml" value="0.24479166666666666" />
         <entry key="app/src/main/res/layout/fragment_orders.xml" value="0.24479166666666666" />
         <entry key="app/src/main/res/layout/fragment_product_list.xml" value="0.24479166666666666" />
+        <entry key="app/src/main/res/layout/fragment_search_product.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_shop_address.xml" value="0.28854166666666664" />
         <entry key="app/src/main/res/layout/fragment_verification_details.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_agent_features.xml" value="0.5" />
         <entry key="app/src/main/res/layout/item_imageview.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/item_products.xml" value="0.45580404685835996" />
         <entry key="app/src/main/res/layout/item_shop_address.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/search_view.xml" value="0.23645833333333333" />
         <entry key="app/src/main/res/menu/asdasd.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/menu/menu_lobby.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/menu/product_status.xml" value="0.24479166666666666" />
+        <entry key="app/src/main/res/menu/search_menu.xml" value="0.24010416666666667" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.19270833333333334" />
         <entry key="app/src/main/res/xml/file_paths.xml" value="0.28541666666666665" />
+        <entry key="app/src/main/res/xml/searchable.xml" value="0.13125" />
       </map>
     </option>
   </component>

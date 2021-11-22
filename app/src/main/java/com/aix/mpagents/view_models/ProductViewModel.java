@@ -31,6 +31,10 @@ public class ProductViewModel extends ViewModel {
         return productRepo.getProductRecyclerOptions(status);
     }
 
+    public FirestoreRecyclerOptions<ProductInfo> getProductSearchRecyclerOptions(String query) {
+        return productRepo.getProductSearchRecyclerOptions(query.toLowerCase());
+    }
+
     public FirestoreRecyclerOptions getCategoriesRecyclerOptions(String product_type){
         return productRepo.getCategoriesRecyclerOptions(product_type);
     }
@@ -81,4 +85,15 @@ public class ProductViewModel extends ViewModel {
     }
 
 
+    public MutableLiveData<List<ProductInfo>> getAllProductInfo() {
+        return productRepo.getAllProductInfo();
+    }
+
+    public void addProductsListener() {
+        productRepo.addProductsListener();
+    }
+
+    public void detachProductsListener() {
+        productRepo.detachProductsListener();
+    }
 }

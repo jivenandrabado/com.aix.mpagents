@@ -30,6 +30,17 @@
         android:layout_marginBottom="16dp"
         tools:listitem="@layout/item_products" />
 
+    <ListView
+        android:id="@+id/listViewSearchProducts"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/whiteSmoke"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <Button
         android:id="@+id/buttonAddProduct"
         android:layout_width="match_parent"

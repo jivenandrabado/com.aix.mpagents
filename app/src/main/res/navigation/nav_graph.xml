@@ -145,6 +145,9 @@
         <action
             android:id="@+id/action_productListFragment_to_addProductFragment"
             app:destination="@id/addProductFragment" />
+        <action
+            android:id="@+id/action_productListFragment_to_searchProductFragment"
+            app:destination="@id/searchProductFragment" />
     </fragment>
     <fragment
         android:id="@+id/categoryFragment"
@@ -197,7 +200,11 @@
             android:id="@+id/action_verificationDetailsFragment_to_addGovernmentIDFragment"
             app:destination="@id/addGovernmentIDFragment" />
     </fragment>
-
+    <fragment
+        android:id="@+id/searchProductFragment"
+        android:name="com.aix.mpagents.views.fragments.products.SearchProductFragment"
+        android:label="fragment_search_product"
+        tools:layout="@layout/fragment_search_product" />
 
 
 </navigation>

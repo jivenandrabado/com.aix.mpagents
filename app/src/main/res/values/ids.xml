@@ -2,4 +2,5 @@
 <resources>
     <item name="online" type="id" />
     <item name="inactive" type="id" />
+    <item name="draft" type="id"/>
 </resources>

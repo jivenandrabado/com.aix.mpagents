@@ -2,15 +2,24 @@ package com.aix.mpagents.views.fragments.products;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -20,6 +29,7 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -35,7 +45,9 @@ import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -47,6 +59,10 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     private ProductsBottomSheetDialog productsBottomSheetDialog;
     private NavController navController;
     private HashMap<Integer,String> tabs = new HashMap<>();
+    private List<ProductInfo> products = new ArrayList<>();
+    private ArrayAdapter<String> productNamesAdapter;
+    private List<String> productNames = new ArrayList<>();
+    private SearchView searchView = null;
     
     private ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -62,6 +78,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentProductListBinding.inflate(inflater,container,false);
+        setHasOptionsMenu(true);
         return binding.getRoot();
     }
 
@@ -71,17 +88,27 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
 
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         navController = Navigation.findNavController(view);
+        productViewModel.addProductsListener();
         initProductsRecyclerView();
         initTabs();
 
+
+        productViewModel.getAllProductInfo().observe(getViewLifecycleOwner(), result -> {
+            products.clear();
+            products.addAll(result);
+            updateProductNameList();
+        });
 
         binding.buttonAddProduct.setOnClickListener(v -> {
             navController.navigate(R.id.action_productListFragment_to_addProductFragment);
         });
     }
 
+
+
     private void initTabs() {
         tabs.put(R.id.online, "Online");
+        tabs.put(R.id.draft, "Draft");
         tabs.put(R.id.inactive, "Inactive");
 
         binding.tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -104,6 +131,15 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
         //temporary fix for recyclerview
         binding.recyclerViewProducts.setItemAnimator(null);
 
+        productNamesAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, productNames);
+        binding.listViewSearchProducts.setAdapter(productNamesAdapter);
+        binding.listViewSearchProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                toSearchResultPage(((TextView) view).getText().toString());
+            }
+        });
+
     }
 
     @Override
@@ -121,6 +157,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
         if(productsFirestoreAdapter!=null) {
             productsFirestoreAdapter.stopListening();
         }
+        productViewModel.detachProductsListener();
     }
 
     @Override
@@ -191,11 +228,15 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             case R.id.online:
                 productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ONLINE));
                 break;
+            case R.id.draft:
+                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.DRAFT));
+                break;
             case R.id.inactive:
                 productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.INACTIVE));
                 break;
         }
-        binding.recyclerViewProducts.setAdapter(productsFirestoreAdapter);
+        productsFirestoreAdapter.notifyDataSetChanged();
+//        binding.recyclerViewProducts.setAdapter(productsFirestoreAdapter);
     }
 
     @Override
@@ -207,4 +248,73 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     public void onTabReselected(TabLayout.Tab tab) {
 
     }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.search_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchManager searchManager = (SearchManager) requireActivity().getSystemService(Context.SEARCH_SERVICE);
+        try {
+            if (searchItem != null) {
+                searchView = (SearchView) searchItem.getActionView();
+            }
+            if (searchView != null) {
+                searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().getComponentName()));
+                searchView.setQueryHint(requireContext().getString(R.string.search));
+                searchView.setInputType(InputType.TYPE_CLASS_TEXT);
+                searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                searchView.setMaxWidth(Integer.MAX_VALUE);
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String s) {
+                        toSearchResultPage(s);
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onQueryTextChange(String s) {
+                        if(s.length() > 0) setOpenSearchRecycler(true);
+                        else setOpenSearchRecycler(false);
+                        updateProductNameList(s);
+                        return false;
+                    }
+                });
+            }
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void toSearchResultPage(String s) {
+        Bundle bundle = new Bundle();
+        bundle.putString("query", s);
+        navController.navigate(R.id.action_productListFragment_to_searchProductFragment, bundle);
+    }
+
+    private void updateProductNameList(String s) {
+        productNames.clear();
+        for(ProductInfo product: products){
+            if(product.getProduct_name().toLowerCase().contains(s.toLowerCase()))
+                productNames.add(product.getProduct_name());
+        }
+        if(productNames.size() == 0) onEmptyProduct();
+        else onNotEmptyProduct();
+        ErrorLog.WriteDebugLog("updateProductNameList " + productNames.size());
+        productNamesAdapter.notifyDataSetChanged();
+    }
+
+    private void updateProductNameList(){
+        updateProductNameList("");
+    }
+
+    private void setOpenSearchRecycler(boolean isOpen) {
+        int isSearchOpen = (isOpen) ? View.VISIBLE : View.GONE;
+        int isSearchClose = (!isOpen) ? View.VISIBLE : View.INVISIBLE;
+            binding.recyclerViewProducts.setVisibility(isSearchClose);
+            binding.tabLayout.setVisibility(isSearchClose);
+            binding.buttonAddProduct.setVisibility(isSearchClose);
+            binding.listViewSearchProducts.setVisibility(isSearchOpen);
+    }
+
 }

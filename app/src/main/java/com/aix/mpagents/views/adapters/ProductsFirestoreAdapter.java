@@ -30,19 +30,7 @@ public class ProductsFirestoreAdapter extends FirestoreRecyclerAdapter<ProductIn
 
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull ProductInfo model) {
-        holder.binding.setProductInfo(model);
-        holder.binding.setProductInterface(productInterface);
-//        holder.binding.ratingBar.setRating(model.getRating());
-        holder.binding.imageShareProduct.setVisibility(
-                model.getProduct_status().equalsIgnoreCase(ProductInfo.Status.INACTIVE) ?
-                        View.INVISIBLE : View.VISIBLE
-        );
-
-        Glide.with(context).load(Uri.parse(model.getPreview_image()))
-//                .apply(requestOptions)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .centerInside()
-                .error(R.drawable.ic_baseline_photo_24).into(holder.binding.imageView);
+        holder.updateData(model, productInterface);
     }
 
     @NonNull
@@ -53,11 +41,27 @@ public class ProductsFirestoreAdapter extends FirestoreRecyclerAdapter<ProductIn
         return new ViewHolder(binding);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         ItemProductsBinding binding;
         public ViewHolder(ItemProductsBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+        }
+
+        public void updateData(ProductInfo product, ProductInterface productInterface) {
+            binding.setProductInfo(product);
+            binding.setProductInterface(productInterface);
+//        holder.binding.ratingBar.setRating(model.getRating());
+            binding.imageShareProduct.setVisibility(
+                    product.getProduct_status().equalsIgnoreCase(ProductInfo.Status.INACTIVE) ?
+                            View.INVISIBLE : View.VISIBLE
+            );
+
+            Glide.with(binding.getRoot().getContext()).load(Uri.parse(product.getPreview_image()))
+//                .apply(requestOptions)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .centerInside()
+                    .error(R.drawable.ic_baseline_photo_24).into(binding.imageView);
         }
     }
 

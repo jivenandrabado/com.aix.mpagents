@@ -113,7 +113,7 @@ public class FirebaseProfileRepo {
 
     public void uploadToFirebaseStorage(Uri path) {
         try {
-            StorageReference mediaRef = storageRef.child("MPAgents/" + userId + "/" + path.getLastPathSegment());
+            StorageReference mediaRef = storageRef.child(userId + "/" + path.getLastPathSegment());
 //            InputStream stream = new FileInputStream(new File(path));
 
             UploadTask uploadTask = mediaRef.putFile(path);
