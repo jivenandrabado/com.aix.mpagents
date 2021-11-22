@@ -119,7 +119,13 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             binding.tabLayout.addTab(newTab);
         }
         binding.tabLayout.addOnTabSelectedListener(this);
-        binding.tabLayout.getTabAt(0).select();
+
+        for (int i = 0; i < tabs.size(); i++){
+            TabLayout.Tab currentTab = binding.tabLayout.getTabAt(i);
+            if(currentTab.getId() == R.id.online){
+                currentTab.select();
+            }
+        }
     }
 
     private void initProductsRecyclerView(){
