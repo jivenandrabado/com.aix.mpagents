@@ -437,10 +437,10 @@ public class FirebaseProductRepo {
 
     public void addProductsListener(){
         try{
-            List<ProductInfo> products = new ArrayList<>();
             productsListener = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
                     .whereEqualTo("merchant_id", userId)
                     .addSnapshotListener((value, error) -> {
+                        List<ProductInfo> products = new ArrayList<>();
                         for(DocumentSnapshot product: value.getDocuments()){
                             ProductInfo productInfo = product.toObject(ProductInfo.class);
                             products.add(productInfo);

@@ -306,6 +306,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
         }
         if(productNames.size() == 0) onEmptyProduct();
         else onNotEmptyProduct();
+
         ErrorLog.WriteDebugLog("updateProductNameList " + productNames.size());
         productNamesAdapter.notifyDataSetChanged();
     }

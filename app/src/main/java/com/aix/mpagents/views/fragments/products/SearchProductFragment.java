@@ -62,6 +62,7 @@ public class SearchProductFragment extends Fragment implements ProductInterface 
         binding.recyclerViewProducts.setItemAnimator(null);
 
         productViewModel.getAllProductInfo().observe(getViewLifecycleOwner(), result -> {
+            productInfoList.clear();
             for(ProductInfo product: result){
                 if(product.getProduct_name().toLowerCase().contains(query.toLowerCase()))
                 productInfoList.add(product);
