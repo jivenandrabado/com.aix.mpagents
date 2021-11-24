@@ -3,7 +3,6 @@ package com.aix.mpagents.view_models;
 import android.app.Activity;
 import android.net.Uri;
 
-import androidx.core.util.Supplier;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -29,7 +28,7 @@ public class AccountInfoViewModel extends ViewModel {
         firebaseLoginRepo.logoutUser(activity);
     }
 
-    public void addAccountInfoSnapshot(){firebaseProfileRepo.addAccountInfoSnaphotListener();}
+    public void addAccountInfoSnapshot(){firebaseProfileRepo.addAccountInfoSnapshotListener();}
     public void detachAccountInfoListener(){firebaseProfileRepo.detachAccountInfoListener();}
 
     public MutableLiveData<AgentStatusENUM> getAgentStatus(){

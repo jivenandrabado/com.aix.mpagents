@@ -144,7 +144,6 @@ public class FirebaseProfileRepo {
             ErrorLog.WriteErrorLog(e);
             ErrorLog.WriteDebugLog("ERROR "+ e);
         }
-
     }
 
 
@@ -236,7 +235,7 @@ public class FirebaseProfileRepo {
                 .build();
     }
 
-    public void addAccountInfoSnaphotListener() {
+    public void addAccountInfoSnapshotListener() {
 
         try{
         accountInfoListener = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId))
