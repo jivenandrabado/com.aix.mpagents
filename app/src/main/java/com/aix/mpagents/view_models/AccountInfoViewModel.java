@@ -31,10 +31,6 @@ public class AccountInfoViewModel extends ViewModel {
     public void addAccountInfoSnapshot(){firebaseProfileRepo.addAccountInfoSnapshotListener();}
     public void detachAccountInfoListener(){firebaseProfileRepo.detachAccountInfoListener();}
 
-    public MutableLiveData<AgentStatusENUM> getAgentStatus(){
-        return firebaseProfileRepo.getAgentStatus();
-    }
-
     public MutableLiveData<AccountInfo> getAccountInfo(){
         return firebaseProfileRepo.getAccountInfoMutableLiveData();
     }

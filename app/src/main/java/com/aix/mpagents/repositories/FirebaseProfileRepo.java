@@ -42,7 +42,6 @@ public class FirebaseProfileRepo {
     private FirebaseFirestore db;
     private String userId;
     private final MutableLiveData<AccountInfo> userInfoMutableLiveData = new MutableLiveData<>();
-    private MutableLiveData<AgentStatusENUM> agentStatus = new MutableLiveData<>();
     public final MutableLiveData<Boolean> updateProfileSuccess = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -243,7 +242,6 @@ public class FirebaseProfileRepo {
                     if(value.exists()) {
                         AccountInfo accountInfo = value.toObject(AccountInfo.class);
                         accountInfoMutableLiveData.setValue(accountInfo);
-                        setAccountStatus(accountInfo);
                     }
 
                 });
@@ -254,25 +252,6 @@ public class FirebaseProfileRepo {
     }
 
 
-
-    private void setAccountStatus(AccountInfo accountInfo) {
-        try {
-            if(!accountInfo.getGov_id_primary().isEmpty()){
-                if(!accountInfo.getFullName().trim().isEmpty() &&
-                !accountInfo.getMobile_no().isEmpty()){
-                    agentStatus.setValue(AgentStatusENUM.FULLY);
-                }else{
-                    agentStatus.setValue(AgentStatusENUM.BASIC);
-                }
-                agentStatus.setValue(AgentStatusENUM.SEMI);
-            }else {
-                agentStatus.setValue(AgentStatusENUM.BASIC);
-            }
-        }catch (Exception e){
-            ErrorLog.WriteErrorLog(e);
-        }
-    }
-
     public void detachAccountInfoListener(){
         if(accountInfoListener!=null){
             accountInfoListener.remove();
@@ -281,10 +260,6 @@ public class FirebaseProfileRepo {
 
     public MutableLiveData<AccountInfo> getAccountInfoMutableLiveData(){
         return accountInfoMutableLiveData;
-    }
-
-    public MutableLiveData<AgentStatusENUM> getAgentStatus() {
-        return agentStatus;
     }
 
     public MutableLiveData<List<ShopAddress>> getAllAddresses() {

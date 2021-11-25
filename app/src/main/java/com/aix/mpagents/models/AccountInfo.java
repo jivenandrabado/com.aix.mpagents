@@ -1,5 +1,7 @@
 package com.aix.mpagents.models;
 
+import com.aix.mpagents.utilities.AgentStatusENUM;
+import com.aix.mpagents.utilities.ErrorLog;
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.Date;
@@ -174,4 +176,19 @@ public class AccountInfo {
         return getFirst_name() + " " + getMiddle_name() + " " + getLast_name();
     }
 
+    public AgentStatusENUM getAccountStatus() {
+        AgentStatusENUM agentEnum = AgentStatusENUM.BASIC;
+        try {
+            if(!getGov_id_primary().isEmpty()){
+                if(!getFullName().trim().isEmpty() &&
+                        !getMobile_no().isEmpty()){
+                    agentEnum = AgentStatusENUM.FULLY;
+                }
+                agentEnum = AgentStatusENUM.SEMI;
+            }
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+        return agentEnum;
+    }
 }

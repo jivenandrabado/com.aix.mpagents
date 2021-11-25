@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentVerificationDetailsBinding;
+import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.utilities.AgentStatusENUM;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.AccountInfoViewModel;
@@ -55,10 +56,10 @@ public class VerificationDetailsFragment extends Fragment {
         userSharedViewModel = new ViewModelProvider(this).get(UserSharedViewModel.class);
         accountInfoViewModel = new ViewModelProvider(this).get(AccountInfoViewModel.class);
         initFeatures();
+        initObservers();
         initListeners();
         return binding.getRoot();
     }
-
     private void initFeatures() {
         features.put("Add Product", R.drawable.ic_baseline_library_add_24);
         features.put("View Product", R.drawable.ic_baseline_backpack_24);
@@ -76,21 +77,7 @@ public class VerificationDetailsFragment extends Fragment {
 
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        navController = Navigation.findNavController(view);
-    }
-
-    private void initListeners() {
-
-        binding.constraintLayoutSetGovId.setOnClickListener(v -> {
-            navController.navigate(R.id.action_verificationDetailsFragment_to_addGovernmentIDFragment);
-        });
-        binding.constraintLayoutSetInfo.setOnClickListener(v -> {
-            navController.navigate(R.id.action_verificationDetailsFragment_to_businessProfileFragment);
-        });
-
+    private void initObservers() {
         userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -115,32 +102,18 @@ public class VerificationDetailsFragment extends Fragment {
             setEnableButtonForSetInfo(!result.getFullName().trim().isEmpty() &&
                     !result.getMobile_no().isEmpty());
             setEnableButtonForID(!result.getGov_id_primary().isEmpty());
+            initAgentStatus(result);
         });
+    }
 
-        accountInfoViewModel.getAgentStatus().observe(getViewLifecycleOwner(), result -> {
-            String agentStatus = "";
-            View.OnClickListener verificationPage = v -> { };
-            switch (result){
-                case SEMI:
-                    agentStatus = "You are a Semi-verified User";
-                    verificationPage = v -> { binding.constraintLayoutSetGovId.performClick(); };
-                    break;
-                case FULLY:
-                    Toast.makeText(requireContext(), "Your are now Fully Verified.", Toast.LENGTH_SHORT).show();
-                    requireActivity().onBackPressed();
-                    break;
-                case BASIC:
-                default:
-                    verificationPage = v -> { binding.constraintLayoutSetInfo.performClick(); };
-                    agentStatus = "You are a Basic User";
-                    break;
-            }
-            System.out.println("getAgentStatus " + agentStatus);
-            binding.textViewAgentVerificationStatus.setText(agentStatus);
-            binding.buttonVerificationPage.setOnClickListener(verificationPage);
+    private void initListeners() {
+
+        binding.constraintLayoutSetGovId.setOnClickListener(v -> {
+            navController.navigate(R.id.action_verificationDetailsFragment_to_addGovernmentIDFragment);
         });
-
-
+        binding.constraintLayoutSetInfo.setOnClickListener(v -> {
+            navController.navigate(R.id.action_verificationDetailsFragment_to_businessProfileFragment);
+        });
 
         binding.textViewSeeListOfID.setOnClickListener(v -> {
             Dialog dialog = new Dialog(requireContext());
@@ -154,6 +127,35 @@ public class VerificationDetailsFragment extends Fragment {
             dialog.setCanceledOnTouchOutside(true);
             dialog.show();
         });
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        navController = Navigation.findNavController(view);
+    }
+
+    private void initAgentStatus(AccountInfo result) {
+        String agentStatus = "";
+        View.OnClickListener verificationPage = v -> { };
+        switch (result.getAccountStatus()){
+            case SEMI:
+                agentStatus = "You are a Semi-verified User";
+                verificationPage = v -> { binding.constraintLayoutSetGovId.performClick(); };
+                break;
+            case FULLY:
+                Toast.makeText(requireContext(), "Your are now Fully Verified.", Toast.LENGTH_SHORT).show();
+                requireActivity().onBackPressed();
+                break;
+            case BASIC:
+            default:
+                verificationPage = v -> { binding.constraintLayoutSetInfo.performClick(); };
+                agentStatus = "You are a Basic User";
+                break;
+        }
+        System.out.println("getAgentStatus " + agentStatus);
+        binding.textViewAgentVerificationStatus.setText(agentStatus);
+        binding.buttonVerificationPage.setOnClickListener(verificationPage);
     }
 
     private void setEnableButtonForID(boolean hasId) {

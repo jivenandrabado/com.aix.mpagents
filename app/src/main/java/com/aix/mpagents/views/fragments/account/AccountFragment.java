@@ -20,6 +20,7 @@ import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentAccountBinding;
 import com.aix.mpagents.interfaces.AccountInterface;
 import com.aix.mpagents.models.AccountInfo;
+import com.aix.mpagents.utilities.AgentStatusENUM;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.LayoutViewHelper;
 import com.aix.mpagents.view_models.AccountInfoViewModel;
@@ -57,7 +58,12 @@ public class AccountFragment extends Fragment implements AccountInterface {
         userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
         layoutViewHelper = new LayoutViewHelper(requireActivity());
+        initObservers();
+        initListeners();
+    }
 
+
+    private void initObservers() {
         userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -80,21 +86,6 @@ public class AccountFragment extends Fragment implements AccountInterface {
             }
         });
 
-        accountInfoViewModel.getAgentStatus().observe(getViewLifecycleOwner(), result -> {
-            switch (result){
-                case FULLY:
-                    binding.textViewVerifyAccount.setVisibility(View.GONE);
-                    binding.circularImageFullyVerifiedIndicator.setImageResource(R.drawable.ic_baseline_check_24);
-                    binding.circularImageSemiVerifiedIndicator.setImageResource(R.drawable.ic_baseline_check_24);
-                    break;
-                case SEMI:
-                    binding.circularImageSemiVerifiedIndicator.setImageResource(R.drawable.ic_baseline_check_24);
-                    break;
-            }
-            binding.circularImageBasicLevelIndicator.setImageResource(R.drawable.ic_baseline_check_24);
-        });
-
-
         accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), new Observer<AccountInfo>() {
             @Override
             public void onChanged(AccountInfo accountInfo) {
@@ -114,16 +105,17 @@ public class AccountFragment extends Fragment implements AccountInterface {
                     binding.textviewShopName.setText(accountInfo.getFirst_name() + " " + accountInfo.getMiddle_name() + " " + accountInfo.getLast_name());
                     binding.textViewSellerID.setText(accountInfo.getAgent_id());
 
+                    initAccountStatus(accountInfo.getAccountStatus());
                     initUserTypeViews(accountInfo);
-                    initVerificationStatus(accountInfo);
                     Glide.with(requireContext()).load(Uri.parse(accountInfo.getProfile_pic()))
                             .fitCenter()
                             .error(R.drawable.ic_baseline_photo_24).into((binding.imageViewProfilePic));
                 }
             }
         });
+    }
 
-
+    private void initListeners() {
         binding.textViewBusinessInformation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,8 +145,6 @@ public class AccountFragment extends Fragment implements AccountInterface {
             @Override
             public void onClick(View view) {
                 accountInfoViewModel.logoutUser(requireActivity());
-//                navController.popBackStack(R.id.accountFragment2,true);
-
             }
         });
 
@@ -166,8 +156,18 @@ public class AccountFragment extends Fragment implements AccountInterface {
         });
     }
 
-    private void initVerificationStatus(AccountInfo accountInfo) {
-        if(!accountInfo.getGov_id_primary().isEmpty()){}
+    private void initAccountStatus(AgentStatusENUM accountStatus) {
+        switch (accountStatus){
+            case FULLY:
+                binding.textViewVerifyAccount.setVisibility(View.GONE);
+                binding.circularImageFullyVerifiedIndicator.setImageResource(R.drawable.ic_baseline_check_24);
+                binding.circularImageSemiVerifiedIndicator.setImageResource(R.drawable.ic_baseline_check_24);
+                break;
+            case SEMI:
+                binding.circularImageSemiVerifiedIndicator.setImageResource(R.drawable.ic_baseline_check_24);
+                break;
+        }
+        binding.circularImageBasicLevelIndicator.setImageResource(R.drawable.ic_baseline_check_24);
     }
 
     private void initUserTypeViews(AccountInfo accountInfo) {
