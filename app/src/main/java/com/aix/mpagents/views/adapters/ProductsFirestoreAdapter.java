@@ -52,10 +52,10 @@ public class ProductsFirestoreAdapter extends FirestoreRecyclerAdapter<ProductIn
             binding.setProductInfo(product);
             binding.setProductInterface(productInterface);
 //        holder.binding.ratingBar.setRating(model.getRating());
-            binding.imageShareProduct.setVisibility(
-                    product.getProduct_status().equalsIgnoreCase(ProductInfo.Status.INACTIVE) ?
-                            View.INVISIBLE : View.VISIBLE
-            );
+//            binding.imageMoreOptionsProduct.setVisibility(
+//                    product.getProduct_status().equalsIgnoreCase(ProductInfo.Status.INACTIVE) ?
+//                            View.INVISIBLE : View.VISIBLE
+//            );
 
             Glide.with(binding.getRoot().getContext()).load(Uri.parse(product.getPreview_image()))
 //                .apply(requestOptions)

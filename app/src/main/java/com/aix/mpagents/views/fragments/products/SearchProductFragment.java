@@ -112,6 +112,16 @@ public class SearchProductFragment extends Fragment implements ProductInterface 
     }
 
     @Override
+    public void onMoreProductOption(ProductInfo productInfo, View view) {
+
+    }
+
+    @Override
+    public void onDeleteProduct(ProductInfo productInfo) {
+
+    }
+
+    @Override
     public void onEmptyProduct() {
 
     }
@@ -120,4 +130,5 @@ public class SearchProductFragment extends Fragment implements ProductInterface 
     public void onNotEmptyProduct() {
 
     }
+
 }

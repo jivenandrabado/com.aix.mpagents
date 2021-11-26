@@ -322,6 +322,72 @@
             app:layout_constraintTop_toBottomOf="@+id/buttonAddProducts" />
 
         <ImageButton
+            android:id="@+id/imageButtonBookings"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_baseline_home_repair_service_24"
+            app:layout_constraintEnd_toStartOf="@+id/guideline5"
+            app:layout_constraintStart_toStartOf="@+id/guideline4"
+            app:layout_constraintTop_toBottomOf="@+id/textView1" />
+
+        <TextView
+            android:id="@+id/textView23"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/services"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/imageButtonBookings"
+            app:layout_constraintStart_toStartOf="@+id/imageButtonBookings"
+            app:layout_constraintTop_toBottomOf="@+id/imageButtonBookings" />
+
+
+        <ImageButton
+            android:id="@+id/imageButtonServices"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_baseline_library_books_24"
+            app:layout_constraintEnd_toEndOf="@+id/buttonOrders"
+            app:layout_constraintStart_toStartOf="@+id/buttonOrders"
+            app:layout_constraintTop_toBottomOf="@+id/textView1" />
+
+        <TextView
+            android:id="@+id/textView21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/bookings"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/imageButtonServices"
+            app:layout_constraintStart_toStartOf="@+id/imageButtonServices"
+            app:layout_constraintTop_toBottomOf="@+id/imageButtonServices" />
+
+        <ImageButton
+            android:id="@+id/imageButtonAddServices"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="16dp"
+            android:src="@drawable/ic_baseline_add_business_24"
+            app:layout_constraintEnd_toStartOf="@+id/guideline6"
+            app:layout_constraintStart_toStartOf="@+id/guideline5"
+            app:layout_constraintTop_toTopOf="@+id/imageButtonServices" />
+
+        <TextView
+            android:id="@+id/textView22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/add_service"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/imageButtonAddServices"
+            app:layout_constraintStart_toStartOf="@+id/imageButtonAddServices"
+            app:layout_constraintTop_toBottomOf="@+id/imageButtonAddServices" />
+
+
+        <ImageButton
             android:id="@+id/buttonReturnOrder"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -364,24 +430,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:text="Services"
             android:textSize="16sp"
+            android:layout_marginTop="8dp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView1" />
-
+            app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
         <ImageButton
             android:id="@+id/buttonHelp"
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
             android:padding="8dp"
             android:src="@drawable/ic_baseline_help_24"
-            app:layout_constraintEnd_toStartOf="@+id/guideline4"
-            app:layout_constraintStart_toStartOf="@+id/buttonOrders"
+            app:layout_constraintEnd_toEndOf="@+id/imageButtonServices"
+            app:layout_constraintStart_toStartOf="@+id/imageButtonServices"
             app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
 

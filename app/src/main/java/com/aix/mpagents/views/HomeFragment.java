@@ -5,6 +5,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -50,6 +52,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater,container,false);
+        setHasOptionsMenu(true);
         return binding.getRoot();
     }
 
@@ -214,5 +217,9 @@ public class HomeFragment extends Fragment {
 
     }
 
-
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_lobby_toolbar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 }

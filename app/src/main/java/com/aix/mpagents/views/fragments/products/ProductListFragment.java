@@ -30,6 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -40,7 +41,9 @@ import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentProductListBinding;
 import com.aix.mpagents.interfaces.ProductInterface;
 import com.aix.mpagents.models.ProductInfo;
+import com.aix.mpagents.utilities.AlertUtils;
 import com.aix.mpagents.utilities.ErrorLog;
+import com.aix.mpagents.utilities.MenuUtils;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
 import com.google.android.material.tabs.TabLayout;
@@ -187,16 +190,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
                 productViewModel.changeProductStatus(productInfo, ProductInfo.Status.ONLINE);
             dialog.dismiss();
         };
-        askAlert(productInfo,onclick, ProductInfo.Status.ONLINE);
-    }
-
-    private void askAlert(ProductInfo productInfo, DialogInterface.OnClickListener onclick, String status) {
-        new AlertDialog.Builder(requireContext())
-                .setTitle(productInfo.getProduct_name())
-                .setMessage("Are you sure you want to make this item " + status + "?")
-                .setPositiveButton("Ok", onclick)
-                .setNegativeButton("Cancel", onclick)
-                .show();
+        AlertUtils.productAlert(requireContext(),productInfo,onclick, ProductInfo.Status.ONLINE);
     }
 
     @Override
@@ -206,16 +200,52 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
                 productViewModel.changeProductStatus(productInfo, ProductInfo.Status.INACTIVE);
             dialog.dismiss();
         };
-        askAlert(productInfo,onclick, ProductInfo.Status.INACTIVE);
+        AlertUtils.productAlert(requireContext(),productInfo,onclick, ProductInfo.Status.INACTIVE);
     }
 
     @Override
     public void onShareProduct(ProductInfo productInfo) {
-        Intent share = new Intent();
-        share.setAction(Intent.ACTION_SEND);
-        share.putExtra(Intent.EXTRA_TEXT, "https://sample.url/" + productInfo.getProduct_id());
-        share.setType("text/plain");
-        onShareResult.launch(Intent.createChooser(share, "Share via..."));
+        if(!productInfo.getProduct_status().equals(ProductInfo.Status.ONLINE)){
+            Toast.makeText(requireContext(), "Product is not online.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://sample.url/" + productInfo.getProduct_id());
+        shareIntent.setType("text/plain");
+
+        onShareResult.launch(Intent.createChooser(shareIntent, "Share via..."));
+    }
+
+    @Override
+    public void onMoreProductOption(ProductInfo productInfo, View view) {
+        PopupMenu.OnMenuItemClickListener menuOnClick = item -> {
+            switch (item.getItemId()){
+                case R.id.shareProduct:
+                    onShareProduct(productInfo);
+                    break;
+                case R.id.deleteProduct:
+                    onDeleteProduct(productInfo);
+                    break;
+            }
+            return true;
+        };
+        MenuUtils.showMenuWithIcons(requireContext(),view,menuOnClick);
+    }
+
+    @Override
+    public void onDeleteProduct(ProductInfo productInfo) {
+        if(productInfo.getProduct_status().equals(ProductInfo.Status.ONLINE)){
+            Toast.makeText(requireContext(), "Unable to delete. Product is online.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        DialogInterface.OnClickListener onclick = (dialog, i) -> {
+            if (i == DialogInterface.BUTTON_POSITIVE)
+                productViewModel.changeProductStatus(productInfo, ProductInfo.Status.DELETED);
+            dialog.dismiss();
+        };
+        AlertUtils.productAlert(requireContext(), productInfo, onclick, ProductInfo.Status.DELETED,
+                "Are you sure you want to delete this item?");
     }
 
     @Override
