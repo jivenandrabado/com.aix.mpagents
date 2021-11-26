@@ -3,10 +3,13 @@ package com.aix.mpagents.repositories;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Supplier;
 import androidx.lifecycle.MutableLiveData;
 
+import com.aix.mpagents.interfaces.GovernmentIDInterface;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ShopAddress;
+import com.aix.mpagents.utilities.AgentStatusENUM;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.FirestoreConstants;
 import com.aix.mpagents.utilities.ToastUtil;
@@ -20,12 +23,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -39,10 +45,11 @@ public class FirebaseProfileRepo {
     public final MutableLiveData<Boolean> updateProfileSuccess = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private StorageReference storageRef = storage.getReference();
+    private StorageReference storageRef = storage.getReference().child("MPAgents");
     private final MutableLiveData<Boolean> isAddressUpdated = new MutableLiveData<>();
     private ListenerRegistration accountInfoListener;
     private MutableLiveData<AccountInfo> accountInfoMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<ShopAddress>> allAddresses = new MutableLiveData<>();
 
 
     public FirebaseProfileRepo() {
@@ -54,37 +61,13 @@ public class FirebaseProfileRepo {
     }
 
 
-    public void getShopInfo() {
-        try{
-            ErrorLog.WriteDebugLog("get user info "+ Objects.requireNonNull(userId));
-
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if(task.isSuccessful()){
-                        task.getResult();
-                        AccountInfo accountInfo = task.getResult().toObject(AccountInfo.class);
-                        userInfoMutableLiveData.setValue(accountInfo);
-
-                    }else {
-                        ErrorLog.WriteDebugLog(task.getException());
-                        errorMessage.setValue(Objects.requireNonNull(task.getException()).getMessage());
-                    }
-                }
-            });
-
-        }catch (Exception e){
-            ErrorLog.WriteErrorLog(e);
-        }
-    }
-
     public MutableLiveData<AccountInfo> getProfileObservable(){
         return userInfoMutableLiveData;
     }
 
-    public void updateShopInfo(Map<String,Object> account_info) {
+    public void updateAgentInfo(Map<String,Object> account_info) {
         try{
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).update(account_info).addOnCompleteListener(new OnCompleteListener<Void>() {
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).update(account_info).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
@@ -97,6 +80,31 @@ public class FirebaseProfileRepo {
                 }
             });
 
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
+
+    public void uploadIDtoFirebase(Uri path, GovernmentIDInterface resultHandler){
+        try {
+            StorageReference mediaRef = storageRef.child("MPAgents/" + userId + "/" + path.getLastPathSegment());
+//            InputStream stream = new FileInputStream(new File(path));
+
+            UploadTask uploadTask = mediaRef.putFile(path);
+            uploadTask.addOnFailureListener(e -> ErrorLog.WriteDebugLog("FAILED TO UPLOAD " + e))
+                    .addOnSuccessListener(taskSnapshot ->
+                            mediaRef.getDownloadUrl()
+                                    .addOnSuccessListener(uri -> {
+                                            ErrorLog.WriteDebugLog("SUCCESS UPLOAD " + uri);
+                                            AccountInfo accountInfo = new AccountInfo();
+                                            accountInfo.setProfile_pic(String.valueOf(uri));
+                                            Map<String,Object> account_info = new HashMap<>();
+                                            account_info.put("gov_id_primary", accountInfo.getProfile_pic());
+                                            updateAgentInfo(account_info);
+                                            resultHandler.onIdUploaded(uri.toString());
+                                        }
+                                    )
+                            );
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
         }
@@ -121,29 +129,29 @@ public class FirebaseProfileRepo {
                         public void onSuccess(Uri uri) {
                             ErrorLog.WriteDebugLog("SUCCESS UPLOAD " + uri);
                             AccountInfo accountInfo = new AccountInfo();
-                            accountInfo.setLogo(String.valueOf(uri));
+                            accountInfo.setProfile_pic(String.valueOf(uri));
 
                             Map<String,Object> account_info = new HashMap<>();
-                            account_info.put("logo", accountInfo.getLogo());
+                            account_info.put("profile_pic", accountInfo.getProfile_pic());
 
-                            updateShopInfo(account_info);
+                            updateAgentInfo(account_info);
                         }
                     });
                 }
             });
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
+            ErrorLog.WriteDebugLog("ERROR "+ e);
         }
-
     }
 
 
     public void saveAddress(ShopAddress shopAddress) {
         try{
-            String address_id = db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            String address_id = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document().getId();
             shopAddress.setAddress_id(address_id);
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(address_id).set(shopAddress)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -161,7 +169,7 @@ public class FirebaseProfileRepo {
     public void updateAddress(ShopAddress shopAddress) {
         try{
 
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(shopAddress.getAddress_id()).set(shopAddress)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -176,12 +184,28 @@ public class FirebaseProfileRepo {
         }
     }
 
+    public void updateAddressForDefault(ShopAddress shopAddress) {
+        try{
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+                    .document(shopAddress.getAddress_id()).set(shopAddress)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            ErrorLog.WriteDebugLog("SUCCESS ADDRESS UPDATE");
+                        }
+                    });
+
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
+
     public void deleteAddress(ShopAddress shopAddress) {
         try{
             Map<String,Object> addressMap = new HashMap<>();
             addressMap.put("is_deleted", true);
             addressMap.put("date_deleted", new Date());
-            db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(shopAddress.getAddress_id()).update(addressMap)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -201,7 +225,7 @@ public class FirebaseProfileRepo {
     }
 
     public FirestoreRecyclerOptions getShopAddressFirestoreRecyclerOptions() {
-        Query query = db.collection(FirestoreConstants.MPARTNER_MERCHANTS)
+        Query query = db.collection(FirestoreConstants.MPARTNER_AGENTS)
                 .document(userId)
                 .collection(FirestoreConstants.MPARTNER_ADDRESSES)
                 .whereEqualTo("is_deleted",false);
@@ -210,13 +234,14 @@ public class FirebaseProfileRepo {
                 .build();
     }
 
-    public void addAccountInfoSnaphotListener() {
+    public void addAccountInfoSnapshotListener() {
 
         try{
-        accountInfoListener = db.collection(FirestoreConstants.MPARTNER_MERCHANTS).document(String.valueOf(userId))
+        accountInfoListener = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId))
                 .addSnapshotListener((value, error) -> {
                     if(value.exists()) {
-                        accountInfoMutableLiveData.setValue(value.toObject(AccountInfo.class));
+                        AccountInfo accountInfo = value.toObject(AccountInfo.class);
+                        accountInfoMutableLiveData.setValue(accountInfo);
                     }
 
                 });
@@ -226,6 +251,7 @@ public class FirebaseProfileRepo {
         }
     }
 
+
     public void detachAccountInfoListener(){
         if(accountInfoListener!=null){
             accountInfoListener.remove();
@@ -234,5 +260,26 @@ public class FirebaseProfileRepo {
 
     public MutableLiveData<AccountInfo> getAccountInfoMutableLiveData(){
         return accountInfoMutableLiveData;
+    }
+
+    public MutableLiveData<List<ShopAddress>> getAllAddresses() {
+        try{
+            List<ShopAddress> addresses = new ArrayList<>();
+            db.collection(FirestoreConstants.MPARTNER_AGENTS)
+                    .document(userId)
+                    .collection(FirestoreConstants.MPARTNER_ADDRESSES).get().addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    for(DocumentSnapshot document: task.getResult().getDocuments()){
+                        addresses.add(document.toObject(ShopAddress.class));
+                        allAddresses.setValue(addresses);
+                    }
+                }else {
+                    ErrorLog.WriteErrorLog(task.getException());
+                }
+            });
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+        return allAddresses;
     }
 }

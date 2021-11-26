@@ -89,7 +89,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
             }
         });
 
-        binding.textViewCattegory.setOnClickListener(new View.OnClickListener() {
+        binding.textViewCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 navController.navigate(R.id.action_editProductFragment_to_categoryFragment);
@@ -99,7 +99,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
         productViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
             @Override
             public void onChanged(Category category) {
-                binding.textViewCattegoryValue.setText(category.getCategory_name());
+                binding.textViewCategoryValue.setText(category.getCategory_name());
                 categoryModel = category;
             }
         });
@@ -112,7 +112,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
         binding.editTextProductName.setText(productInfo.getProduct_name());
         binding.editTextPrice.setText(String.valueOf(productInfo.getProduct_price()));
         binding.editTextDescription.setText(productInfo.getProduct_desc());
-        binding.textViewCattegoryValue.setText(productInfo.getCategory_name());
+        binding.textViewCategoryValue.setText(productInfo.getCategory_name());
 
         productViewModel.getMedia(productInfo.getProduct_id());
         productViewModel.getMediaList().observe(getViewLifecycleOwner(), new Observer<List<Media>>() {
@@ -157,7 +157,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
             product_price = Double.parseDouble(String.valueOf(binding.editTextPrice.getText()).trim());
         }
         description = String.valueOf(binding.editTextDescription.getText()).trim();
-        category = String.valueOf(binding.textViewCattegoryValue.getText()).trim();
+        category = String.valueOf(binding.textViewCategoryValue.getText()).trim();
 
 
         if(!isEmptyFields(product_name,description,category)) {
@@ -168,7 +168,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
 
             if(categoryModel!=null) {
                 productInfo.setCategory_name(category);
-                productInfo.setCategory_id(categoryModel.getId());
+                productInfo.setCategory_id(categoryModel.getCategory_id());
             }
 
 //            if(!photoList.isEmpty()){

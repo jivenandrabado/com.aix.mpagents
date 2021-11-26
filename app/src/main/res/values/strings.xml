@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MPAgents</string>
+    <string name="app_name">MAgents</string>
 
     <!--    Login-->
     <string name="email">Email</string>
@@ -56,6 +56,11 @@
     <string name="cancel">Cancel</string>
     <string name="rating">Rating:</string>
     <string name="sold">Sold:</string>
+    <string name="online">Online</string>
+    <string name="inactive">Inactive</string>
+    <string name="search">Search Product</string>
+    <string name="filter">Filter</string>
+
     <!--    Orders-->
     <string name="pending">Pending</string>
     <string name="topack">ToPack</string>
@@ -76,5 +81,25 @@
     <string name="customer_care">Customer Care</string>
     <string name="feedback">Feedback</string>
     <string name="orders">Orders</string>
+    <string name="upgrade_status_label">Upgrade to Fully Verified to gain full access on MAgents services.</string>
 
+    <!--    Places API Key-->
+    <string name="places_api_key">AIzaSyAwpadNKq1dNkmRcS9oHxfXwX_xhnBQSKk</string>
+    <string name="resendCode">Resend Code</string>
+    <string name="notifications">Notifications</string>
+    <string name="chat">Chat</string>
+    <string name="services">Services</string>
+    <string name="add_service">Add Service</string>
+    <string name="bookings">Bookings</string>
+    <string name="share_product">Share product</string>
+    <string name="boost_product">Boost product</string>
+    <string name="delete_product">Delete product</string>
+
+
+    <string-array name="id_types">
+        <item>TIN ID</item>
+        <item>Driver License</item>
+        <item>SSS</item>
+        <item>Passport</item>
+    </string-array>
 </resources>

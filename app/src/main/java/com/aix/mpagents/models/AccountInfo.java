@@ -1,91 +1,135 @@
 package com.aix.mpagents.models;
 
+import com.aix.mpagents.utilities.AgentStatusENUM;
+import com.aix.mpagents.utilities.ErrorLog;
+import com.google.firebase.firestore.GeoPoint;
+
 import java.util.Date;
 
 public class AccountInfo {
 
-    public String shop_name;
-    public String logo;
-    public String shop_email;
-    public String shop_id;
-    public Date date_created;
-    public boolean is_agent = false;
-    public boolean is_corporate = false;
-    public boolean is_individual = false;
-    public boolean is_mdm = false;
+//    agent_id
+//
+//    name: string
+//    profile_pic: string
+//    mobile_no:String
+//
+//    is_active: boolean
+//    date_created: Date
+//    date_updated: Date
+//
+//    gov_id_primary:String
+//    gov_id_secondary:String
+
+    public static class ApplicationStatus {
+        public static final String APPROVED = "Approved";
+        public static final String PENDING = "Pending";
+        public static final String DECLINED = "Declined";
+    }
+    
+    public String agent_id;
+    public String first_name = "";
+    public String middle_name = "";
+    public String last_name = "";
+
+    public String profile_pic = "";
     public String mobile_no = "";
-    public String contact_person = "";
+    public String email;
 
-    public String getShop_name() {
-        return shop_name;
+    public Date date_created;
+    public Date date_updated;
+
+    public String gov_id_no_primary = "";
+    public String gov_id_no_secondary = "";
+    public String gov_id_primary = "";
+    public String gov_id_secondary = "";
+    public String gov_id_type_primary = "";
+    public String gov_id_type_secondary = "";
+    public String agent_status = "";
+
+    public Date application_date_submitted;
+    public Date application_date_approved;
+    public String application_remarks = "";
+
+
+    public Date getApplication_date_submitted() {
+        return application_date_submitted;
     }
 
-    public void setShop_name(String shop_name) {
-        this.shop_name = shop_name;
+    public void setApplication_date_submitted(Date application_date_submitted) {
+        this.application_date_submitted = application_date_submitted;
     }
 
-    public String getShop_email() {
-        return shop_email;
+    public Date getApplication_date_approved() {
+        return application_date_approved;
     }
 
-    public void setShop_email(String shop_email) {
-        this.shop_email = shop_email;
+    public void setApplication_date_approved(Date application_date_approved) {
+        this.application_date_approved = application_date_approved;
     }
 
-    public String getShop_id() {
-        return shop_id;
+    public String getApplication_remarks() {
+        return application_remarks;
     }
 
-    public void setShop_id(String shop_id) {
-        this.shop_id = shop_id;
+    public void setApplication_remarks(String application_remarks) {
+        this.application_remarks = application_remarks;
     }
 
-    public Date getDate_created() {
-        return date_created;
+    public String getGov_id_type_secondary() {
+        return gov_id_type_secondary;
     }
 
-    public void setDate_created(Date date_created) {
-        this.date_created = date_created;
+    public String getAgent_status() {
+        return agent_status;
     }
 
-    public String getLogo() {
-        return logo;
+    public void setAgent_status(String agent_status) {
+        this.agent_status = agent_status;
     }
 
-    public void setLogo(String logo) {
-        this.logo = logo;
+    public void setGov_id_type_secondary(String gov_id_type_secondary) {
+        this.gov_id_type_secondary = gov_id_type_secondary;
     }
 
-    public boolean isIs_agent() {
-        return is_agent;
+    public String getAgent_id() {
+        return agent_id;
     }
 
-    public void setIs_agent(boolean is_agent) {
-        this.is_agent = is_agent;
+    public void setAgent_id(String agent_id) {
+        this.agent_id = agent_id;
     }
 
-    public boolean isIs_corporate() {
-        return is_corporate;
+    public String getFirst_name() {
+        return first_name;
     }
 
-    public void setIs_corporate(boolean is_corporate) {
-        this.is_corporate = is_corporate;
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
     }
 
-    public boolean isIs_individual() {
-        return is_individual;
+    public String getMiddle_name() {
+        return middle_name;
     }
 
-    public void setIs_individual(boolean is_individual) {
-        this.is_individual = is_individual;
+    public void setMiddle_name(String middle_name) {
+        this.middle_name = middle_name;
     }
 
-    public boolean isIs_mdm() {
-        return is_mdm;
+    public String getLast_name() {
+        return last_name;
     }
 
-    public void setIs_mdm(boolean is_mdm) {
-        this.is_mdm = is_mdm;
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
+    }
+
+    public String getProfile_pic() {
+        return profile_pic;
+    }
+
+    public void setProfile_pic(String profile_pic) {
+        this.profile_pic = profile_pic;
     }
 
     public String getMobile_no() {
@@ -96,11 +140,89 @@ public class AccountInfo {
         this.mobile_no = mobile_no;
     }
 
-    public String getContact_person() {
-        return contact_person;
+    public Date getDate_created() {
+        return date_created;
     }
 
-    public void setContact_person(String contact_person) {
-        this.contact_person = contact_person;
+    public void setDate_created(Date date_created) {
+        this.date_created = date_created;
+    }
+
+    public Date getDate_updated() {
+        return date_updated;
+    }
+
+    public void setDate_updated(Date date_updated) {
+        this.date_updated = date_updated;
+    }
+
+
+
+    public String getGov_id_no_secondary() {
+        return gov_id_no_secondary;
+    }
+
+    public void setGov_id_no_secondary(String gov_id_no_secondary) {
+        this.gov_id_no_secondary = gov_id_no_secondary;
+    }
+
+    public String getGov_id_secondary() {
+        return gov_id_secondary;
+    }
+
+    public void setGov_id_secondary(String gov_id_secondary) {
+        this.gov_id_secondary = gov_id_secondary;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getGov_id_no_primary() {
+        return gov_id_no_primary;
+    }
+
+    public void setGov_id_no_primary(String gov_id_no_primary) {
+        this.gov_id_no_primary = gov_id_no_primary;
+    }
+
+    public String getGov_id_type_primary() {
+        return gov_id_type_primary;
+    }
+
+    public void setGov_id_type_primary(String gov_id_type_primary) {
+        this.gov_id_type_primary = gov_id_type_primary;
+    }
+
+    public String getGov_id_primary() {
+        return gov_id_primary;
+    }
+
+    public void setGov_id_primary(String gov_id_primary) {
+        this.gov_id_primary = gov_id_primary;
+    }
+
+    public String getFullName(){
+        return getFirst_name() + " " + getMiddle_name() + " " + getLast_name();
+    }
+
+    public AgentStatusENUM getAccountStatus() {
+        AgentStatusENUM agentEnum = AgentStatusENUM.BASIC;
+        try {
+            if(!getGov_id_primary().isEmpty()){
+                if(!getFullName().trim().isEmpty() &&
+                        !getMobile_no().isEmpty()){
+                    agentEnum = AgentStatusENUM.FULLY;
+                }
+                agentEnum = AgentStatusENUM.SEMI;
+            }
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+        return agentEnum;
     }
 }

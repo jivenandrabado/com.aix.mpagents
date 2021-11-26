@@ -55,7 +55,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textViewStoreLogo" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayoutName"
+            android:id="@+id/textInputLayoutFirstName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="@+id/textViewStoreLogo"
@@ -63,36 +63,94 @@
             app:layout_constraintTop_toBottomOf="@+id/view2">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextShopName"
+                android:id="@+id/editTextFirstName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
                 android:enabled="false"
-                android:hint="Business Name" />
+                android:hint="First Name" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutMiddleName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@+id/textViewStoreLogo"
+            app:layout_constraintStart_toStartOf="@+id/textViewStoreLogo"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutFirstName">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextMiddleName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:enabled="false"
+                android:hint="Middle Name" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@+id/textViewStoreLogo"
+            app:layout_constraintStart_toStartOf="@+id/textViewStoreLogo"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutMiddleName">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextLastName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:enabled="false"
+                android:hint="Last Name" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton
-            android:id="@+id/imageButtonEditShopName"
+            android:id="@+id/imageButtonEditFirstName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_baseline_edit_24"
-            app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutName"
-            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutName"
-            app:layout_constraintTop_toTopOf="@+id/textInputLayoutName"
-            android:onClick="@{() -> accountInfoInterface.onEditName()}"/>
+            app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutFirstName"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutFirstName"
+            app:layout_constraintTop_toTopOf="@+id/textInputLayoutFirstName"
+            android:onClick="@{() -> accountInfoInterface.onEditFirstName()}"/>
+
+        <ImageButton
+            android:id="@+id/imageButtonEditMiddleName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_baseline_edit_24"
+            app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutMiddleName"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutMiddleName"
+            app:layout_constraintTop_toTopOf="@+id/textInputLayoutMiddleName"
+            android:onClick="@{() -> accountInfoInterface.onEditMiddleName()}"/>
+
+        <ImageButton
+            android:id="@+id/imageButtonEditLastName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_baseline_edit_24"
+            app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutLastName"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutLastName"
+            app:layout_constraintTop_toTopOf="@+id/textInputLayoutLastName"
+            android:onClick="@{() -> accountInfoInterface.onEditLastName()}"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/textInputLayout5"
-            app:layout_constraintStart_toStartOf="@+id/textInputLayout5"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout5">
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutLastName"
+            app:layout_constraintStart_toStartOf="@+id/textInputLayoutLastName"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutLastName">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextShopEmail"
+                android:id="@+id/editTextAgentEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
@@ -101,76 +159,25 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutName"
-            app:layout_constraintStart_toStartOf="@+id/textInputLayoutName"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutName">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editUserType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/white"
-                android:enabled="false"
-                android:hint="Type of business" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
         <ImageButton
-            android:id="@+id/imageButtonEditUserType"
+            android:id="@+id/imageButtonEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:src="@drawable/ic_baseline_edit_24"
-            app:layout_constraintBottom_toBottomOf="@+id/textInputLayout5"
-            app:layout_constraintEnd_toEndOf="@+id/textInputLayout5"
-            app:layout_constraintTop_toTopOf="@+id/textInputLayout5"
-            android:onClick="@{() -> accountInfoInterface.onEditUserType()}"/>
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayoutContactPerson"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/textInputLayout4"
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout4"
-            app:layout_constraintStart_toStartOf="@+id/textInputLayout4"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout4">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextContactPerson"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/white"
-                android:enabled="false"
-                android:hint="Contact Person" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <ImageButton
-            android:id="@+id/imageButtonContactPerson"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:src="@drawable/ic_baseline_edit_24"
-            app:layout_constraintBottom_toBottomOf="@+id/textInputLayoutContactPerson"
-            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutContactPerson"
-            app:layout_constraintTop_toTopOf="@+id/textInputLayoutContactPerson"
-            android:onClick="@{() -> accountInfoInterface.onEditContactPerson()}"/>
+            app:layout_constraintTop_toTopOf="@+id/textInputLayout4"
+            android:onClick="@{() -> accountInfoInterface.onEditEmail()}"/>
 
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/textInputLayoutContactPerson"
-            app:layout_constraintStart_toStartOf="@+id/textInputLayoutContactPerson"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayoutContactPerson">
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayout4"
+            app:layout_constraintStart_toStartOf="@+id/textInputLayout4"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout4">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editMobileNo"
@@ -194,6 +201,49 @@
             app:layout_constraintEnd_toEndOf="@+id/textInputLayout6"
             app:layout_constraintTop_toTopOf="@+id/textInputLayout6"
             android:onClick="@{() -> accountInfoInterface.onEditMobile()}"/>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayout6"
+            app:layout_constraintStart_toStartOf="@+id/textInputLayout6"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout6">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editAddGovernmentID"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:clickable="true"
+                android:focusable="false"
+                android:textColor="@color/silver"
+                android:inputType="number"
+                android:hint="Add Government ID" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_baseline_keyboard_arrow_right_24"
+            app:layout_constraintBottom_toBottomOf="@+id/textInputLayout7"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayout7"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout6" />
+<!--        <TextView-->
+<!--            android:id="@+id/textViewAddGovernmentId"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:background="@color/white"-->
+<!--            android:drawableEnd="@drawable/ic_baseline_keyboard_arrow_right_24"-->
+<!--            android:padding="16dp"-->
+<!--            android:paddingStart="16dp"-->
+<!--            android:paddingEnd="8dp"-->
+<!--            android:text="Add Government ID"-->
+<!--            android:textSize="16sp"-->
+<!--            app:layout_constraintTop_toBottomOf="@+id/textInputLayout6" />-->
 
         <Button
             android:id="@+id/buttonSave"

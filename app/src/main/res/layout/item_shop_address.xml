@@ -42,35 +42,36 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="Business"
+                android:textStyle="italic"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textViewBlkNumAndStreet"
+                android:id="@+id/textViewAddress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginHorizontal="4dp"
                 android:layout_marginTop="4dp"
                 app:layout_constraintEnd_toStartOf="@+id/textViewAddressType"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/textViewBarangay"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="@+id/textViewBlkNumAndStreet"
-                app:layout_constraintStart_toStartOf="@+id/textViewBlkNumAndStreet"
-                app:layout_constraintTop_toBottomOf="@+id/textViewBlkNumAndStreet" />
+<!--            <TextView-->
+<!--                android:id="@+id/textViewBarangay"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintEnd_toEndOf="@+id/textViewBlkNumAndStreet"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/textViewBlkNumAndStreet"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/textViewBlkNumAndStreet" />-->
 
 
-            <TextView
-                android:id="@+id/textViewCity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="@+id/textViewBarangay"
-                app:layout_constraintStart_toStartOf="@+id/textViewBarangay"
-                app:layout_constraintTop_toBottomOf="@+id/textViewBarangay" />
+<!--            <TextView-->
+<!--                android:id="@+id/textViewCity"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:layout_constraintEnd_toEndOf="@+id/textViewBarangay"-->
+<!--                app:layout_constraintStart_toStartOf="@+id/textViewBarangay"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/textViewBarangay" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

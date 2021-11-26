@@ -2,10 +2,18 @@ package com.aix.mpagents.models;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.Comparator;
 import java.util.Date;
 
 public class ProductInfo {
 
+
+    public static class Status{
+        public static String ONLINE = "online";
+        public static String INACTIVE = "inactive";
+        public static String DRAFT = "draft";
+        public static String DELETED = "deleted";
+    }
 
     public String category_name;
     public String category_id;
@@ -17,12 +25,37 @@ public class ProductInfo {
     public String product_name;
     public Double product_price;
     public String product_desc;
+    public String product_status;
     public int rating;
     public int sold;
     public String product_id;
     public boolean is_deleted;
     public boolean is_active;
     public String preview_image;
+
+    public String product_type_id;
+    public String product_type;
+
+    public String search_name;
+
+    public boolean product_is_agent = true;
+
+
+    public String getSearch_name() {
+        return search_name;
+    }
+
+    public void setSearch_name(String search_name) {
+        this.search_name = search_name;
+    }
+
+    public String getProduct_status() {
+        return product_status;
+    }
+
+    public void setProduct_status(String product_status) {
+        this.product_status = product_status;
+    }
 
     public String getCategory_name() {
         return category_name;
@@ -152,5 +185,29 @@ public class ProductInfo {
 
     public void setPreview_image(String preview_image) {
         this.preview_image = preview_image;
+    }
+
+    public String getProduct_type_id() {
+        return product_type_id;
+    }
+
+    public void setProduct_type_id(String product_type_id) {
+        this.product_type_id = product_type_id;
+    }
+
+    public String getProduct_type() {
+        return product_type;
+    }
+
+    public void setProduct_type(String product_type) {
+        this.product_type = product_type;
+    }
+
+    public boolean isProduct_is_agent() {
+        return product_is_agent;
+    }
+
+    public void setProduct_is_agent(boolean product_is_agent) {
+        this.product_is_agent = product_is_agent;
     }
 }

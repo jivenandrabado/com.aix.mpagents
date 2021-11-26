@@ -30,6 +30,7 @@ import com.aix.mpagents.databinding.FragmentAddProductBinding;
 import com.aix.mpagents.interfaces.AddProductInterface;
 import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.ProductInfo;
+import com.aix.mpagents.models.ProductType;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.AddProductPhotoViewAdapter;
@@ -48,6 +49,7 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
     private Category categoryModel;
     private AddProductPhotoViewAdapter addProductPhotoViewAdapter;
     private ProgressDialogFragment progressDialogFragment;
+    private ProductType productTypeModel;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -89,18 +91,39 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
             }
         });
 
-        binding.textViewCattegory.setOnClickListener(new View.OnClickListener() {
+        binding.textViewCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navController.navigate(R.id.action_addProductFragment_to_categoryFragment);
+                if(productTypeModel != null) {
+                    navController.navigate(R.id.action_addProductFragment_to_categoryFragment);
+                }else{
+                    Toast.makeText(requireContext(),"Please select product type",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        binding.textViewProductType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navController.navigate(R.id.action_addProductFragment_to_productTypeFragment);
             }
         });
 
         productViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
             @Override
             public void onChanged(Category category) {
-                binding.textViewCattegoryValue.setText(category.getCategory_name());
+                binding.textViewCategoryValue.setText(category.getCategory_name());
                 categoryModel = category;
+            }
+        });
+
+        productViewModel.getSelectedProductType().observe(getViewLifecycleOwner(), new Observer<ProductType>() {
+            @Override
+            public void onChanged(ProductType productType) {
+                if(productType != null) {
+                    binding.textViewProductTypeValue.setText(productType.getName());
+                    productTypeModel = productType;
+                }
             }
         });
     }
@@ -112,17 +135,18 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
 
     private void addProduct() {
 
-        String product_name, description, category;
+        String product_name, description, category, product_type;
         double product_price = 0;
         product_name = String.valueOf(binding.editTextProductName.getText()).trim();
         if(!String.valueOf(binding.editTextPrice.getText()).isEmpty()) {
             product_price = Double.parseDouble(String.valueOf(binding.editTextPrice.getText()).trim());
         }
         description = String.valueOf(binding.editTextDescription.getText()).trim();
-        category = String.valueOf(binding.textViewCattegoryValue.getText()).trim();
+        category = String.valueOf(binding.textViewCategoryValue.getText()).trim();
+        product_type = String.valueOf(binding.textViewProductTypeValue.getText()).trim();
 
 
-        if(!isEmptyFields(product_name,description,category, photoList)) {
+        if(!isEmptyFields(product_name,description,category, photoList, product_type)) {
             ProductInfo productInfo = new ProductInfo();
             productInfo.setProduct_name(product_name);
             productInfo.setProduct_price(product_price);
@@ -131,16 +155,21 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
             productInfo.setCategory_name(category);
             productInfo.setRating(0);
             productInfo.setSold(0);
-            productInfo.setCategory_id(categoryModel.getId());
+            productInfo.setCategory_id(categoryModel.getCategory_id());
             productInfo.setIs_deleted(false);
             productInfo.setIs_active(true);
+            productInfo.setProduct_status(ProductInfo.Status.DRAFT);
+            productInfo.setSearch_name(product_name.toLowerCase() + " " + description.toLowerCase() );
+
+            productInfo.setProduct_type_id(productTypeModel.getProduct_type_id());
+            productInfo.setProduct_type(productTypeModel.getName());
 
             productViewModel.addProduct(productInfo, photoList);
             showProgressDialog();
         }
     }
 
-    private boolean isEmptyFields(String product_name, String description, String category, List<String> photoList){
+    private boolean isEmptyFields(String product_name, String description, String category, List<String> photoList, String product_type){
 
         if (TextUtils.isEmpty(product_name)){
             Toast.makeText(requireContext(), "Empty Product Name", Toast.LENGTH_LONG).show();
@@ -156,6 +185,9 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
             return true;
         }else if (photoList.isEmpty()) {
             Toast.makeText(requireContext(), "No product photo", Toast.LENGTH_LONG).show();
+            return true;
+        }else if (TextUtils.isEmpty(product_type)) {
+            Toast.makeText(requireContext(), "Empty Product Type", Toast.LENGTH_LONG).show();
             return true;
         }else {
             return false;

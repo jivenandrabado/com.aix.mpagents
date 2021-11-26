@@ -1,58 +1,36 @@
 package com.aix.mpagents.models;
 
-import com.google.type.LatLng;
+
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.Date;
 
 public class ShopAddress {
 
-    public String shop_street;
-    public String shop_barangay;
-    public String shop_citymun;
-    public String shop_blkbldgnumber;
-    public LatLng latLng;
+
+    public GeoPoint latLng;
     public String address_id;
+    public String address_name;
     public boolean is_deleted;
     public Date date_deleted;
     public boolean is_business;
 
-    public String getShop_street() {
-        return shop_street;
+    public ShopAddress() {
     }
 
-    public void setShop_street(String shop_street) {
-        this.shop_street = shop_street;
+    public String getAddress_name() {
+        return address_name;
     }
 
-    public String getShop_barangay() {
-        return shop_barangay;
+    public void setAddress_name(String address_name) {
+        this.address_name = address_name;
     }
 
-    public void setShop_barangay(String shop_barangay) {
-        this.shop_barangay = shop_barangay;
-    }
-
-    public String getShop_citymun() {
-        return shop_citymun;
-    }
-
-    public void setShop_citymun(String shop_citymun) {
-        this.shop_citymun = shop_citymun;
-    }
-
-    public String getShop_blkbldgnumber() {
-        return shop_blkbldgnumber;
-    }
-
-    public void setShop_blkbldgnumber(String shop_blkbldgnumber) {
-        this.shop_blkbldgnumber = shop_blkbldgnumber;
-    }
-
-    public LatLng getLatLng() {
+    public GeoPoint getLatLng() {
         return latLng;
     }
 
-    public void setLatLng(LatLng latLng) {
+    public void setLatLng(GeoPoint latLng) {
         this.latLng = latLng;
     }
 

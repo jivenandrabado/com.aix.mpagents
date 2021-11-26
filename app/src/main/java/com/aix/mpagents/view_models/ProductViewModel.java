@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.Media;
 import com.aix.mpagents.models.ProductInfo;
+import com.aix.mpagents.models.ProductType;
 import com.aix.mpagents.repositories.FirebaseProductRepo;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
@@ -16,6 +17,7 @@ public class ProductViewModel extends ViewModel {
     private FirebaseProductRepo productRepo = new FirebaseProductRepo();
     private MutableLiveData<Category> selectedCategory = new MutableLiveData<>();
     private MutableLiveData<ProductInfo> selectedProduct = new MutableLiveData<>();
+    private MutableLiveData<ProductType> selectedProductType = new MutableLiveData<>();
 
     public void addProduct(ProductInfo productInfo, List<String> photoList){
         productRepo.addProduct(productInfo,photoList);
@@ -25,12 +27,20 @@ public class ProductViewModel extends ViewModel {
         return productRepo.getIsProductSaved();
     }
 
-    public FirestoreRecyclerOptions getProductRecyclerOptions(){
-        return productRepo.getProductRecyclerOptions();
+    public FirestoreRecyclerOptions getProductRecyclerOptions(String status){
+        return productRepo.getProductRecyclerOptions(status);
     }
 
-    public FirestoreRecyclerOptions getCategoriesRecyclerOptions(){
-        return productRepo.getCategoriesRecyclerOptions();
+    public FirestoreRecyclerOptions<ProductInfo> getProductSearchRecyclerOptions(String query) {
+        return productRepo.getProductSearchRecyclerOptions(query.toLowerCase());
+    }
+
+    public FirestoreRecyclerOptions getCategoriesRecyclerOptions(String product_type){
+        return productRepo.getCategoriesRecyclerOptions(product_type);
+    }
+
+    public FirestoreRecyclerOptions getProductTypeRecyclerOptions(){
+        return productRepo.getProductTypeRecyclerOptions();
     }
 
     public MutableLiveData<Category> getSelectedCategory(){
@@ -62,7 +72,28 @@ public class ProductViewModel extends ViewModel {
         productRepo.updateProduct(productInfo,newPhotoList,deletePhotoList);
     }
 
+    public void changeProductStatus(ProductInfo productInfo, String status) {
+        productRepo.changeProductStatus(productInfo,status);
+    }
+
     public MutableLiveData<Boolean> isProductUpdated(){
         return productRepo.getIsProductUpdated();
+    }
+
+    public MutableLiveData<ProductType> getSelectedProductType(){
+        return selectedProductType;
+    }
+
+
+    public MutableLiveData<List<ProductInfo>> getAllProductInfo() {
+        return productRepo.getAllProductInfo();
+    }
+
+    public void addProductsListener() {
+        productRepo.addProductsListener();
+    }
+
+    public void detachProductsListener() {
+        productRepo.detachProductsListener();
     }
 }
