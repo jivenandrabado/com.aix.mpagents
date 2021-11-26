@@ -85,9 +85,7 @@ public class HomeFragment extends Fragment {
         binding.buttonAddProducts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mAccountInfo.getEmail().isEmpty() &&
-                    !mAccountInfo.getMobile_no().isEmpty() &&
-                    !mAccountInfo.getGov_id_primary().isEmpty())
+                if (mAccountInfo.hasInfoFillUp())
                 navController.navigate(R.id.action_homeFragment_to_addProductFragment);
                 else{
                     new AddProductsRequirementsDialog(
