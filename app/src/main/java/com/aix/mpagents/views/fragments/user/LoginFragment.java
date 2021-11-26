@@ -173,6 +173,11 @@ public class LoginFragment extends Fragment implements LoginInterface {
         }
     }
 
+    @Override
+    public void onLoginMobile() {
+        navController.navigate(R.id.action_loginFragment_to_phoneLoginFragment);
+    }
+
     private boolean isEmptyFields(){
         if (!getEmail().isEmpty() && !getPassword().isEmpty()) {
             return false;

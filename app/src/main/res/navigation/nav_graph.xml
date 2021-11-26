@@ -20,6 +20,9 @@
             app:destination="@id/homeFragment"
             app:launchSingleTop="true"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_loginFragment_to_phoneLoginFragment"
+            app:destination="@id/phoneLoginFragment" />
 
     </fragment>
     <fragment
@@ -142,6 +145,12 @@
         <action
             android:id="@+id/action_productListFragment_to_editProductFragment"
             app:destination="@id/editProductFragment" />
+        <action
+            android:id="@+id/action_productListFragment_to_addProductFragment"
+            app:destination="@id/addProductFragment" />
+        <action
+            android:id="@+id/action_productListFragment_to_searchProductFragment"
+            app:destination="@id/searchProductFragment" />
     </fragment>
     <fragment
         android:id="@+id/categoryFragment"
@@ -194,7 +203,27 @@
             android:id="@+id/action_verificationDetailsFragment_to_addGovernmentIDFragment"
             app:destination="@id/addGovernmentIDFragment" />
     </fragment>
-
-
+    <fragment
+        android:id="@+id/searchProductFragment"
+        android:name="com.aix.mpagents.views.fragments.products.SearchProductFragment"
+        android:label="fragment_search_product"
+        tools:layout="@layout/fragment_search_product" />
+    <fragment
+        android:id="@+id/phoneLoginFragment"
+        android:name="com.aix.mpagents.views.fragments.user.PhoneLoginFragment"
+        android:label="Phone Number Login"
+        tools:layout="@layout/fragment_phone_login" >
+        <action
+            android:id="@+id/action_phoneLoginFragment_to_phoneVerificationFragment"
+            app:destination="@id/phoneVerificationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/phoneVerificationFragment"
+        android:name="com.aix.mpagents.views.fragments.user.PhoneVerificationFragment"
+        android:label="Verification" >
+        <action
+            android:id="@+id/action_phoneVerificationFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 
 </navigation>

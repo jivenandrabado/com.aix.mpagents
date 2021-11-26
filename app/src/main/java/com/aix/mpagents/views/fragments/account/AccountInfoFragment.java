@@ -52,6 +52,7 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
     private NavController navController;
     private FragmentAccountInformationBinding binding;
     private AccountInfoViewModel accountInfoViewModel;
+    private UserSharedViewModel userSharedViewModel;
     private ToastUtil toastUtil;
     private UploadDialog uploadDialog;
 
@@ -82,7 +83,7 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
-        UserSharedViewModel userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
+        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
         binding.setAccountInfoInterface(this);
         toastUtil = new ToastUtil();
@@ -110,8 +111,6 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
                 }
             }
         });
-
-
 
         binding.buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,8 +171,14 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
         binding.editTextMiddleName.setText(accountInfo.getMiddle_name());
         binding.editTextLastName.setText(accountInfo.getLast_name());
 
-        binding.editTextShopEmail.setText(accountInfo.getEmail());
 
+        //Connected to login
+        if(userSharedViewModel.getSignInMethod().equalsIgnoreCase("email")){
+            binding.imageButtonEmail.setVisibility(View.GONE);
+        }else binding.imageButtonMobileNo.setVisibility(View.GONE);
+
+
+        binding.editTextAgentEmail.setText(accountInfo.getEmail());
         if(!accountInfo.getMobile_no().isEmpty()){
             binding.editMobileNo.setText(accountInfo.getMobile_no());
         }
@@ -268,14 +273,22 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
     @Override
     public void onEditMobile() {
         enableViews(binding.editMobileNo,binding.imageButtonMobileNo);
+    }
 
+    @Override
+    public void onEditEmail() {
+        enableViews(binding.editTextAgentEmail,binding.imageButtonEmail);
     }
 
 
     private void onSave(){
         try {
-            AccountInfo accountInfo = new AccountInfo();
             Map<String,Object> account_info = new HashMap<>();
+
+            if(binding.editTextAgentEmail.isEnabled()) {
+                account_info.put("email", binding.editTextAgentEmail.getText().toString().trim());
+                disableViewsMobile(binding.editTextAgentEmail, binding.imageButtonEmail);
+            }
 
             if(binding.editTextFirstName.isEnabled()) {
                 account_info.put("first_name", binding.editTextFirstName.getText().toString().trim());

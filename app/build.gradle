@@ -81,12 +81,15 @@ dependencies {
     //google sign in
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
     //Facebook
-    implementation 'com.facebook.android:facebook-android-sdk:5.13.0'
+    implementation 'com.facebook.android:facebook-android-sdk:5.15.3'
     //Circular imageview
     implementation 'com.mikhaellopez:circularimageview:4.3.0'
     //Image Crop View
     implementation "com.naver.android.helloyako:imagecropview:1.2.3"
     //Places API
     implementation 'com.google.android.libraries.places:places:2.5.0'
-
+    //pinView
+    implementation 'com.chaos.view:pinview:1.4.4'
+    //Keyboard
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC2'
 }

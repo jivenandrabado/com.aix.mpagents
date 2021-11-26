@@ -56,6 +56,11 @@
     <string name="cancel">Cancel</string>
     <string name="rating">Rating:</string>
     <string name="sold">Sold:</string>
+    <string name="online">Online</string>
+    <string name="inactive">Inactive</string>
+    <string name="search">Search Product</string>
+    <string name="filter">Filter</string>
+
     <!--    Orders-->
     <string name="pending">Pending</string>
     <string name="topack">ToPack</string>
@@ -78,7 +83,10 @@
     <string name="orders">Orders</string>
     <string name="upgrade_status_label">Upgrade to Fully Verified to gain full access on MAgents services.</string>
 
+    <!--    Places API Key-->
     <string name="places_api_key">AIzaSyAwpadNKq1dNkmRcS9oHxfXwX_xhnBQSKk</string>
+    <string name="resendCode">Resend Code</string>
+
 
     <string-array name="id_types">
         <item>TIN ID</item>

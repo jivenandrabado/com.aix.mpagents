@@ -20,4 +20,7 @@ public class UserSharedViewModel extends ViewModel {
     }
 
 
+    public String getSignInMethod() {
+        return firebaseLoginRepo.getSignInMethod();
+    }
 }

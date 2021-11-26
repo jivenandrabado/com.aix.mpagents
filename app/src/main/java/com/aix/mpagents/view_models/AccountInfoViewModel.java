@@ -3,7 +3,6 @@ package com.aix.mpagents.view_models;
 import android.app.Activity;
 import android.net.Uri;
 
-import androidx.core.util.Supplier;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -15,6 +14,7 @@ import com.aix.mpagents.repositories.FirebaseProfileRepo;
 import com.aix.mpagents.utilities.AgentStatusENUM;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import java.util.List;
 import java.util.Map;
 
 public class AccountInfoViewModel extends ViewModel {
@@ -28,12 +28,8 @@ public class AccountInfoViewModel extends ViewModel {
         firebaseLoginRepo.logoutUser(activity);
     }
 
-    public void addAccountInfoSnapshot(){firebaseProfileRepo.addAccountInfoSnaphotListener();}
+    public void addAccountInfoSnapshot(){firebaseProfileRepo.addAccountInfoSnapshotListener();}
     public void detachAccountInfoListener(){firebaseProfileRepo.detachAccountInfoListener();}
-
-    public MutableLiveData<AgentStatusENUM> getAgentStatus(){
-        return firebaseProfileRepo.getAgentStatus();
-    }
 
     public MutableLiveData<AccountInfo> getAccountInfo(){
         return firebaseProfileRepo.getAccountInfoMutableLiveData();
@@ -44,6 +40,9 @@ public class AccountInfoViewModel extends ViewModel {
     public MutableLiveData<AccountInfo> getProfileObservable(){return firebaseProfileRepo.getProfileObservable();}
     public MutableLiveData<Boolean> updateProfileSuccess(){return firebaseProfileRepo.updateProfileSuccess;}
     public MutableLiveData<String> getErrorMessage(){return firebaseProfileRepo.errorMessage;}
+    public MutableLiveData<List<ShopAddress>> getAllAddresses() {
+        return firebaseProfileRepo.getAllAddresses();
+    }
 
     public void uploadToFirebaseStorage(Uri path){
         firebaseProfileRepo.uploadToFirebaseStorage(path);
@@ -62,6 +61,10 @@ public class AccountInfoViewModel extends ViewModel {
         firebaseProfileRepo.updateAddress(shopAddress);
     }
 
+    public void updateAddressForDefault(ShopAddress shopAddress){
+        firebaseProfileRepo.updateAddressForDefault(shopAddress);
+    }
+
     public void deleteAddress(ShopAddress shopAddress){
         firebaseProfileRepo.deleteAddress(shopAddress);
     }
@@ -78,5 +81,6 @@ public class AccountInfoViewModel extends ViewModel {
     public MutableLiveData<ShopAddress> getSelectedShopAddress(){
         return selectedShopAddress;
     }
+
 
 }

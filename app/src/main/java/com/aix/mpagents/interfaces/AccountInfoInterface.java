@@ -6,5 +6,5 @@ public interface AccountInfoInterface {
     void onEditMiddleName();
     void onEditLastName();
     void onEditMobile();
-
+    void onEditEmail();
 }

@@ -10,6 +10,7 @@ import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.Media;
 import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.models.ProductType;
+import com.aix.mpagents.models.ShopAddress;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.FirestoreConstants;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -20,6 +21,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -44,6 +46,9 @@ public class FirebaseProductRepo {
     private MutableLiveData<List<Media>> getMediaList = new MutableLiveData<>();
     private List<Media> mediaList = new ArrayList<>();
     private MutableLiveData<Boolean> isProductUpdated = new MutableLiveData<>();
+    private MutableLiveData<List<ProductInfo>> allProducts = new MutableLiveData<>();
+    private ListenerRegistration productsListener;
+
 
     public FirebaseProductRepo() {
         db = FirebaseFirestore.getInstance();
@@ -208,14 +213,35 @@ public class FirebaseProductRepo {
 
     }
 
-    public FirestoreRecyclerOptions getProductRecyclerOptions() {
-        Query query = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
-                .whereEqualTo("merchant_id", userId)
-                .whereEqualTo("is_deleted",false)
-                .orderBy("dateCreated");
-        return new FirestoreRecyclerOptions.Builder<ProductInfo>()
-                .setQuery(query, ProductInfo.class)
-                .build();
+    public FirestoreRecyclerOptions getProductRecyclerOptions(String status) {
+        try{
+            Query query = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
+                    .whereEqualTo("merchant_id", userId)
+                    .whereEqualTo("product_status", status)
+                    .orderBy("dateCreated");
+            return new FirestoreRecyclerOptions.Builder<ProductInfo>()
+                    .setQuery(query, ProductInfo.class)
+                    .build();
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+            return null;
+        }
+    }
+
+    public FirestoreRecyclerOptions<ProductInfo> getProductSearchRecyclerOptions(String query) {
+        try{
+            Query newQuery = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
+                    .whereEqualTo("merchant_id", userId)
+                    .orderBy("search_name")
+                    .startAt(query)
+                    .endAt(query + "~");
+            return new FirestoreRecyclerOptions.Builder<ProductInfo>()
+                    .setQuery(newQuery, ProductInfo.class)
+                    .build();
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+            return null;
+        }
     }
 
     public FirestoreRecyclerOptions getCategoriesRecyclerOptions(String product_type) {
@@ -255,6 +281,22 @@ public class FirebaseProductRepo {
                 if(task.isSuccessful()){
                     ErrorLog.WriteDebugLog("PRODUCT DELETED");
                     isProductDeleted.setValue(true);
+                }else{
+                    ErrorLog.WriteErrorLog(task.getException());
+                }
+            }
+        });
+    }
+
+    public void changeProductStatus(ProductInfo productInfo, String status) {
+        Map<String, Object> productDelete = new HashMap<>();
+        productDelete.put("product_status",status);
+        db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(productInfo.getProduct_id())
+                .update(productDelete).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    ErrorLog.WriteDebugLog("PRODUCT "+ status);
                 }else{
                     ErrorLog.WriteErrorLog(task.getException());
                 }
@@ -386,4 +428,32 @@ public class FirebaseProductRepo {
         });
 
     }
+
+    public void detachProductsListener(){
+        if(productsListener!=null){
+            productsListener.remove();
+        }
+    }
+
+    public void addProductsListener(){
+        try{
+            productsListener = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
+                    .whereEqualTo("merchant_id", userId)
+                    .addSnapshotListener((value, error) -> {
+                        List<ProductInfo> products = new ArrayList<>();
+                        for(DocumentSnapshot product: value.getDocuments()){
+                            ProductInfo productInfo = product.toObject(ProductInfo.class);
+                            products.add(productInfo);
+                        }
+                        allProducts.setValue(products);
+                    });
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
+
+    public MutableLiveData<List<ProductInfo>> getAllProductInfo() {
+        return allProducts;
+    }
+
 }

@@ -7,4 +7,5 @@ public interface LoginInterface {
     void onForgotPasswordClick();
     void onLoginAsGuestClick();
     void onLoginWithGoogle();
+    void onLoginMobile();
 }
