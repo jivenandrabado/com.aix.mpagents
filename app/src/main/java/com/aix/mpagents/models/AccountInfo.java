@@ -225,4 +225,14 @@ public class AccountInfo {
         }
         return agentEnum;
     }
+
+    public boolean hasInfoFillUp(){
+        return !getEmail().isEmpty() &&
+                !getMobile_no().isEmpty() &&
+                !getGov_id_primary().isEmpty();
+    }
+
+    public boolean hasDocumentApproved(){
+        return getAgent_status().equalsIgnoreCase("Approved");
+    }
 }

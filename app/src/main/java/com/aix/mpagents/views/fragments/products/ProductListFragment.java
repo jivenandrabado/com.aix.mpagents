@@ -40,12 +40,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentProductListBinding;
 import com.aix.mpagents.interfaces.ProductInterface;
+import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.utilities.AlertUtils;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.MenuUtils;
+import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.ProductViewModel;
+import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
+import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -59,6 +63,8 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     private FragmentProductListBinding binding;
     private ProductViewModel productViewModel;
     private ProductsFirestoreAdapter productsFirestoreAdapter;
+    private AccountInfoViewModel accountInfoViewModel;
+    private UserSharedViewModel userSharedViewModel;
     private ProductsBottomSheetDialog productsBottomSheetDialog;
     private NavController navController;
     private HashMap<Integer,String> tabs = new HashMap<>();
@@ -66,6 +72,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     private ArrayAdapter<String> productNamesAdapter;
     private List<String> productNames = new ArrayList<>();
     private SearchView searchView = null;
+    private AccountInfo mAccountInfo;
     
     private ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -90,11 +97,36 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
         super.onViewCreated(view, savedInstanceState);
 
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
+        accountInfoViewModel  = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
+        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         navController = Navigation.findNavController(view);
         productViewModel.addProductsListener();
         initProductsRecyclerView();
         initTabs();
+        initObservers();
+        initListeners();
 
+    }
+
+    private void initListeners() {
+        binding.buttonAddProduct.setOnClickListener(v -> {
+            if (mAccountInfo.hasInfoFillUp())
+                navController.navigate(R.id.action_productListFragment_to_addProductFragment);
+            else{
+                new AddProductsRequirementsDialog(
+                        !mAccountInfo.getEmail().isEmpty(),
+                        !mAccountInfo.getMobile_no().isEmpty(),
+                        false,
+                        !mAccountInfo.getGov_id_primary().isEmpty(),
+                        navController
+                ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+            }
+        });
+    }
+
+    private void initObservers() {
+        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result ->
+                accountInfoViewModel.addAccountInfoSnapshot());
 
         productViewModel.getAllProductInfo().observe(getViewLifecycleOwner(), result -> {
             products.clear();
@@ -102,11 +134,8 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             updateProductNameList();
         });
 
-        binding.buttonAddProduct.setOnClickListener(v -> {
-            navController.navigate(R.id.action_productListFragment_to_addProductFragment);
-        });
+        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), result -> mAccountInfo = result);
     }
-
 
 
     private void initTabs() {
@@ -167,6 +196,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             productsFirestoreAdapter.stopListening();
         }
         productViewModel.detachProductsListener();
+        accountInfoViewModel.detachAccountInfoListener();
     }
 
     @Override
