@@ -49,13 +49,12 @@ public class FirebaseLoginRepo {
 
     PhoneAuthProvider.OnVerificationStateChangedCallbacks loginPhoneCallback = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         @Override
-        public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {
-
-        }
+        public void onVerificationCompleted(@NonNull PhoneAuthCredential credential) {}
         @Override
         public void onVerificationFailed(@NonNull FirebaseException e) {
             ErrorLog.WriteErrorLog(e);
             ErrorLog.WriteDebugLog(e);
+            errorMessage.setValue("Request Time out.");
         }
         @Override
         public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
@@ -324,6 +323,16 @@ public class FirebaseLoginRepo {
         }catch (Exception e){
             errorMessage.setValue(e.getLocalizedMessage());
             ErrorLog.WriteErrorLog(e);
+        }
+    }
+
+    public String getSignInMethod() {
+        try {
+            if(mAuth.getCurrentUser().getEmail().isEmpty()) return "Phone";
+            else return "Email";
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+            return "Email";
         }
     }
 }

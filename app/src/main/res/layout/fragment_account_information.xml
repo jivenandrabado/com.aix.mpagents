@@ -150,7 +150,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textInputLayoutLastName">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextShopEmail"
+                android:id="@+id/editTextAgentEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
@@ -159,7 +159,16 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
+        <ImageButton
+            android:id="@+id/imageButtonEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:src="@drawable/ic_baseline_edit_24"
+            app:layout_constraintBottom_toBottomOf="@+id/textInputLayout4"
+            app:layout_constraintEnd_toEndOf="@+id/textInputLayout4"
+            app:layout_constraintTop_toTopOf="@+id/textInputLayout4"
+            android:onClick="@{() -> accountInfoInterface.onEditEmail()}"/>
 
 
         <com.google.android.material.textfield.TextInputLayout
