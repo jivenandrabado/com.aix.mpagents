@@ -4,5 +4,6 @@ public enum SigninENUM {
 
     FACEBOOK,
     GOOGLE,
+    PHONE,
     NONE
 }

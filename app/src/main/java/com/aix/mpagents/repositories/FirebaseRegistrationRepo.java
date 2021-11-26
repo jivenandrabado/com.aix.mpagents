@@ -77,6 +77,9 @@ public class FirebaseRegistrationRepo {
                             case FACEBOOK:
                                 ErrorLog.WriteDebugLog("User info saved from facebook");
                                 break;
+                            case PHONE:
+                                ErrorLog.WriteDebugLog("User info saved from phone");
+                                break;
                         }
                     } else {
                         ErrorLog.WriteErrorLog(task.getException());

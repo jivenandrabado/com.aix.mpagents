@@ -76,9 +76,9 @@ public class AddProductsRequirementsDialog extends DialogFragment {
             else accountInfoViewModel.detachAccountInfoListener();
         });
 
-        accountInfoViewModel.getAgentStatus().observe(getViewLifecycleOwner(), result -> {
+        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), result -> {
             String agentStatus = "";
-            switch (result){
+            switch (result.getAccountStatus()){
                 case SEMI:
                     agentStatus = "You are a Semi-verified User";
                     break;

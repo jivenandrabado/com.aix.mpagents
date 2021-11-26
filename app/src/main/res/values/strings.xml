@@ -85,6 +85,7 @@
 
     <!--    Places API Key-->
     <string name="places_api_key">AIzaSyAwpadNKq1dNkmRcS9oHxfXwX_xhnBQSKk</string>
+    <string name="resendCode">Resend Code</string>
 
 
     <string-array name="id_types">

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="view"
+            type="com.aix.mpagents.views.fragments.user.PhoneVerificationFragment" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/whiteSmoke"
+        tools:context=".views.fragments.user.PhoneVerificationFragment">
+
+        <!-- TODO: Update blank fragment layout -->
+        <TextView
+            android:id="@+id/textView20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:text="Enter Verification Code"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.chaos.view.PinView
+            android:id="@+id/pinViewVerificationCode"
+            style="@style/PinWidget.PinView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:cursorVisible="true"
+            android:gravity="center"
+            android:inputType="number"
+            android:itemBackground="@color/white"
+            android:padding="10dp"
+            android:text="@={view.verificationCode}"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:cursorColor="@color/silver"
+            app:cursorWidth="2dp"
+            app:itemCount="6"
+            app:itemRadius="4dp"
+            app:itemSpacing="5dp"
+            app:layout_constraintEnd_toEndOf="@+id/textView20"
+            app:layout_constraintStart_toStartOf="@+id/textView20"
+            app:layout_constraintTop_toBottomOf="@+id/textView20"
+            app:lineColor="@color/mpagents_base_color"
+            app:lineWidth="2dp"
+            app:viewType="rectangle" />
+
+
+        <TextView
+            android:id="@+id/textViewResendVerificationCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:text="Resend Verification Code 60s"
+            android:textColor="@color/mpagents_base_color"
+            android:textSize="12sp"
+            android:textStyle="italic"
+            app:layout_constraintStart_toStartOf="@+id/pinViewVerificationCode"
+            app:layout_constraintTop_toBottomOf="@+id/pinViewVerificationCode" />
+
+        <Button
+            android:id="@+id/buttonLoginWithPhone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="16dp"
+            android:elevation="10dp"
+            android:text="@string/submit"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/pinViewVerificationCode"
+            app:layout_constraintStart_toStartOf="@+id/pinViewVerificationCode" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

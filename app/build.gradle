@@ -88,5 +88,8 @@ dependencies {
     implementation "com.naver.android.helloyako:imagecropview:1.2.3"
     //Places API
     implementation 'com.google.android.libraries.places:places:2.5.0'
-
+    //pinView
+    implementation 'com.chaos.view:pinview:1.4.4'
+    //Keyboard
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC2'
 }
