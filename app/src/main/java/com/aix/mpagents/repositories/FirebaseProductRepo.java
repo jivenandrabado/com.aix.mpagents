@@ -213,10 +213,11 @@ public class FirebaseProductRepo {
 
     }
 
-    public FirestoreRecyclerOptions getProductRecyclerOptions(String status) {
+    public FirestoreRecyclerOptions getProductRecyclerOptions(String type,String status) {
         try{
             Query query = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
                     .whereEqualTo("merchant_id", userId)
+                    .whereEqualTo("product_type", type)
                     .whereEqualTo("product_status", status)
                     .orderBy("dateCreated");
             return new FirestoreRecyclerOptions.Builder<ProductInfo>()
@@ -435,7 +436,25 @@ public class FirebaseProductRepo {
         }
     }
 
-    public void addProductsListener(){
+    public void addProductsWithTypeListener(String productType){
+        try{
+            productsListener = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
+                    .whereEqualTo("merchant_id", userId)
+                    .whereEqualTo("product_type", productType)
+                    .addSnapshotListener((value, error) -> {
+                        List<ProductInfo> products = new ArrayList<>();
+                        for(DocumentSnapshot product: value.getDocuments()){
+                            ProductInfo productInfo = product.toObject(ProductInfo.class);
+                            products.add(productInfo);
+                        }
+                        allProducts.setValue(products);
+                    });
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
+
+    public void addProductsAllListener(){
         try{
             productsListener = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
                     .whereEqualTo("merchant_id", userId)
@@ -456,4 +475,17 @@ public class FirebaseProductRepo {
         return allProducts;
     }
 
+    public MutableLiveData<ProductType> getProductType(String productType) {
+        MutableLiveData<ProductType> type = new MutableLiveData<>();
+        try {
+            db.collection(FirestoreConstants.MPARTNER_PRODUCT_TYPE)
+                    .whereEqualTo("name", productType)
+                    .get().addOnSuccessListener(result ->
+                    type.setValue(result.getDocuments().get(0).toObject(ProductType.class)))
+                    .addOnFailureListener(ErrorLog::WriteErrorLog);
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+        return type;
+    }
 }

@@ -1,5 +1,6 @@
 package com.aix.mpagents.view_models;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -27,8 +28,8 @@ public class ProductViewModel extends ViewModel {
         return productRepo.getIsProductSaved();
     }
 
-    public FirestoreRecyclerOptions getProductRecyclerOptions(String status){
-        return productRepo.getProductRecyclerOptions(status);
+    public FirestoreRecyclerOptions getProductRecyclerOptions(String type,String status){
+        return productRepo.getProductRecyclerOptions(type,status);
     }
 
     public FirestoreRecyclerOptions<ProductInfo> getProductSearchRecyclerOptions(String query) {
@@ -89,11 +90,20 @@ public class ProductViewModel extends ViewModel {
         return productRepo.getAllProductInfo();
     }
 
-    public void addProductsListener() {
-        productRepo.addProductsListener();
+    public void addProductsListener(String productType) {
+        productRepo.addProductsWithTypeListener(productType);
     }
+
+    public void addProductsListener() {
+        productRepo.addProductsAllListener();
+    }
+
 
     public void detachProductsListener() {
         productRepo.detachProductsListener();
+    }
+
+    public MutableLiveData<ProductType> getProductType(String productType) {
+        return productRepo.getProductType(productType);
     }
 }

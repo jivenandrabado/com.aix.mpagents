@@ -50,6 +50,7 @@ import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     private List<String> productNames = new ArrayList<>();
     private SearchView searchView = null;
     private AccountInfo mAccountInfo;
+    private String productType = "";
     
     private ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -95,12 +97,12 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         accountInfoViewModel  = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
         userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         navController = Navigation.findNavController(view);
-        productViewModel.addProductsListener();
+        productType = getArguments().getString("product_type");
+        ErrorLog.WriteDebugLog("ProductType: " +productType);
         initProductsRecyclerView();
         initTabs();
         initObservers();
@@ -125,8 +127,11 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     }
 
     private void initObservers() {
-        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result ->
-                accountInfoViewModel.addAccountInfoSnapshot());
+
+        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result ->{
+            accountInfoViewModel.addAccountInfoSnapshot();
+            productViewModel.addProductsListener(productType);
+        });
 
         productViewModel.getAllProductInfo().observe(getViewLifecycleOwner(), result -> {
             products.clear();
@@ -161,7 +166,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     }
 
     private void initProductsRecyclerView(){
-        productsFirestoreAdapter = new ProductsFirestoreAdapter(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ONLINE),this,requireContext());
+        productsFirestoreAdapter = new ProductsFirestoreAdapter(getProductRecyclerOptions(ProductInfo.Status.ONLINE),this,requireContext());
         productsFirestoreAdapter.setHasStableIds(true);
 
         binding.recyclerViewProducts.setAdapter(productsFirestoreAdapter);
@@ -178,6 +183,10 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             }
         });
 
+    }
+
+    private FirestoreRecyclerOptions<ProductInfo> getProductRecyclerOptions(String status){
+        return productViewModel.getProductRecyclerOptions(productType,status);
     }
 
     @Override
@@ -292,13 +301,13 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     public void onTabSelected(TabLayout.Tab tab) {
         switch (tab.getId()){
             case R.id.online:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ONLINE));
+                productsFirestoreAdapter.updateOptions(getProductRecyclerOptions(ProductInfo.Status.ONLINE));
                 break;
             case R.id.draft:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.DRAFT));
+                productsFirestoreAdapter.updateOptions(getProductRecyclerOptions(ProductInfo.Status.DRAFT));
                 break;
             case R.id.inactive:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.INACTIVE));
+                productsFirestoreAdapter.updateOptions(getProductRecyclerOptions(ProductInfo.Status.INACTIVE));
                 break;
         }
         productsFirestoreAdapter.notifyDataSetChanged();

@@ -26,6 +26,7 @@ public class ProductInfo {
     public Double product_price;
     public String product_desc;
     public String product_status;
+    public int product_quantity;
     public int rating;
     public int sold;
     public String product_id;
@@ -40,6 +41,14 @@ public class ProductInfo {
 
     public boolean product_is_agent = true;
 
+
+    public int getProduct_quantity() {
+        return product_quantity;
+    }
+
+    public void setProduct_quantity(int product_quantity) {
+        this.product_quantity = product_quantity;
+    }
 
     public String getSearch_name() {
         return search_name;
