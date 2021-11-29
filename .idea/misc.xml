@@ -30,6 +30,7 @@
         <entry key="app/src/main/res/layout/fragment_add_government_i_d.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_add_product.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_add_service.xml" value="0.19947916666666668" />
+        <entry key="app/src/main/res/layout/fragment_edit_product.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_face_verification.xml" value="0.2635416666666667" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.4105037513397642" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.33" />

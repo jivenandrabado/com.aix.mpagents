@@ -108,11 +108,16 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
     }
 
     private void initView() {
-        productInfo = productViewModel.getSelectedProduct().getValue();
-        binding.editTextProductName.setText(productInfo.getProduct_name());
-        binding.editTextPrice.setText(String.valueOf(productInfo.getProduct_price()));
-        binding.editTextDescription.setText(productInfo.getProduct_desc());
-        binding.textViewCategoryValue.setText(productInfo.getCategory_name());
+        try {
+            productInfo = productViewModel.getSelectedProduct().getValue();
+            binding.editTextProductName.setText(productInfo.getProduct_name());
+            binding.editTextPrice.setText(String.valueOf(productInfo.getProduct_price()));
+            binding.editTextDescription.setText(productInfo.getProduct_desc());
+            binding.textViewCategoryValue.setText(productInfo.getCategory_name());
+            binding.editTextQuantity.setText(String.valueOf(productInfo.getProduct_quantity()));
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
 
         productViewModel.getMedia(productInfo.getProduct_id());
         productViewModel.getMediaList().observe(getViewLifecycleOwner(), new Observer<List<Media>>() {
@@ -165,6 +170,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
             productInfo.setProduct_price(product_price);
             productInfo.setProduct_desc(description);
             productInfo.setDateUpdated(new Date());
+            productInfo.setProduct_quantity(Integer.parseInt(String.valueOf(binding.editTextQuantity.getText())));
 
             if(categoryModel!=null) {
                 productInfo.setCategory_name(category);
