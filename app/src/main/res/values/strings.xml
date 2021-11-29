@@ -97,6 +97,11 @@
     <string name="product_type_product">Product</string>
     <string name="product_type_service">Service</string>
     <string name="quantity">Quantity</string>
+    <string name="add_variant">Add Variant</string>
+    <string name="variant_name">Variant Description</string>
+    <string name="variant_stock">Stock</string>
+    <string name="delete_variant">Delete</string>
+    <string name="update">Update</string>
 
 
     <string-array name="id_types">

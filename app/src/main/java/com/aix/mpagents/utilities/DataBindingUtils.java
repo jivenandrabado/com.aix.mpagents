@@ -20,4 +20,14 @@ public class DataBindingUtils {
             view.setOnClickListener(v -> productInterface.onInactiveProduct(productInfo));
         }
     }
+    
+    @BindingAdapter("android:variantName")
+    public static void variantName(TextView view, String text){
+        view.setText("Variant: " + text);
+    }
+
+    @BindingAdapter("android:variantStock")
+    public static void variantStock(TextView view, int stock){
+        view.setText("Stock: " + stock);
+    }
 }

@@ -28,18 +28,23 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentEditProductBinding;
 import com.aix.mpagents.interfaces.EditProductInterface;
+import com.aix.mpagents.interfaces.VariantInterface;
 import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.Media;
 import com.aix.mpagents.models.ProductInfo;
+import com.aix.mpagents.models.Variant;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.EditProductPhotoViewAdapter;
+import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
+import com.aix.mpagents.views.adapters.VariantsFirestoreAdapter;
+import com.aix.mpagents.views.fragments.dialogs.AddVariantDialog;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class EditProductFragment extends Fragment implements EditProductInterface {
+public class EditProductFragment extends Fragment implements EditProductInterface, VariantInterface {
 
     private FragmentEditProductBinding binding;
     private ProductViewModel productViewModel;
@@ -51,6 +56,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
     private List<String> deletePhotoList = new ArrayList<>();
     private Category categoryModel;
     private EditProductPhotoViewAdapter editProductPhotoViewAdapter;
+    private VariantsFirestoreAdapter variantsFirestoreAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,7 +70,26 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
         super.onViewCreated(view, savedInstanceState);
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         navController = Navigation.findNavController(view);
+        initObservers();
+        initListeners();
+        initView();
+        initVariantFirestoreOptions();
+    }
 
+    private void initVariantFirestoreOptions() {
+        variantsFirestoreAdapter = new VariantsFirestoreAdapter(
+                productViewModel.getVariantRecyclerOptions(productInfo.getProduct_id()),
+                this
+        );
+        variantsFirestoreAdapter.setHasStableIds(true);
+
+        binding.recyclerViewVariants.setAdapter(variantsFirestoreAdapter);
+        binding.recyclerViewVariants.setLayoutManager(new LinearLayoutManager(requireContext()));
+        //temporary fix for recyclerview
+        binding.recyclerViewVariants.setItemAnimator(null);
+    }
+
+    private void initObservers() {
         productViewModel.isProductSaved().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -73,6 +98,21 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
                     productViewModel.isProductSaved().setValue(false);
                 }
             }
+        });
+
+        productViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
+            @Override
+            public void onChanged(Category category) {
+                binding.textViewCategoryValue.setText(category.getCategory_name());
+                categoryModel = category;
+            }
+        });
+    }
+
+    private void initListeners() {
+        binding.textViewAddVariant.setOnClickListener(v -> {
+            new AddVariantDialog(this)
+                    .show(requireActivity().getSupportFragmentManager(), "ADD_VARIANT");
         });
 
         binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
@@ -95,16 +135,6 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
                 navController.navigate(R.id.action_editProductFragment_to_categoryFragment);
             }
         });
-
-        productViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
-            @Override
-            public void onChanged(Category category) {
-                binding.textViewCategoryValue.setText(category.getCategory_name());
-                categoryModel = category;
-            }
-        });
-
-        initView();
     }
 
     private void initView() {
@@ -262,10 +292,17 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if(variantsFirestoreAdapter != null){
+            variantsFirestoreAdapter.startListening();
+        }
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
-//        photoList.clear();
-//        newPhotoList.clear();
+        variantsFirestoreAdapter.stopListening();
     }
 
     @Override
@@ -276,6 +313,42 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
         photoList.remove(photoPosition);
         editProductPhotoViewAdapter.notifyItemRemoved(photoPosition);
 
+
+    }
+
+    @Override
+    public void onVariantAdd(Variant variant) {
+        productViewModel.addVariant(variant, productInfo.getProduct_id());
+    }
+
+    @Override
+    public void onVariantClick(Variant variant) {
+        new AddVariantDialog(this,variant)
+                .show(requireActivity().getSupportFragmentManager(), "ADD_VARIANT");
+    }
+
+    @Override
+    public void onVariantClick(int position, Variant variant) {
+
+    }
+
+    @Override
+    public void onVariantDelete(Variant variant) {
+        productViewModel.deleteVariant(variant, productInfo.getProduct_id());
+    }
+
+    @Override
+    public void onVariantDelete(int position, Variant variant) {
+
+    }
+
+    @Override
+    public void onVariantUpdate(Variant variant) {
+        productViewModel.updateVariant(variant, productInfo.getProduct_id());
+    }
+
+    @Override
+    public void onVariantUpdate(int position, Variant variant) {
 
     }
 }
