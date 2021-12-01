@@ -89,9 +89,13 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
         toastUtil = new ToastUtil();
         layoutViewHelper = new LayoutViewHelper(requireActivity());
         uploadDialog = new UploadDialog();
-
+        initObservers();
         initAccount();
+        initListeners();
 
+    }
+
+    private void initObservers() {
         userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -112,6 +116,15 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
             }
         });
 
+        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), new Observer<AccountInfo>() {
+            @Override
+            public void onChanged(AccountInfo accountInfo) {
+                initHasUser(accountInfo);
+            }
+        });
+    }
+
+    private void initListeners() {
         binding.buttonSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,13 +136,6 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
             @Override
             public void onClick(View view) {
                 chooseImage();
-            }
-        });
-
-        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), new Observer<AccountInfo>() {
-            @Override
-            public void onChanged(AccountInfo accountInfo) {
-                initHasUser(accountInfo);
             }
         });
 
@@ -149,7 +155,6 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
                         .show();
             }
         });
-
     }
 
 
