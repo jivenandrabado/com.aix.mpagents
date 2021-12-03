@@ -185,11 +185,16 @@ public class AddAddressfragment extends Fragment {
     }
 
     private void isAddressDefault(ShopAddress shopAddress) {
-        if(shopAddress.is_business){
-            for(ShopAddress address : addresses){
-                address.setIs_business(false);
-                accountInfoViewModel.updateAddressForDefault(address);
+        try{
+            if(shopAddress.is_business){
+                if(addresses != null)
+                    for(ShopAddress address : addresses){
+                        address.setIs_business(false);
+                        accountInfoViewModel.updateAddressForDefault(address);
+                    }
             }
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
         }
     }
 

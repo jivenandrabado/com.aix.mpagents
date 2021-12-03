@@ -13,6 +13,7 @@ public class FirestoreConstants {
     //Products
     public static String MPARTNER_PRODUCTS = db_+"products";
     public static String MPARTNER_MEDIA = "media";
+    public static String MPARTNER_PRODUCT_VARIANT = "variant";
 
     //Category
     public static String MPARTNER_PRODUCT_CATEGORY = db_+"product_categories";

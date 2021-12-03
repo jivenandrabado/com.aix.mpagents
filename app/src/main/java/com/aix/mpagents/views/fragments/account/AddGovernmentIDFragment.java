@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentAddGovernmentIDBinding;
 import com.aix.mpagents.interfaces.GovernmentIDInterface;
+import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.utilities.PermissionsUtils;
 import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.views.fragments.dialogs.IdTypeDialog;
@@ -41,6 +42,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -161,6 +163,9 @@ public class AddGovernmentIDFragment extends Fragment {
         disableCropGesture(true);
         account_info.put("gov_id_no_primary",binding.editTextIdNumber.getText().toString());
         account_info.put("gov_id_type_primary",binding.editTextIdType.getText().toString());
+        account_info.put("application_date_submitted",new Date());
+        account_info.put("application_remarks", "Agent has submitted his government ID.");
+        account_info.put("agent_status", AccountInfo.ApplicationStatus.PENDING);
         accountInfoViewModel.updateAgentInfo(account_info);
         uploadDialog.dismiss();
         Toast.makeText(requireContext(), "Government ID submitted!", Toast.LENGTH_SHORT).show();

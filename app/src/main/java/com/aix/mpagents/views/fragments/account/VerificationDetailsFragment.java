@@ -108,12 +108,16 @@ public class VerificationDetailsFragment extends Fragment {
 
     private void initListeners() {
 
-        binding.constraintLayoutSetGovId.setOnClickListener(v -> {
-            navController.navigate(R.id.action_verificationDetailsFragment_to_addGovernmentIDFragment);
-        });
-        binding.constraintLayoutSetInfo.setOnClickListener(v -> {
-            navController.navigate(R.id.action_verificationDetailsFragment_to_businessProfileFragment);
-        });
+        binding.constraintLayoutSetGovId.setOnClickListener(v ->
+            navController.navigate(R.id.action_verificationDetailsFragment_to_addGovernmentIDFragment)
+        );
+        binding.constraintLayoutSetInfo.setOnClickListener(v ->
+            navController.navigate(R.id.action_verificationDetailsFragment_to_businessProfileFragment)
+        );
+        binding.constraintLayoutSetFaceCapture.setOnClickListener(v -> {}
+//                navController.navigate(R.id.action_verificationDetailsFragment_to_faceVerificationFragment)
+        );
+
 
         binding.textViewSeeListOfID.setOnClickListener(v -> {
             Dialog dialog = new Dialog(requireContext());
@@ -141,7 +145,7 @@ public class VerificationDetailsFragment extends Fragment {
         switch (result.getAccountStatus()){
             case SEMI:
                 agentStatus = "You are a Semi-verified User";
-                verificationPage = v -> { binding.constraintLayoutSetGovId.performClick(); };
+                verificationPage = v -> { binding.constraintLayoutSetFaceCapture.performClick(); };
                 break;
             case FULLY:
                 Toast.makeText(requireContext(), "Your are now Fully Verified.", Toast.LENGTH_SHORT).show();
@@ -149,7 +153,7 @@ public class VerificationDetailsFragment extends Fragment {
                 break;
             case BASIC:
             default:
-                verificationPage = v -> { binding.constraintLayoutSetInfo.performClick(); };
+                verificationPage = v -> { binding.constraintLayoutSetGovId.performClick(); };
                 agentStatus = "You are a Basic User";
                 break;
         }

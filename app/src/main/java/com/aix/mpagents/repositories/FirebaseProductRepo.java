@@ -11,6 +11,7 @@ import com.aix.mpagents.models.Media;
 import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.models.ProductType;
 import com.aix.mpagents.models.ShopAddress;
+import com.aix.mpagents.models.Variant;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.FirestoreConstants;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
@@ -56,7 +57,7 @@ public class FirebaseProductRepo {
 
     }
 
-    public void addProduct(ProductInfo productInfo, List<String> photoList){
+    public void addProduct(ProductInfo productInfo, List<String> photoList, List<Variant> variants){
         try{
             //get shop info
             db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -81,6 +82,7 @@ public class FirebaseProductRepo {
                                 if(task.isSuccessful()){
                                     ErrorLog.WriteDebugLog("Product Saved");
                                     uploadPhotoList(photoList,doc_id);
+                                    uploadVariants(variants,doc_id);
                                 }else{
                                     ErrorLog.WriteErrorLog(task.getException());
                                     ErrorLog.WriteDebugLog("Product not Saved");
@@ -95,10 +97,96 @@ public class FirebaseProductRepo {
                     }
                 }
             });
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
 
+    private void uploadVariants(List<Variant> variants, String product_id) {
+        for (Variant variant : variants){
+            try{
+                String doc_id = db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(product_id)
+                        .collection(FirestoreConstants.MPARTNER_PRODUCT_VARIANT).document().getId();
 
+                variant.setDate_created(new Date());
+                variant.setVariant_id(doc_id);
+                db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(product_id)
+                        .collection(FirestoreConstants.MPARTNER_PRODUCT_VARIANT).document(doc_id)
+                        .set(variant).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+                            ErrorLog.WriteDebugLog("UPLOADED TO VARIANTS");
+                        }else{
+                            ErrorLog.WriteErrorLog(task.getException());
+                        }
+                    }
+                });
+            }catch (Exception e){
+                ErrorLog.WriteErrorLog(e);
+            }
+        }
+    }
 
+    public void addVariant(Variant variant, String product_id) {
+        try {
+            String doc_id = db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(product_id)
+                    .collection(FirestoreConstants.MPARTNER_PRODUCT_VARIANT).document().getId();
+            variant.setDate_created(new Date());
+            variant.setVariant_id(doc_id);
+            db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(product_id)
+                    .collection(FirestoreConstants.MPARTNER_PRODUCT_VARIANT)
+                    .document(doc_id).set(variant).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+                        ErrorLog.WriteDebugLog("ADDED TO VARIANTS");
+                    }else{
+                        ErrorLog.WriteErrorLog(task.getException());
+                    }
+                }
+            });
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
 
+    public void updateVariant(Variant variant, String product_id){
+        try{
+            HashMap<String,Object> variantMap = new HashMap<>();
+            variantMap.put("variant_name", variant.getVariant_name());
+            variantMap.put("stock", variant.getStock());
+            db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(product_id)
+                    .collection(FirestoreConstants.MPARTNER_PRODUCT_VARIANT).document(variant.getVariant_id())
+                    .update(variantMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+                        ErrorLog.WriteDebugLog("UPLOADED TO VARIANTS");
+                    }else{
+                        ErrorLog.WriteErrorLog(task.getException());
+                    }
+                }
+            });
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
+
+    public void deleteVariant(Variant variant, String product_id) {
+        try{
+            db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(product_id)
+                    .collection(FirestoreConstants.MPARTNER_PRODUCT_VARIANT).document(variant.getVariant_id())
+                    .delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()) {
+                        ErrorLog.WriteDebugLog("DELETED TO VARIANTS");
+                    }else{
+                        ErrorLog.WriteErrorLog(task.getException());
+                    }
+                }
+            });
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
         }
@@ -213,10 +301,11 @@ public class FirebaseProductRepo {
 
     }
 
-    public FirestoreRecyclerOptions getProductRecyclerOptions(String status) {
+    public FirestoreRecyclerOptions getProductRecyclerOptions(String type,String status) {
         try{
             Query query = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
                     .whereEqualTo("merchant_id", userId)
+                    .whereEqualTo("product_type", type)
                     .whereEqualTo("product_status", status)
                     .orderBy("dateCreated");
             return new FirestoreRecyclerOptions.Builder<ProductInfo>()
@@ -435,7 +524,25 @@ public class FirebaseProductRepo {
         }
     }
 
-    public void addProductsListener(){
+    public void addProductsWithTypeListener(String productType){
+        try{
+            productsListener = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
+                    .whereEqualTo("merchant_id", userId)
+                    .whereEqualTo("product_type", productType)
+                    .addSnapshotListener((value, error) -> {
+                        List<ProductInfo> products = new ArrayList<>();
+                        for(DocumentSnapshot product: value.getDocuments()){
+                            ProductInfo productInfo = product.toObject(ProductInfo.class);
+                            products.add(productInfo);
+                        }
+                        allProducts.setValue(products);
+                    });
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+    }
+
+    public void addProductsAllListener(){
         try{
             productsListener = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
                     .whereEqualTo("merchant_id", userId)
@@ -456,4 +563,32 @@ public class FirebaseProductRepo {
         return allProducts;
     }
 
+    public MutableLiveData<ProductType> getProductType(String productType) {
+        MutableLiveData<ProductType> type = new MutableLiveData<>();
+        try {
+            db.collection(FirestoreConstants.MPARTNER_PRODUCT_TYPE)
+                    .whereEqualTo("name", productType)
+                    .get().addOnSuccessListener(result ->
+                    type.setValue(result.getDocuments().get(0).toObject(ProductType.class)))
+                    .addOnFailureListener(ErrorLog::WriteErrorLog);
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+        }
+        return type;
+    }
+
+
+    public FirestoreRecyclerOptions<Variant> getVariantRecyclerOptions(String product_id) {
+        try{
+            Query newQuery = db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(product_id)
+                    .collection(FirestoreConstants.MPARTNER_PRODUCT_VARIANT);
+//                    .orderBy("date_created");
+            return new FirestoreRecyclerOptions.Builder<Variant>()
+                    .setQuery(newQuery, Variant.class)
+                    .build();
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+            return null;
+        }
+    }
 }

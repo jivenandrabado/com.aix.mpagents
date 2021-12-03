@@ -30,6 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -39,10 +40,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentProductListBinding;
 import com.aix.mpagents.interfaces.ProductInterface;
+import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ProductInfo;
+import com.aix.mpagents.utilities.AlertUtils;
 import com.aix.mpagents.utilities.ErrorLog;
+import com.aix.mpagents.utilities.MenuUtils;
+import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.ProductViewModel;
+import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
+import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -56,6 +64,8 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     private FragmentProductListBinding binding;
     private ProductViewModel productViewModel;
     private ProductsFirestoreAdapter productsFirestoreAdapter;
+    private AccountInfoViewModel accountInfoViewModel;
+    private UserSharedViewModel userSharedViewModel;
     private ProductsBottomSheetDialog productsBottomSheetDialog;
     private NavController navController;
     private HashMap<Integer,String> tabs = new HashMap<>();
@@ -63,6 +73,8 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     private ArrayAdapter<String> productNamesAdapter;
     private List<String> productNames = new ArrayList<>();
     private SearchView searchView = null;
+    private AccountInfo mAccountInfo;
+    private String productType = "";
     
     private ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -85,13 +97,41 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
+        accountInfoViewModel  = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
+        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         navController = Navigation.findNavController(view);
-        productViewModel.addProductsListener();
+        productType = getArguments().getString("product_type");
+        ErrorLog.WriteDebugLog("ProductType: " +productType);
         initProductsRecyclerView();
         initTabs();
+        initObservers();
+        initListeners();
 
+    }
+
+    private void initListeners() {
+        binding.buttonAddProduct.setOnClickListener(v -> {
+            if (mAccountInfo.hasInfoFillUp())
+                navController.navigate(R.id.action_productListFragment_to_addProductFragment);
+            else{
+                new AddProductsRequirementsDialog(
+                        !mAccountInfo.getEmail().isEmpty(),
+                        !mAccountInfo.getMobile_no().isEmpty(),
+                        false,
+                        !mAccountInfo.getGov_id_primary().isEmpty(),
+                        navController
+                ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+            }
+        });
+    }
+
+    private void initObservers() {
+
+        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result ->{
+            accountInfoViewModel.addAccountInfoSnapshot();
+            productViewModel.addProductsListener(productType);
+        });
 
         productViewModel.getAllProductInfo().observe(getViewLifecycleOwner(), result -> {
             products.clear();
@@ -99,11 +139,8 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             updateProductNameList();
         });
 
-        binding.buttonAddProduct.setOnClickListener(v -> {
-            navController.navigate(R.id.action_productListFragment_to_addProductFragment);
-        });
+        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), result -> mAccountInfo = result);
     }
-
 
 
     private void initTabs() {
@@ -129,7 +166,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     }
 
     private void initProductsRecyclerView(){
-        productsFirestoreAdapter = new ProductsFirestoreAdapter(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ONLINE),this,requireContext());
+        productsFirestoreAdapter = new ProductsFirestoreAdapter(getProductRecyclerOptions(ProductInfo.Status.ONLINE),this,requireContext());
         productsFirestoreAdapter.setHasStableIds(true);
 
         binding.recyclerViewProducts.setAdapter(productsFirestoreAdapter);
@@ -148,6 +185,10 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
 
     }
 
+    private FirestoreRecyclerOptions<ProductInfo> getProductRecyclerOptions(String status){
+        return productViewModel.getProductRecyclerOptions(productType,status);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -164,6 +205,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             productsFirestoreAdapter.stopListening();
         }
         productViewModel.detachProductsListener();
+        accountInfoViewModel.detachAccountInfoListener();
     }
 
     @Override
@@ -187,16 +229,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
                 productViewModel.changeProductStatus(productInfo, ProductInfo.Status.ONLINE);
             dialog.dismiss();
         };
-        askAlert(productInfo,onclick, ProductInfo.Status.ONLINE);
-    }
-
-    private void askAlert(ProductInfo productInfo, DialogInterface.OnClickListener onclick, String status) {
-        new AlertDialog.Builder(requireContext())
-                .setTitle(productInfo.getProduct_name())
-                .setMessage("Are you sure you want to make this item " + status + "?")
-                .setPositiveButton("Ok", onclick)
-                .setNegativeButton("Cancel", onclick)
-                .show();
+        AlertUtils.productAlert(requireContext(),productInfo,onclick, ProductInfo.Status.ONLINE);
     }
 
     @Override
@@ -206,16 +239,52 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
                 productViewModel.changeProductStatus(productInfo, ProductInfo.Status.INACTIVE);
             dialog.dismiss();
         };
-        askAlert(productInfo,onclick, ProductInfo.Status.INACTIVE);
+        AlertUtils.productAlert(requireContext(),productInfo,onclick, ProductInfo.Status.INACTIVE);
     }
 
     @Override
     public void onShareProduct(ProductInfo productInfo) {
-        Intent share = new Intent();
-        share.setAction(Intent.ACTION_SEND);
-        share.putExtra(Intent.EXTRA_TEXT, "https://sample.url/" + productInfo.getProduct_id());
-        share.setType("text/plain");
-        onShareResult.launch(Intent.createChooser(share, "Share via..."));
+        if(!productInfo.getProduct_status().equals(ProductInfo.Status.ONLINE)){
+            Toast.makeText(requireContext(), "Product is not online.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "https://sample.url/" + productInfo.getProduct_id());
+        shareIntent.setType("text/plain");
+
+        onShareResult.launch(Intent.createChooser(shareIntent, "Share via..."));
+    }
+
+    @Override
+    public void onMoreProductOption(ProductInfo productInfo, View view) {
+        PopupMenu.OnMenuItemClickListener menuOnClick = item -> {
+            switch (item.getItemId()){
+                case R.id.shareProduct:
+                    onShareProduct(productInfo);
+                    break;
+                case R.id.deleteProduct:
+                    onDeleteProduct(productInfo);
+                    break;
+            }
+            return true;
+        };
+        MenuUtils.showMenuWithIcons(requireContext(),view,menuOnClick);
+    }
+
+    @Override
+    public void onDeleteProduct(ProductInfo productInfo) {
+        if(productInfo.getProduct_status().equals(ProductInfo.Status.ONLINE)){
+            Toast.makeText(requireContext(), "Unable to delete. Product is online.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        DialogInterface.OnClickListener onclick = (dialog, i) -> {
+            if (i == DialogInterface.BUTTON_POSITIVE)
+                productViewModel.changeProductStatus(productInfo, ProductInfo.Status.DELETED);
+            dialog.dismiss();
+        };
+        AlertUtils.productAlert(requireContext(), productInfo, onclick, ProductInfo.Status.DELETED,
+                "Are you sure you want to delete this item?");
     }
 
     @Override
@@ -232,13 +301,13 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     public void onTabSelected(TabLayout.Tab tab) {
         switch (tab.getId()){
             case R.id.online:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ONLINE));
+                productsFirestoreAdapter.updateOptions(getProductRecyclerOptions(ProductInfo.Status.ONLINE));
                 break;
             case R.id.draft:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.DRAFT));
+                productsFirestoreAdapter.updateOptions(getProductRecyclerOptions(ProductInfo.Status.DRAFT));
                 break;
             case R.id.inactive:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.INACTIVE));
+                productsFirestoreAdapter.updateOptions(getProductRecyclerOptions(ProductInfo.Status.INACTIVE));
                 break;
         }
         productsFirestoreAdapter.notifyDataSetChanged();

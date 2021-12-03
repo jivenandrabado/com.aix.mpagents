@@ -1,5 +1,6 @@
 package com.aix.mpagents.view_models;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -7,6 +8,7 @@ import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.Media;
 import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.models.ProductType;
+import com.aix.mpagents.models.Variant;
 import com.aix.mpagents.repositories.FirebaseProductRepo;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
@@ -19,16 +21,16 @@ public class ProductViewModel extends ViewModel {
     private MutableLiveData<ProductInfo> selectedProduct = new MutableLiveData<>();
     private MutableLiveData<ProductType> selectedProductType = new MutableLiveData<>();
 
-    public void addProduct(ProductInfo productInfo, List<String> photoList){
-        productRepo.addProduct(productInfo,photoList);
+    public void addProduct(ProductInfo productInfo, List<String> photoList, List<Variant> variants){
+        productRepo.addProduct(productInfo,photoList,variants);
     }
 
     public MutableLiveData<Boolean> isProductSaved(){
         return productRepo.getIsProductSaved();
     }
 
-    public FirestoreRecyclerOptions getProductRecyclerOptions(String status){
-        return productRepo.getProductRecyclerOptions(status);
+    public FirestoreRecyclerOptions getProductRecyclerOptions(String type,String status){
+        return productRepo.getProductRecyclerOptions(type,status);
     }
 
     public FirestoreRecyclerOptions<ProductInfo> getProductSearchRecyclerOptions(String query) {
@@ -89,11 +91,36 @@ public class ProductViewModel extends ViewModel {
         return productRepo.getAllProductInfo();
     }
 
-    public void addProductsListener() {
-        productRepo.addProductsListener();
+    public void addProductsListener(String productType) {
+        productRepo.addProductsWithTypeListener(productType);
     }
+
+    public void addProductsListener() {
+        productRepo.addProductsAllListener();
+    }
+
 
     public void detachProductsListener() {
         productRepo.detachProductsListener();
+    }
+
+    public MutableLiveData<ProductType> getProductType(String productType) {
+        return productRepo.getProductType(productType);
+    }
+
+    public void updateVariant(Variant variant, String product_id) {
+        productRepo.updateVariant(variant, product_id);
+    }
+
+    public void addVariant(Variant variant, String product_id) {
+        productRepo.addVariant(variant, product_id);
+    }
+
+    public void deleteVariant(Variant variant, String product_id) {
+        productRepo.deleteVariant(variant, product_id);
+    }
+
+    public FirestoreRecyclerOptions<Variant> getVariantRecyclerOptions(String product_id) {
+        return productRepo.getVariantRecyclerOptions(product_id);
     }
 }

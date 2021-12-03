@@ -6,20 +6,37 @@
         <entry key="../../../../Android/Sdk/platforms/android-31/data/res/layout/simple_list_item_1.xml" value="0.23489583333333333" />
         <entry key="app/src/main/res/drawable-v24/custom_border_black.xml" value="0.36354166666666665" />
         <entry key="app/src/main/res/drawable-v24/custom_border_primary.xml" value="0.3338541666666667" />
+        <entry key="app/src/main/res/drawable-v24/custom_border_primary_no_solid.xml" value="0.2078125" />
+        <entry key="app/src/main/res/drawable-v24/custom_border_rounded_top_white.xml" value="0.2078125" />
+        <entry key="app/src/main/res/drawable-v24/custom_border_rounded_white.xml" value="0.2078125" />
+        <entry key="app/src/main/res/drawable-v24/ic_baseline_headset_mic_24.xml" value="0.215625" />
+        <entry key="app/src/main/res/drawable-v24/ic_baseline_help_24.xml" value="0.215625" />
         <entry key="app/src/main/res/drawable/broken_line_border.xml" value="0.3338541666666667" />
+        <entry key="app/src/main/res/drawable/custom_border_rounded_silver.xml" value="0.2078125" />
+        <entry key="app/src/main/res/drawable/ic_baseline_add_business_24.xml" value="0.215625" />
+        <entry key="app/src/main/res/drawable/ic_baseline_attach_money_24.xml" value="0.2390625" />
         <entry key="app/src/main/res/drawable/ic_baseline_check_24.xml" value="0.18854166666666666" />
         <entry key="app/src/main/res/drawable/ic_baseline_circle_24.xml" value="0.3338541666666667" />
+        <entry key="app/src/main/res/drawable/ic_baseline_delete_24.xml" value="0.215625" />
+        <entry key="app/src/main/res/drawable/ic_baseline_home_repair_service_24.xml" value="0.215625" />
+        <entry key="app/src/main/res/drawable/ic_baseline_library_books_24.xml" value="0.215625" />
         <entry key="app/src/main/res/drawable/ic_baseline_local_phone_24.xml" value="0.1828125" />
+        <entry key="app/src/main/res/drawable/ic_baseline_more_vert_24.xml" value="0.215625" />
+        <entry key="app/src/main/res/drawable/ic_baseline_share_24.xml" value="0.2390625" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/layout/bottom_sheet_dialog_id_type.xml" value="0.25" />
         <entry key="app/src/main/res/layout/bottom_sheet_dialog_media_selector.xml" value="0.28541666666666665" />
         <entry key="app/src/main/res/layout/bottom_sheet_dialog_products.xml" value="0.23489583333333333" />
         <entry key="app/src/main/res/layout/dialog_add_product_requirements.xml" value="0.2558320373250389" />
+        <entry key="app/src/main/res/layout/dialog_add_variant.xml" value="0.5" />
         <entry key="app/src/main/res/layout/fragment_account.xml" value="0.5" />
         <entry key="app/src/main/res/layout/fragment_account_information.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_add_addressfragment.xml" value="0.24375" />
         <entry key="app/src/main/res/layout/fragment_add_government_i_d.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/fragment_add_product.xml" value="0.14375" />
+        <entry key="app/src/main/res/layout/fragment_add_product.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/fragment_add_service.xml" value="0.19947916666666668" />
+        <entry key="app/src/main/res/layout/fragment_edit_product.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_face_verification.xml" value="0.2635416666666667" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_order_details.xml" value="0.24479166666666666" />
@@ -28,15 +45,19 @@
         <entry key="app/src/main/res/layout/fragment_phone_verification.xml" value="0.16666666666666666" />
         <entry key="app/src/main/res/layout/fragment_product_list.xml" value="0.24479166666666666" />
         <entry key="app/src/main/res/layout/fragment_search_product.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_service_list.xml" value="0.19947916666666668" />
         <entry key="app/src/main/res/layout/fragment_shop_address.xml" value="0.28854166666666664" />
         <entry key="app/src/main/res/layout/fragment_verification_details.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_agent_features.xml" value="0.5" />
         <entry key="app/src/main/res/layout/item_imageview.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/layout/item_product_variant.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_products.xml" value="0.45580404685835996" />
         <entry key="app/src/main/res/layout/item_shop_address.xml" value="0.5" />
         <entry key="app/src/main/res/layout/search_view.xml" value="0.23645833333333333" />
         <entry key="app/src/main/res/menu/asdasd.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/menu/menu_lobby.xml" value="0.34739583333333335" />
+        <entry key="app/src/main/res/menu/menu_lobby_toolbar.xml" value="0.19947916666666668" />
+        <entry key="app/src/main/res/menu/product_options.xml" value="0.19947916666666668" />
         <entry key="app/src/main/res/menu/product_status.xml" value="0.24479166666666666" />
         <entry key="app/src/main/res/menu/search_menu.xml" value="0.24010416666666667" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.19270833333333334" />

@@ -18,6 +18,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -28,19 +29,23 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentAddProductBinding;
 import com.aix.mpagents.interfaces.AddProductInterface;
+import com.aix.mpagents.interfaces.VariantInterface;
 import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.models.ProductType;
+import com.aix.mpagents.models.Variant;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.AddProductPhotoViewAdapter;
+import com.aix.mpagents.views.adapters.VariantAdapter;
+import com.aix.mpagents.views.fragments.dialogs.AddVariantDialog;
 import com.aix.mpagents.views.fragments.dialogs.ProgressDialogFragment;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AddProductFragment extends Fragment implements AddProductInterface {
+public class AddProductFragment extends Fragment implements AddProductInterface, VariantInterface {
 
     private FragmentAddProductBinding binding;
     private ProductViewModel productViewModel;
@@ -50,6 +55,9 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
     private AddProductPhotoViewAdapter addProductPhotoViewAdapter;
     private ProgressDialogFragment progressDialogFragment;
     private ProductType productTypeModel;
+    private VariantAdapter variantAdapter;
+    private String productType = "";
+    private List<Variant> variants = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +71,29 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
         super.onViewCreated(view, savedInstanceState);
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         navController = Navigation.findNavController(view);
+        try {
+            productType = getArguments().getString("product_type");
+            ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Add " + productType);
+        }catch (Exception e){
+            ErrorLog.WriteErrorLog(e);
+            requireActivity().onBackPressed();
+        }
+        initObservers();
+        initVariantFirestoreOptions();
+        initListeners();
+    }
+
+    private void initVariantFirestoreOptions() {
+        variantAdapter = new VariantAdapter(this, variants);
+        variantAdapter.setHasStableIds(true);
+
+        binding.recyclerViewVariants.setAdapter(variantAdapter);
+        binding.recyclerViewVariants.setLayoutManager(new LinearLayoutManager(requireContext()));
+        //temporary fix for recyclerview
+        binding.recyclerViewVariants.setItemAnimator(null);
+    }
+
+    private void initObservers() {
 
         productViewModel.isProductSaved().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
@@ -76,6 +107,31 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
                 }
             }
         });
+
+        productViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
+            @Override
+            public void onChanged(Category category) {
+                binding.textViewCategoryValue.setText(category.getCategory_name());
+                categoryModel = category;
+            }
+        });
+
+        productViewModel.getProductType(productType).observe(getViewLifecycleOwner(), new Observer<ProductType>() {
+            @Override
+            public void onChanged(ProductType productType) {
+                if(productType != null) {
+//                    binding.textViewProductTypeValue.setText(productType.getName());
+                    productTypeModel = productType;
+                    productViewModel.getSelectedProductType().setValue(productType);
+                }
+            }
+        });
+
+
+    }
+
+    private void initListeners() {
+        binding.editTextQuantity.setText("0");
 
         binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,30 +158,16 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
             }
         });
 
-        binding.textViewProductType.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.action_addProductFragment_to_productTypeFragment);
-            }
+        binding.textViewAddVariant.setOnClickListener(v -> {
+            new AddVariantDialog(this).show(requireActivity().getSupportFragmentManager(), "ADD_VARIANT");
         });
 
-        productViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
-            @Override
-            public void onChanged(Category category) {
-                binding.textViewCategoryValue.setText(category.getCategory_name());
-                categoryModel = category;
-            }
-        });
-
-        productViewModel.getSelectedProductType().observe(getViewLifecycleOwner(), new Observer<ProductType>() {
-            @Override
-            public void onChanged(ProductType productType) {
-                if(productType != null) {
-                    binding.textViewProductTypeValue.setText(productType.getName());
-                    productTypeModel = productType;
-                }
-            }
-        });
+//        binding.textViewProductType.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                navController.navigate(R.id.action_addProductFragment_to_productTypeFragment);
+//            }
+//        });
     }
 
     private void showProgressDialog(){
@@ -143,7 +185,7 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
         }
         description = String.valueOf(binding.editTextDescription.getText()).trim();
         category = String.valueOf(binding.textViewCategoryValue.getText()).trim();
-        product_type = String.valueOf(binding.textViewProductTypeValue.getText()).trim();
+        product_type = productTypeModel.getName();
 
 
         if(!isEmptyFields(product_name,description,category, photoList, product_type)) {
@@ -160,11 +202,11 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
             productInfo.setIs_active(true);
             productInfo.setProduct_status(ProductInfo.Status.DRAFT);
             productInfo.setSearch_name(product_name.toLowerCase() + " " + description.toLowerCase() );
-
+            productInfo.setProduct_quantity(Integer.parseInt(String.valueOf(binding.editTextQuantity.getText()).trim()));
             productInfo.setProduct_type_id(productTypeModel.getProduct_type_id());
             productInfo.setProduct_type(productTypeModel.getName());
 
-            productViewModel.addProduct(productInfo, photoList);
+            productViewModel.addProduct(productInfo, photoList, variants);
             showProgressDialog();
         }
     }
@@ -260,5 +302,40 @@ public class AddProductFragment extends Fragment implements AddProductInterface 
     public void onImageRemove(int photoPosition) {
         photoList.remove(photoPosition);
         addProductPhotoViewAdapter.notifyItemRemoved(photoPosition);
+    }
+
+    @Override
+    public void onVariantAdd(Variant variant) {
+        variants.add(variant);
+        variantAdapter.notifyItemInserted(variants.size()-1);
+    }
+
+    @Override
+    public void onVariantClick(Variant variant) { }
+
+    @Override
+    public void onVariantClick(int position, Variant variant) {
+        new AddVariantDialog(this,variant, position)
+        .show(requireActivity().getSupportFragmentManager(), "UPDATE_VARIANT");
+    }
+
+    @Override
+    public void onVariantDelete(Variant variant) { }
+
+    @Override
+    public void onVariantDelete(int position, Variant variant) {
+        variants.remove(position);
+        variantAdapter.notifyItemRemoved(position);
+        variantAdapter.notifyItemRangeChanged(0, position);
+    }
+
+    @Override
+    public void onVariantUpdate(Variant variant) { }
+
+    @Override
+    public void onVariantUpdate(int position, Variant variant) {
+        variants.get(position).setVariant_name(variant.getVariant_name());
+        variants.get(position).setStock(variant.getStock());
+        variantAdapter.notifyItemChanged(position);
     }
 }

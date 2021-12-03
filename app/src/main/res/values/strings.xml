@@ -76,6 +76,7 @@
     <!--    Home-->
     <string name="products">Products</string>
     <string name="add_products">Add Products</string>
+    <string name="add_service">Add Service</string>
     <string name="return_order">Return Order</string>
     <string name="help">Help</string>
     <string name="customer_care">Customer Care</string>
@@ -86,6 +87,21 @@
     <!--    Places API Key-->
     <string name="places_api_key">AIzaSyAwpadNKq1dNkmRcS9oHxfXwX_xhnBQSKk</string>
     <string name="resendCode">Resend Code</string>
+    <string name="notifications">Notifications</string>
+    <string name="chat">Chat</string>
+    <string name="services">Services</string>
+    <string name="bookings">Bookings</string>
+    <string name="share_product">Share product</string>
+    <string name="boost_product">Boost product</string>
+    <string name="delete_product">Delete product</string>
+    <string name="product_type_product">Product</string>
+    <string name="product_type_service">Service</string>
+    <string name="quantity">Quantity</string>
+    <string name="add_variant">Add Variant</string>
+    <string name="variant_name">Variant Description</string>
+    <string name="variant_stock">Stock</string>
+    <string name="delete_variant">Delete</string>
+    <string name="update">Update</string>
 
 
     <string-array name="id_types">

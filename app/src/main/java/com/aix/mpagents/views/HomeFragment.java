@@ -5,6 +5,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -50,6 +52,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater,container,false);
+        setHasOptionsMenu(true);
         return binding.getRoot();
     }
 
@@ -79,31 +82,10 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        binding.buttonAddProducts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mAccountInfo.getEmail().isEmpty() &&
-                    !mAccountInfo.getMobile_no().isEmpty() &&
-                    !mAccountInfo.getGov_id_primary().isEmpty())
-                navController.navigate(R.id.action_homeFragment_to_addProductFragment);
-                else{
-                    new AddProductsRequirementsDialog(
-                            !mAccountInfo.getEmail().isEmpty(),
-                            !mAccountInfo.getMobile_no().isEmpty(),
-                            false,
-                            !mAccountInfo.getGov_id_primary().isEmpty(),
-                            navController
-                    ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
-                }
-            }
-        });
-
-        binding.buttonProducts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.action_homeFragment_to_productListFragment);
-                }
-        });
+        binding.buttonAddProducts.setOnClickListener(view1 -> toCreateProduct(getString(R.string.product_type_product)));
+        binding.buttonAddServices.setOnClickListener(view1 -> toCreateProduct(getString(R.string.product_type_service)));
+        binding.buttonProducts.setOnClickListener(view1 -> toProductList(getString(R.string.product_type_product)));
+        binding.buttonServices.setOnClickListener(view1 -> toProductList(getString(R.string.product_type_service)));
 
         binding.buttonOrders.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +101,29 @@ public class HomeFragment extends Fragment {
             }
         });
 
+    }
+
+    private void toCreateProduct(String productType) {
+        if (mAccountInfo.hasInfoFillUp()){
+            Bundle bundle = new Bundle();
+            bundle.putString("product_type",productType);
+            navController.navigate(R.id.action_homeFragment_to_addProductFragment,bundle);
+        }
+        else{
+            new AddProductsRequirementsDialog(
+                    !mAccountInfo.getEmail().isEmpty(),
+                    !mAccountInfo.getMobile_no().isEmpty(),
+                    false,
+                    !mAccountInfo.getGov_id_primary().isEmpty(),
+                    navController
+            ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+        }
+    }
+
+    private void toProductList(String productType) {
+        Bundle bundle = new Bundle();
+        bundle.putString("product_type",productType);
+        navController.navigate(R.id.action_homeFragment_to_productListFragment, bundle);
     }
 
     private void initShopInfo(){
@@ -214,5 +219,9 @@ public class HomeFragment extends Fragment {
 
     }
 
-
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_lobby_toolbar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 }

@@ -322,6 +322,72 @@
             app:layout_constraintTop_toBottomOf="@+id/buttonAddProducts" />
 
         <ImageButton
+            android:id="@+id/buttonServices"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_baseline_home_repair_service_24"
+            app:layout_constraintEnd_toStartOf="@+id/guideline5"
+            app:layout_constraintStart_toStartOf="@+id/guideline4"
+            app:layout_constraintTop_toBottomOf="@+id/textView1" />
+
+        <TextView
+            android:id="@+id/textView23"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/services"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/buttonServices"
+            app:layout_constraintStart_toStartOf="@+id/buttonServices"
+            app:layout_constraintTop_toBottomOf="@+id/buttonServices" />
+
+
+        <ImageButton
+            android:id="@+id/buttonBookings"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_baseline_library_books_24"
+            app:layout_constraintEnd_toEndOf="@+id/buttonOrders"
+            app:layout_constraintStart_toStartOf="@+id/buttonOrders"
+            app:layout_constraintTop_toBottomOf="@+id/textView1" />
+
+        <TextView
+            android:id="@+id/textView21"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/bookings"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/buttonBookings"
+            app:layout_constraintStart_toStartOf="@+id/buttonBookings"
+            app:layout_constraintTop_toBottomOf="@+id/buttonBookings" />
+
+        <ImageButton
+            android:id="@+id/buttonAddServices"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginHorizontal="16dp"
+            android:src="@drawable/ic_baseline_add_business_24"
+            app:layout_constraintEnd_toStartOf="@+id/guideline6"
+            app:layout_constraintStart_toStartOf="@+id/guideline5"
+            app:layout_constraintTop_toTopOf="@+id/buttonBookings" />
+
+        <TextView
+            android:id="@+id/textView22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/add_service"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/buttonAddServices"
+            app:layout_constraintStart_toStartOf="@+id/buttonAddServices"
+            app:layout_constraintTop_toBottomOf="@+id/buttonAddServices" />
+
+
+        <ImageButton
             android:id="@+id/buttonReturnOrder"
             android:layout_width="0dp"
             android:layout_height="60dp"
@@ -364,24 +430,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:text="Services"
             android:textSize="16sp"
+            android:layout_marginTop="8dp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView1" />
-
+            app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
         <ImageButton
             android:id="@+id/buttonHelp"
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
             android:padding="8dp"
             android:src="@drawable/ic_baseline_help_24"
-            app:layout_constraintEnd_toStartOf="@+id/guideline4"
-            app:layout_constraintStart_toStartOf="@+id/buttonOrders"
+            app:layout_constraintEnd_toEndOf="@+id/buttonBookings"
+            app:layout_constraintStart_toStartOf="@+id/buttonBookings"
             app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
 

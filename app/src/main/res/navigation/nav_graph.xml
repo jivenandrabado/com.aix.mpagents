@@ -202,6 +202,9 @@
         <action
             android:id="@+id/action_verificationDetailsFragment_to_addGovernmentIDFragment"
             app:destination="@id/addGovernmentIDFragment" />
+        <action
+            android:id="@+id/action_verificationDetailsFragment_to_faceVerificationFragment"
+            app:destination="@id/faceVerificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchProductFragment"
@@ -225,5 +228,10 @@
             android:id="@+id/action_phoneVerificationFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/faceVerificationFragment"
+        android:name="com.aix.mpagents.views.fragments.account.FaceVerificationFragment"
+        android:label="fragment_face_verification"
+        tools:layout="@layout/fragment_face_verification" />
 
 </navigation>

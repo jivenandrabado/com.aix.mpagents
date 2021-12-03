@@ -217,7 +217,7 @@ public class FirebaseLoginRepo {
                                     accountInfo.setMobile_no(mAuth.getCurrentUser().getPhoneNumber());
                                 }
                                 accountInfo.setProfile_pic(mAuth.getCurrentUser().getPhotoUrl().toString());
-                                accountInfo.setEmail(mAuth.getCurrentUser().getEmail());
+                                accountInfo.setEmail(mAuth.getCurrentUser().getEmail() == null ? "" : mAuth.getCurrentUser().getEmail());
                                 accountInfo.setDate_created(new Date());
                                 accountInfo.setAgent_id(mAuth.getUid());
                                 firebaseRegistrationRepo.checkUserExist(accountInfo, SigninENUM.GOOGLE);

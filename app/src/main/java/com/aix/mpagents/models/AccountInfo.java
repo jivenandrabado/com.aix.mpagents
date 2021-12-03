@@ -20,6 +20,12 @@ public class AccountInfo {
 //
 //    gov_id_primary:String
 //    gov_id_secondary:String
+
+    public static class ApplicationStatus {
+        public static final String APPROVED = "Approved";
+        public static final String PENDING = "Pending";
+        public static final String DECLINED = "Declined";
+    }
     
     public String agent_id;
     public String first_name = "";
@@ -41,6 +47,34 @@ public class AccountInfo {
     public String gov_id_type_secondary = "";
     public String agent_status = "";
 
+    public Date application_date_submitted;
+    public Date application_date_approved;
+    public String application_remarks = "";
+
+
+    public Date getApplication_date_submitted() {
+        return application_date_submitted;
+    }
+
+    public void setApplication_date_submitted(Date application_date_submitted) {
+        this.application_date_submitted = application_date_submitted;
+    }
+
+    public Date getApplication_date_approved() {
+        return application_date_approved;
+    }
+
+    public void setApplication_date_approved(Date application_date_approved) {
+        this.application_date_approved = application_date_approved;
+    }
+
+    public String getApplication_remarks() {
+        return application_remarks;
+    }
+
+    public void setApplication_remarks(String application_remarks) {
+        this.application_remarks = application_remarks;
+    }
 
     public String getGov_id_type_secondary() {
         return gov_id_type_secondary;
@@ -190,5 +224,15 @@ public class AccountInfo {
             ErrorLog.WriteErrorLog(e);
         }
         return agentEnum;
+    }
+
+    public boolean hasInfoFillUp(){
+        return !getEmail().isEmpty() &&
+                !getMobile_no().isEmpty() &&
+                !getGov_id_primary().isEmpty();
+    }
+
+    public boolean hasDocumentApproved(){
+        return getAgent_status().equalsIgnoreCase("Approved");
     }
 }
