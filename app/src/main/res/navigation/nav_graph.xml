@@ -69,6 +69,9 @@
         <action
             android:id="@+id/action_homeFragment_to_businessProfileFragment"
             app:destination="@id/businessProfileFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_bookingListFragment"
+            app:destination="@id/bookingListFragment" />
 
     </fragment>
     <fragment
@@ -233,5 +236,10 @@
         android:name="com.aix.mpagents.views.fragments.account.FaceVerificationFragment"
         android:label="fragment_face_verification"
         tools:layout="@layout/fragment_face_verification" />
+    <fragment
+        android:id="@+id/bookingListFragment"
+        android:name="com.aix.mpagents.views.fragments.booking.BookingListFragment"
+        android:label="Booking"
+        tools:layout="@layout/fragment_booking_list" />
 
 </navigation>

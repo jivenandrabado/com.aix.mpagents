@@ -52,7 +52,7 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater,container,false);
-        setHasOptionsMenu(true);
+//        setHasOptionsMenu(true);
         return binding.getRoot();
     }
 
@@ -87,6 +87,9 @@ public class HomeFragment extends Fragment {
         binding.buttonProducts.setOnClickListener(view1 -> toProductList(getString(R.string.product_type_product)));
         binding.buttonServices.setOnClickListener(view1 -> toProductList(getString(R.string.product_type_service)));
 
+        binding.buttonBookings.setOnClickListener(v->{
+            navController.navigate(R.id.action_homeFragment_to_bookingListFragment);
+        });
         binding.buttonOrders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

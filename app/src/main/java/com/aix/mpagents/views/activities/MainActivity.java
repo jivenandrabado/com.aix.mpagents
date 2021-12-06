@@ -62,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
                 || destination.getId() == R.id.organizationFragment
                 || destination.getId() == R.id.addGovernmentIDFragment
                 || destination.getId() == R.id.phoneLoginFragment
-                || destination.getId() == R.id.phoneVerificationFragment){
+                || destination.getId() == R.id.phoneVerificationFragment
+                || destination.getId() == R.id.forgotPasswordFragment){
                     bottomNavigationView.setVisibility(View.GONE);
                 }else{
                     bottomNavigationView.setVisibility(View.VISIBLE);

@@ -103,6 +103,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
         navController = Navigation.findNavController(view);
         productType = getArguments().getString("product_type");
         ErrorLog.WriteDebugLog("ProductType: " +productType);
+        ((AppCompatActivity) requireContext()).getSupportActionBar().setTitle("My "+ productType +"s");
         initProductsRecyclerView();
         initTabs();
         initObservers();
