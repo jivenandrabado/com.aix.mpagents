@@ -7,6 +7,7 @@ import com.aix.mpagents.models.PushNotification;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.FirestoreConstants;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -20,6 +21,7 @@ public class PushNotificationRepo {
 
     private FirebaseFirestore db;
     private ListenerRegistration pushNotifRegistration;
+    private MutableLiveData<List<PushNotification>> pushList = new MutableLiveData<>();
     private MutableLiveData<PushNotification> pushNotif1 = new MutableLiveData<>();
     private MutableLiveData<PushNotification> pushNotif2 = new MutableLiveData<>();
     private MutableLiveData<PushNotification> pushNotif3 = new MutableLiveData<>();
@@ -89,9 +91,37 @@ public class PushNotificationRepo {
         }
     }
 
+    public void addSnapshotForPushNotifList() {
+
+        try{
+            pushNotifRegistration = db.collection(FirestoreConstants.MPARTNER_PUSH_NOTIF)
+                    .orderBy("position")
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    if (value != null) {
+                        List<PushNotification> pushNotificationList = new ArrayList<>();
+                        for (DocumentSnapshot dc : value.getDocuments()) {
+                            pushNotificationList.add(dc.toObject(PushNotification.class));
+                        }
+                        pushList.setValue(pushNotificationList);
+                    }
+
+                }
+            });
+        }catch (Exception e){
+            ErrorLog.WriteDebugLog(e);
+        }
+    }
+
     public MutableLiveData<PushNotification> getPushNotif1(){
         return pushNotif1;
     }
+
+    public MutableLiveData<List<PushNotification>> getPushList() {
+        return pushList;
+    }
+
     public MutableLiveData<PushNotification> getPushNotif2(){
         return pushNotif2;
     }
@@ -101,7 +131,7 @@ public class PushNotificationRepo {
 
     public void detachMediaSnapshotListener(){
         if(pushNotifRegistration!=null){
-            ErrorLog.WriteDebugLog("PSUH NOTIF SNAPSHOT REMOVED");
+            ErrorLog.WriteDebugLog("PUSH NOTIF SNAPSHOT REMOVED");
             pushNotifRegistration.remove();
         }
     }

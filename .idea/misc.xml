@@ -52,6 +52,7 @@
         <entry key="app/src/main/res/layout/fragment_verification_details.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_view_booking_details.xml" value="0.1515625" />
         <entry key="app/src/main/res/layout/item_agent_features.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/item_banner.xml" value="0.2526041666666667" />
         <entry key="app/src/main/res/layout/item_imageview.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/item_product_variant.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_products.xml" value="0.45580404685835996" />

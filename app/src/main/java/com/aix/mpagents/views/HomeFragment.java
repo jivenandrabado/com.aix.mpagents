@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +18,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentHomeBinding;
@@ -27,10 +29,14 @@ import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.OrderViewModel;
 import com.aix.mpagents.view_models.PushNotificationViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
+import com.aix.mpagents.views.adapters.BannerAdapter;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class HomeFragment extends Fragment {
@@ -41,6 +47,8 @@ public class HomeFragment extends Fragment {
     private OrderViewModel orderViewModel;
     private PushNotificationViewModel pushNotificationViewModel;
     private AccountInfo mAccountInfo;
+    private BannerAdapter viewPagerAdapter;
+    private List<String> links = new ArrayList<>();
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,29 +67,17 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
+        pushNotificationViewModel = new ViewModelProvider(requireActivity()).get(PushNotificationViewModel.class);
         navController = Navigation.findNavController(view);
-        initPushNotif(requireContext());
+        viewPagerAdapter = new BannerAdapter(links);
+        initPushNotif();
+        initViewPager();
+        initObservers();
+        initListener();
+    }
 
-        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean){
-                    ErrorLog.WriteDebugLog("User logged in");
-                    if(accountInfoViewModel == null){
-                        accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
-                    }
-                    initShopInfo();
-                    initPendingOrderListener();
-                }else{
-                    navController.navigate(R.id.action_homeFragment_to_loginFragment);
-                    ErrorLog.WriteDebugLog("User logged out");
-                }
-
-            }
-        });
-
+    private void initListener() {
         binding.buttonAddProducts.setOnClickListener(view1 -> toCreateProduct(getString(R.string.product_type_product)));
         binding.buttonAddServices.setOnClickListener(view1 -> toCreateProduct(getString(R.string.product_type_service)));
         binding.buttonProducts.setOnClickListener(view1 -> toProductList(getString(R.string.product_type_product)));
@@ -104,6 +100,52 @@ public class HomeFragment extends Fragment {
             }
         });
 
+    }
+
+    private void initObservers() {
+        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    ErrorLog.WriteDebugLog("User logged in");
+                    if(accountInfoViewModel == null){
+                        accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
+                    }
+                    initShopInfo();
+                    initPendingOrderListener();
+                }else{
+                    navController.navigate(R.id.action_homeFragment_to_loginFragment);
+                    ErrorLog.WriteDebugLog("User logged out");
+                }
+
+            }
+        });
+    }
+
+    private void initViewPager() {
+        binding.viewPagerBannerContainer.setAdapter(viewPagerAdapter);
+        binding.springDotsIndicator.setViewPager2(binding.viewPagerBannerContainer);
+        binding.viewPagerBannerContainer.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if(links.isEmpty()) return;
+                Handler handler = new Handler();
+                handler.postDelayed(() -> {
+                    if(position == links.size() - 1)
+                        binding.viewPagerBannerContainer.setCurrentItem(0, true);
+                    else binding.viewPagerBannerContainer.setCurrentItem(position + 1, true);
+                }, 3000);
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+            }
+        });
     }
 
     private void toCreateProduct(String productType) {
@@ -187,18 +229,13 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void initPushNotif(Context context) {
-        pushNotificationViewModel = new ViewModelProvider(requireActivity()).get(PushNotificationViewModel.class);
-        pushNotificationViewModel.addSnapshotForPushNotif();
-        pushNotificationViewModel.getPushNotif1().observe(requireActivity(), new Observer<PushNotification>() {
-            @Override
-            public void onChanged(PushNotification pushNotification) {
-                if (pushNotification != null) {
-                    Glide.with(context).load(Uri.parse(pushNotification.getImage_url()))
-                            .fitCenter()
-                            .apply(RequestOptions.bitmapTransform(new RoundedCorners(14)))
-                            .error(R.drawable.ic_baseline_photo_24).into((binding.imageViewPushAdvertising));
-                }
+    private void initPushNotif() {
+        pushNotificationViewModel.addSnapshotForPushNotifList();
+        pushNotificationViewModel.getPushList().observe(requireActivity(), pushNotification -> {
+            links.clear();
+            for(PushNotification notif: pushNotification){
+                links.add(notif.getImage_url());
+                viewPagerAdapter.notifyDataSetChanged();
             }
         });
     }
