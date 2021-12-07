@@ -49,7 +49,14 @@ public class FirebaseProductRepo {
     private MutableLiveData<Boolean> isProductUpdated = new MutableLiveData<>();
     private MutableLiveData<List<ProductInfo>> allProducts = new MutableLiveData<>();
     private ListenerRegistration productsListener;
+    private static FirebaseProductRepo instance;
 
+    public static FirebaseProductRepo getInstance() {
+        if(instance == null){
+            instance = new FirebaseProductRepo();
+        }
+        return instance;
+    }
 
     public FirebaseProductRepo() {
         db = FirebaseFirestore.getInstance();

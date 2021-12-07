@@ -13,7 +13,7 @@ public class PushNotificationViewModel extends ViewModel {
     private final PushNotificationRepo pushNotificationRepo ;
 
     public PushNotificationViewModel() {
-        this.pushNotificationRepo = new PushNotificationRepo();
+        this.pushNotificationRepo = PushNotificationRepo.getInstance();
     }
 
     public void addSnapshotForPushNotif(){

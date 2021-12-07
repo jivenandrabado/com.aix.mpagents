@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ProductViewModel extends ViewModel {
 
-    private FirebaseProductRepo productRepo = new FirebaseProductRepo();
+    private FirebaseProductRepo productRepo = FirebaseProductRepo.getInstance();
     private MutableLiveData<Category> selectedCategory = new MutableLiveData<>();
     private MutableLiveData<ProductInfo> selectedProduct = new MutableLiveData<>();
     private MutableLiveData<ProductType> selectedProductType = new MutableLiveData<>();

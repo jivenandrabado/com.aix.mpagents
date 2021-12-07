@@ -3,6 +3,7 @@ package com.aix.mpagents.views.activities;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ import com.aix.mpagents.R;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.AppConfigViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
+import com.aix.mpagents.views.HomeFragment;
 import com.aix.mpagents.views.fragments.dialogs.AppUpdateDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private AppConfigViewModel appConfigViewModel;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         initBottomNav();
         initOnNavigationDestinationChange();
         initAppConfig();
-
     }
 
     private void initOnNavigationDestinationChange() {
@@ -71,6 +71,18 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(navController.getCurrentDestination().getId() == R.id.homeFragment){
+            if(HomeFragment.backCounter == 0){
+                HomeFragment.backCounter++;
+                Toast.makeText(this, "Press again to exit.", Toast.LENGTH_SHORT).show();
+            }else finish();
+            return;
+        }
+        super.onBackPressed();
     }
 
     private void initAuthStateListener(){

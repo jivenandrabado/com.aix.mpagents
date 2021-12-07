@@ -9,7 +9,7 @@ import com.aix.mpagents.repositories.AppConfigRepo;
 
 public class AppConfigViewModel extends ViewModel {
 
-    private AppConfigRepo appConfigRepo = new AppConfigRepo();
+    private AppConfigRepo appConfigRepo = AppConfigRepo.getInstance();
 
     public void initAppConfig(Context context){
         appConfigRepo.initAppVersionControl(context);

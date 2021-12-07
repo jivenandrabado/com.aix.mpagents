@@ -38,9 +38,16 @@ public class FirebaseOrderRepo {
     private MutableLiveData<Order> getOrderSnapshot = new MutableLiveData<>();
     private final MutableLiveData<Integer> pendingOrderStatusLiveData = new MutableLiveData<>();
     private final MutableLiveData<Integer> completedOrderStatusLiveData = new MutableLiveData<>();
-
+    private static FirebaseOrderRepo instance;
     private ListenerRegistration pendingOrderListener;
     private int pending, completed;
+
+    public static FirebaseOrderRepo getInstance() {
+        if(instance == null){
+            instance = new FirebaseOrderRepo();
+        }
+        return instance;
+    }
 
     public FirebaseOrderRepo() {
         db = FirebaseFirestore.getInstance();

@@ -25,7 +25,14 @@ public class PushNotificationRepo {
     private MutableLiveData<PushNotification> pushNotif1 = new MutableLiveData<>();
     private MutableLiveData<PushNotification> pushNotif2 = new MutableLiveData<>();
     private MutableLiveData<PushNotification> pushNotif3 = new MutableLiveData<>();
+    private static PushNotificationRepo instance;
 
+    public static PushNotificationRepo getInstance() {
+        if(instance == null){
+            instance = new PushNotificationRepo();
+        }
+        return instance;
+    }
 
     public PushNotificationRepo() {
         db = FirebaseFirestore.getInstance();

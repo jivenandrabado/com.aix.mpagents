@@ -13,6 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -26,8 +27,10 @@ import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.NetworkUtil;
 import com.aix.mpagents.utilities.ToastUtil;
 import com.aix.mpagents.view_models.LoginViewModel;
+import com.aix.mpagents.view_models.RegistrationViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.fragments.dialogs.ProgressDialogFragment;
+import com.aix.mpagents.views.fragments.dialogs.WelcomeMessageDialog;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
@@ -73,35 +76,24 @@ public class LoginFragment extends Fragment implements LoginInterface {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        try {
-            toastUtil = new ToastUtil();
-            binding.setLoginInterface(this);
-            loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
-            userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
-            navController = Navigation.findNavController(view);
-            firebaseUserHelper = new FirebaseUserHelper();
-            progressDialogFragment = new ProgressDialogFragment();
-
-            initLoginListener();
-
-
-        }catch (Exception e){
-            ErrorLog.WriteErrorLog(e);
-        }
-
+        toastUtil = new ToastUtil();
+        binding.setLoginInterface(this);
+        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
+        navController = Navigation.findNavController(view);
+        firebaseUserHelper = new FirebaseUserHelper();
+        progressDialogFragment = new ProgressDialogFragment();
+        initLoginListener();
     }
 
     private void initLoginListener(){
         userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), aBoolean -> {
-            System.out.println("LOGIN_initLoginListener" + aBoolean);
             if (aBoolean) {
                 if (progressDialogFragment.getTag() != null && progressDialogFragment.getTag().equals(dialogLoginTag)) {
                     progressDialogFragment.dismiss();
                 }
 
                 navController.navigate(R.id.action_loginFragment_to_homeFragment3);
-
                 toastUtil.toastSingInSuccess(requireContext());
             }
         });

@@ -11,6 +11,7 @@
         <entry key="app/src/main/res/drawable-v24/custom_border_rounded_white.xml" value="0.2078125" />
         <entry key="app/src/main/res/drawable-v24/ic_baseline_headset_mic_24.xml" value="0.215625" />
         <entry key="app/src/main/res/drawable-v24/ic_baseline_help_24.xml" value="0.215625" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3338541666666667" />
         <entry key="app/src/main/res/drawable/broken_line_border.xml" value="0.3338541666666667" />
         <entry key="app/src/main/res/drawable/custom_border_rounded_silver.xml" value="0.2078125" />
         <entry key="app/src/main/res/drawable/ic_baseline_add_business_24.xml" value="0.215625" />
@@ -24,12 +25,16 @@
         <entry key="app/src/main/res/drawable/ic_baseline_local_phone_24.xml" value="0.1828125" />
         <entry key="app/src/main/res/drawable/ic_baseline_more_vert_24.xml" value="0.215625" />
         <entry key="app/src/main/res/drawable/ic_baseline_share_24.xml" value="0.2390625" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.3338541666666667" />
+        <entry key="app/src/main/res/drawable/ic_shop_description_background.xml" value="0.3338541666666667" />
+        <entry key="app/src/main/res/drawable/ic_shopping_cart_svgrepo_com.xml" value="0.3338541666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.34739583333333335" />
         <entry key="app/src/main/res/layout/bottom_sheet_dialog_id_type.xml" value="0.25" />
         <entry key="app/src/main/res/layout/bottom_sheet_dialog_media_selector.xml" value="0.28541666666666665" />
         <entry key="app/src/main/res/layout/bottom_sheet_dialog_products.xml" value="0.23489583333333333" />
         <entry key="app/src/main/res/layout/dialog_add_product_requirements.xml" value="0.2558320373250389" />
         <entry key="app/src/main/res/layout/dialog_add_variant.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/dialog_welcome_message.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_account.xml" value="0.5" />
         <entry key="app/src/main/res/layout/fragment_account_information.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_add_addressfragment.xml" value="0.24375" />
@@ -65,6 +70,9 @@
         <entry key="app/src/main/res/menu/product_status.xml" value="0.24479166666666666" />
         <entry key="app/src/main/res/menu/search_menu.xml" value="0.24010416666666667" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.19270833333333334" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.3338541666666667" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_shop_description.xml" value="0.3338541666666667" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_shop_description_round.xml" value="0.3338541666666667" />
         <entry key="app/src/main/res/xml/file_paths.xml" value="0.28541666666666665" />
         <entry key="app/src/main/res/xml/searchable.xml" value="0.13125" />
       </map>

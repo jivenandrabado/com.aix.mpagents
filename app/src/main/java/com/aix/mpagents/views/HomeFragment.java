@@ -1,7 +1,5 @@
 package com.aix.mpagents.views;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +16,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.aix.mpagents.R;
@@ -28,12 +27,12 @@ import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.OrderViewModel;
 import com.aix.mpagents.view_models.PushNotificationViewModel;
+import com.aix.mpagents.view_models.RegistrationViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.BannerAdapter;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
+import com.aix.mpagents.views.fragments.dialogs.WelcomeMessageDialog;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,18 @@ public class HomeFragment extends Fragment {
     private PushNotificationViewModel pushNotificationViewModel;
     private AccountInfo mAccountInfo;
     private BannerAdapter viewPagerAdapter;
+    private RegistrationViewModel registrationViewModel;
     private List<String> links = new ArrayList<>();
+    private Long slideTimer = 3000L;
+    private Handler sliderHandler = new Handler();
+    private Runnable sliderRunnable = () -> {
+        int nextBanner = binding.viewPagerBannerContainer.getCurrentItem() + 1;
+        binding.viewPagerBannerContainer.setCurrentItem(
+                links.size() - 1 < nextBanner ? 0 : nextBanner,
+                true);
+    };
+
+    public static int backCounter = 0;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,6 +79,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         pushNotificationViewModel = new ViewModelProvider(requireActivity()).get(PushNotificationViewModel.class);
+        registrationViewModel = new ViewModelProvider(requireActivity()).get(RegistrationViewModel.class);
         navController = Navigation.findNavController(view);
         viewPagerAdapter = new BannerAdapter(links);
         initPushNotif();
@@ -103,6 +114,17 @@ public class HomeFragment extends Fragment {
     }
 
     private void initObservers() {
+
+        registrationViewModel.isRegistered().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    new WelcomeMessageDialog().show(requireActivity().getSupportFragmentManager(), "WELCOME_DIALOG");
+                    registrationViewModel.isRegistered().setValue(false);
+                }
+            }
+        });
+
         userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -133,19 +155,20 @@ public class HomeFragment extends Fragment {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                if(links.isEmpty()) return;
-                Handler handler = new Handler();
-                handler.postDelayed(() -> {
-                    if(position == links.size() - 1)
-                        binding.viewPagerBannerContainer.setCurrentItem(0, true);
-                    else binding.viewPagerBannerContainer.setCurrentItem(position + 1, true);
-                }, 3000);
+                sliderHandler.removeCallbacks(sliderRunnable);
+                sliderHandler.postDelayed(sliderRunnable, slideTimer);
             }
             @Override
             public void onPageScrollStateChanged(int state) {
                 super.onPageScrollStateChanged(state);
             }
         });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sliderHandler.removeCallbacks(sliderRunnable);
     }
 
     private void toCreateProduct(String productType) {
@@ -243,6 +266,8 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onResume() {
+        backCounter = 0;
+        sliderHandler.postDelayed(sliderRunnable, slideTimer);
         super.onResume();
     }
 

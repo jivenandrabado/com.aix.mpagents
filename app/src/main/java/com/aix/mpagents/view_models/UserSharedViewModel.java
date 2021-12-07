@@ -8,7 +8,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class UserSharedViewModel extends ViewModel {
 
-    private FirebaseLoginRepo firebaseLoginRepo = new FirebaseLoginRepo();
+    private FirebaseLoginRepo firebaseLoginRepo = FirebaseLoginRepo.getInstance();
 
 
     public MutableLiveData<Boolean> isUserLoggedin(){

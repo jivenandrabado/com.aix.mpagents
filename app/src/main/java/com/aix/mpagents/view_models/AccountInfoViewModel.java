@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class AccountInfoViewModel extends ViewModel {
 
-    private final FirebaseLoginRepo firebaseLoginRepo = new FirebaseLoginRepo();
+    private final FirebaseLoginRepo firebaseLoginRepo = FirebaseLoginRepo.getInstance();
     private final FirebaseProfileRepo firebaseProfileRepo = new FirebaseProfileRepo();
 
     private final MutableLiveData<ShopAddress> selectedShopAddress = new MutableLiveData<>();
