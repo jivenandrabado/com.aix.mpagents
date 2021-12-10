@@ -322,7 +322,7 @@
             app:layout_constraintTop_toBottomOf="@+id/buttonAddProducts" />
 
         <ImageButton
-            android:id="@+id/imageButtonBookings"
+            android:id="@+id/buttonServices"
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_marginHorizontal="16dp"
@@ -339,13 +339,13 @@
             android:gravity="center"
             android:text="@string/services"
             android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@+id/imageButtonBookings"
-            app:layout_constraintStart_toStartOf="@+id/imageButtonBookings"
-            app:layout_constraintTop_toBottomOf="@+id/imageButtonBookings" />
+            app:layout_constraintEnd_toEndOf="@+id/buttonServices"
+            app:layout_constraintStart_toStartOf="@+id/buttonServices"
+            app:layout_constraintTop_toBottomOf="@+id/buttonServices" />
 
 
         <ImageButton
-            android:id="@+id/imageButtonServices"
+            android:id="@+id/buttonBookings"
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_marginTop="8dp"
@@ -361,19 +361,19 @@
             android:gravity="center"
             android:text="@string/bookings"
             android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@+id/imageButtonServices"
-            app:layout_constraintStart_toStartOf="@+id/imageButtonServices"
-            app:layout_constraintTop_toBottomOf="@+id/imageButtonServices" />
+            app:layout_constraintEnd_toEndOf="@+id/buttonBookings"
+            app:layout_constraintStart_toStartOf="@+id/buttonBookings"
+            app:layout_constraintTop_toBottomOf="@+id/buttonBookings" />
 
         <ImageButton
-            android:id="@+id/imageButtonAddServices"
+            android:id="@+id/buttonAddServices"
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:layout_marginHorizontal="16dp"
             android:src="@drawable/ic_baseline_add_business_24"
             app:layout_constraintEnd_toStartOf="@+id/guideline6"
             app:layout_constraintStart_toStartOf="@+id/guideline5"
-            app:layout_constraintTop_toTopOf="@+id/imageButtonServices" />
+            app:layout_constraintTop_toTopOf="@+id/buttonBookings" />
 
         <TextView
             android:id="@+id/textView22"
@@ -382,9 +382,9 @@
             android:gravity="center"
             android:text="@string/add_service"
             android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="@+id/imageButtonAddServices"
-            app:layout_constraintStart_toStartOf="@+id/imageButtonAddServices"
-            app:layout_constraintTop_toBottomOf="@+id/imageButtonAddServices" />
+            app:layout_constraintEnd_toEndOf="@+id/buttonAddServices"
+            app:layout_constraintStart_toStartOf="@+id/buttonAddServices"
+            app:layout_constraintTop_toBottomOf="@+id/buttonAddServices" />
 
 
         <ImageButton
@@ -420,10 +420,40 @@
             android:paddingEnd="0dp"
             android:paddingBottom="8dp"
             android:scaleType="fitXY"
+            android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
 
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPagerBannerContainer"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="16dp"
+            android:paddingStart="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="0dp"
+            android:paddingBottom="8dp"
+            android:scaleType="fitXY"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
+
+        <com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator
+            android:id="@+id/spring_dots_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:dampingRatio="0.5"
+            app:dotsColor="@color/mpagents_base_color"
+            app:dotsSize="8dp"
+            app:dotsSpacing="4dp"
+            app:dotsStrokeColor="@color/white"
+            app:dotsStrokeWidth="1dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/viewPagerBannerContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:stiffness="300" />
 
         <TextView
             android:id="@+id/textView4"
@@ -444,8 +474,8 @@
             android:layout_marginTop="8dp"
             android:padding="8dp"
             android:src="@drawable/ic_baseline_help_24"
-            app:layout_constraintEnd_toEndOf="@+id/imageButtonServices"
-            app:layout_constraintStart_toStartOf="@+id/imageButtonServices"
+            app:layout_constraintEnd_toEndOf="@+id/buttonBookings"
+            app:layout_constraintStart_toStartOf="@+id/buttonBookings"
             app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
 

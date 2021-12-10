@@ -50,6 +50,7 @@ import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     private List<String> productNames = new ArrayList<>();
     private SearchView searchView = null;
     private AccountInfo mAccountInfo;
+    private String productType = "Product";
     
     private ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -95,12 +97,10 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         accountInfoViewModel  = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
         userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
         navController = Navigation.findNavController(view);
-        productViewModel.addProductsListener();
         initProductsRecyclerView();
         initTabs();
         initObservers();
@@ -125,8 +125,11 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     }
 
     private void initObservers() {
-        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result ->
-                accountInfoViewModel.addAccountInfoSnapshot());
+
+        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result ->{
+            accountInfoViewModel.addAccountInfoSnapshot();
+            productViewModel.addProductsListener();
+        });
 
         productViewModel.getAllProductInfo().observe(getViewLifecycleOwner(), result -> {
             products.clear();
@@ -139,8 +142,8 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
 
 
     private void initTabs() {
-        tabs.put(R.id.online, "Online");
         tabs.put(R.id.draft, "Draft");
+        tabs.put(R.id.online, "Online");
         tabs.put(R.id.inactive, "Inactive");
 
         binding.tabLayout.setTabMode(TabLayout.MODE_FIXED);
@@ -186,7 +189,6 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
         if(productsFirestoreAdapter!=null) {
             productsFirestoreAdapter.startListening();
         }
-
     }
 
     @Override

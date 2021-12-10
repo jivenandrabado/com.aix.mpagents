@@ -10,8 +10,8 @@ import com.aix.mpagents.repositories.FirebaseRegistrationRepo;
 
 public class RegistrationViewModel extends ViewModel {
 
-    private final FirebaseLoginRepo firebaseLoginRepo = new FirebaseLoginRepo();
-    private final FirebaseRegistrationRepo firebaseRegistrationRepo = new FirebaseRegistrationRepo(firebaseLoginRepo);
+    private final FirebaseLoginRepo firebaseLoginRepo = FirebaseLoginRepo.getInstance();
+    private final FirebaseRegistrationRepo firebaseRegistrationRepo = FirebaseRegistrationRepo.getInstance(firebaseLoginRepo);
     public void registerUser(AccountInfo accountInfo, String password){
         firebaseRegistrationRepo.registerUser(password, accountInfo);
     }

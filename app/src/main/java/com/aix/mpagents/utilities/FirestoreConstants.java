@@ -10,9 +10,12 @@ public class FirestoreConstants {
     public static String PAYMENT_ACCCOUNTS = "payment_accounts";
     public static String MPARTNER_PUSH_NOTIF = db_+"push_notifications_mp";
 
+    //Service
+    public static String MPARTNER_SERVICES = db_+"services";
     //Products
     public static String MPARTNER_PRODUCTS = db_+"products";
     public static String MPARTNER_MEDIA = "media";
+    public static String MPARTNER_PRODUCT_VARIANT = "variant";
 
     //Category
     public static String MPARTNER_PRODUCT_CATEGORY = db_+"product_categories";

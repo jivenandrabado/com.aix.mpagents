@@ -9,7 +9,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 public class OrderViewModel  extends ViewModel {
 
-    private FirebaseOrderRepo orderRepo = new FirebaseOrderRepo();
+    private FirebaseOrderRepo orderRepo = FirebaseOrderRepo.getInstance();
     private MutableLiveData<Order> selectedOrder = new MutableLiveData<>();
 
     public FirestoreRecyclerOptions orderFirestoreRecyclerOptions(){

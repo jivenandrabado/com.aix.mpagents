@@ -3,7 +3,7 @@ package com.aix.mpagents.models;
 public class PushNotification {
 
     public String image_url;
-    public int position;
+    public Integer position;
 
     public String getImage_url() {
         return image_url;
@@ -13,7 +13,7 @@ public class PushNotification {
         this.image_url = image_url;
     }
 
-    public int getPosition() {
+    public Integer getPosition() {
         return position;
     }
 

@@ -12,7 +12,7 @@ public class LoginViewModel extends ViewModel{
 
     MutableLiveData<Boolean> resetSuccess;
     private MutableLiveData<Boolean> isResendAvailable = new MutableLiveData<>();
-    FirebaseLoginRepo firebaseLoginRepo = new FirebaseLoginRepo();
+    FirebaseLoginRepo firebaseLoginRepo = FirebaseLoginRepo.getInstance();
     
     public void usernamePasswordLogin(String email, String password){
         firebaseLoginRepo.loginUserUsernamePassword(email,password);

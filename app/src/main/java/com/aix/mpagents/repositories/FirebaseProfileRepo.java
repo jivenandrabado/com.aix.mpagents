@@ -50,7 +50,14 @@ public class FirebaseProfileRepo {
     private ListenerRegistration accountInfoListener;
     private MutableLiveData<AccountInfo> accountInfoMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<ShopAddress>> allAddresses = new MutableLiveData<>();
+    private static FirebaseProfileRepo instance;
 
+    public static FirebaseProfileRepo getInstance() {
+        if(instance == null){
+            instance = new FirebaseProfileRepo();
+        }
+        return instance;
+    }
 
     public FirebaseProfileRepo() {
         mAuth = FirebaseAuth.getInstance();

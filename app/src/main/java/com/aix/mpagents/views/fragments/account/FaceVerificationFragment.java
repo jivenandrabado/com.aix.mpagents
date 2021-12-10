@@ -16,13 +16,6 @@ import android.view.ViewGroup;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentFaceVerificationBinding;
 import com.aix.mpagents.utilities.ErrorLog;
-import com.yoti.mobile.android.capture.face.ui.FaceCaptureListener;
-import com.yoti.mobile.android.capture.face.ui.models.camera.CameraState;
-import com.yoti.mobile.android.capture.face.ui.models.camera.CameraStateListener;
-import com.yoti.mobile.android.capture.face.ui.models.face.FaceCaptureConfiguration;
-import com.yoti.mobile.android.capture.face.ui.models.face.FaceCaptureResult;
-import com.yoti.mobile.android.capture.face.ui.models.face.FaceCaptureState;
-import com.yoti.mobile.android.capture.face.ui.models.face.ImageQuality;
 
 public class FaceVerificationFragment extends Fragment {
 
@@ -46,25 +39,25 @@ public class FaceVerificationFragment extends Fragment {
 
     private void initFaceCaptureConfigs() {
         Rect scanning_region = new Rect(20, 200, 700, 800);
-        FaceCaptureConfiguration configuration =
-                new FaceCaptureConfiguration(scanning_region,
-                        ImageQuality.MEDIUM,
-                        true,
-                        true,
-                        3);
+//        FaceCaptureConfiguration configuration =
+//                new FaceCaptureConfiguration(scanning_region,
+//                        ImageQuality.MEDIUM,
+//                        true,
+//                        true,
+//                        3);
 
-        binding.faceCapture.startCamera(getViewLifecycleOwner(), new CameraStateListener() {
-            @Override
-            public void onCameraState(@NonNull CameraState cameraState) {
-                ErrorLog.WriteDebugLog("onCameraState" + cameraState);
-            }
-        });
-
-        binding.faceCapture.startAnalysing(configuration, new FaceCaptureListener() {
-            @Override
-            public void onFaceCaptureResult(@NonNull FaceCaptureResult faceCaptureResult) {
-                ErrorLog.WriteDebugLog("onFaceCaptureResult" + faceCaptureResult.getState() );
-            }
-        });
+//        binding.faceCapture.startCamera(getViewLifecycleOwner(), new CameraStateListener() {
+//            @Override
+//            public void onCameraState(@NonNull CameraState cameraState) {
+//                ErrorLog.WriteDebugLog("onCameraState" + cameraState);
+//            }
+//        });
+//
+//        binding.faceCapture.startAnalysing(configuration, new FaceCaptureListener() {
+//            @Override
+//            public void onFaceCaptureResult(@NonNull FaceCaptureResult faceCaptureResult) {
+//                ErrorLog.WriteDebugLog("onFaceCaptureResult" + faceCaptureResult.getState() );
+//            }
+//        });
     }
 }

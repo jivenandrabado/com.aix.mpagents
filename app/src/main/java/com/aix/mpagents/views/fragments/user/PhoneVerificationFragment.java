@@ -89,8 +89,8 @@ public class PhoneVerificationFragment extends Fragment {
     }
 
     private void phoneLogin() {
-        UIUtil.hideKeyboard(requireActivity());
         if(isVerificationNotEmpty()){
+            UIUtil.hideKeyboard(requireActivity());
             loginViewModel.loginWithPhone(verificationCode.getValue());
         }
     }

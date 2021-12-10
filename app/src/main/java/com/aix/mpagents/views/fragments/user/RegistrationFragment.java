@@ -23,6 +23,7 @@ import com.aix.mpagents.utilities.ToastUtil;
 import com.aix.mpagents.view_models.RegistrationViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.fragments.dialogs.ProgressDialogFragment;
+import com.aix.mpagents.views.fragments.dialogs.WelcomeMessageDialog;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Date;
@@ -70,22 +71,10 @@ public class RegistrationFragment extends Fragment {
         progressDialogFragment = new ProgressDialogFragment();
         userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), aBoolean -> {
             if (aBoolean) {
-                navController.popBackStack(R.id.registrationFragment,true);
-//                navController.navigate(R.id.action_registrationFragment_to_homeFragment);
-
-            }
-        });
-
-        registrationViewModel.isRegistered().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
                 if (progressDialogFragment.getTag() != null && progressDialogFragment.getTag().equals(dialogTag)) {
                     progressDialogFragment.dismiss();
                 }
-                if(aBoolean){
-                    toastUtil.toastRegistrationSucces(requireContext());
-                    registrationViewModel.isRegistered().setValue(false);
-                }
+                navController.popBackStack(R.id.registrationFragment,true); // welcome message dialog
             }
         });
 
