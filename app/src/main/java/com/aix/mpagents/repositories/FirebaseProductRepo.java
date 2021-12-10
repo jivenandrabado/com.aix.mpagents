@@ -308,11 +308,10 @@ public class FirebaseProductRepo {
 
     }
 
-    public FirestoreRecyclerOptions getProductRecyclerOptions(String type,String status) {
+    public FirestoreRecyclerOptions getProductRecyclerOptions(String status) {
         try{
             Query query = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
                     .whereEqualTo("merchant_id", userId)
-                    .whereEqualTo("product_type", type)
                     .whereEqualTo("product_status", status)
                     .orderBy("dateCreated");
             return new FirestoreRecyclerOptions.Builder<ProductInfo>()
@@ -528,24 +527,6 @@ public class FirebaseProductRepo {
     public void detachProductsListener(){
         if(productsListener!=null){
             productsListener.remove();
-        }
-    }
-
-    public void addProductsWithTypeListener(String productType){
-        try{
-            productsListener = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
-                    .whereEqualTo("merchant_id", userId)
-                    .whereEqualTo("product_type", productType)
-                    .addSnapshotListener((value, error) -> {
-                        List<ProductInfo> products = new ArrayList<>();
-                        for(DocumentSnapshot product: value.getDocuments()){
-                            ProductInfo productInfo = product.toObject(ProductInfo.class);
-                            products.add(productInfo);
-                        }
-                        allProducts.setValue(products);
-                    });
-        }catch (Exception e){
-            ErrorLog.WriteErrorLog(e);
         }
     }
 

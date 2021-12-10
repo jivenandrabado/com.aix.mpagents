@@ -1,4 +1,4 @@
-package com.aix.mpagents.views.fragments.products;
+package com.aix.mpagents.views.fragments.services;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -26,17 +26,17 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.aix.mpagents.R;
-import com.aix.mpagents.databinding.FragmentEditProductBinding;
+import com.aix.mpagents.databinding.FragmentEditServiceBinding;
 import com.aix.mpagents.interfaces.EditProductInterface;
 import com.aix.mpagents.interfaces.VariantInterface;
 import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.Media;
-import com.aix.mpagents.models.ProductInfo;
+import com.aix.mpagents.models.ServiceInfo;
 import com.aix.mpagents.models.Variant;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
+import com.aix.mpagents.view_models.ServiceViewModel;
 import com.aix.mpagents.views.adapters.EditProductPhotoViewAdapter;
-import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
 import com.aix.mpagents.views.adapters.VariantsFirestoreAdapter;
 import com.aix.mpagents.views.fragments.dialogs.AddVariantDialog;
 
@@ -44,12 +44,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class EditProductFragment extends Fragment implements EditProductInterface, VariantInterface {
+public class EditServiceFragment extends Fragment implements EditProductInterface, VariantInterface {
 
-    private FragmentEditProductBinding binding;
+    private FragmentEditServiceBinding binding;
+    private ServiceViewModel serviceViewModel;
+
     private ProductViewModel productViewModel;
     private NavController navController;
-    private ProductInfo productInfo;
+    private ServiceInfo serviceInfo;
 
     private List<String> photoList = new ArrayList<>();
     private List<String> newPhotoList = new ArrayList<>();
@@ -61,13 +63,14 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentEditProductBinding.inflate(inflater,container,false);
+        binding = FragmentEditServiceBinding.inflate(inflater,container,false);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        serviceViewModel = new ViewModelProvider(requireActivity()).get(ServiceViewModel.class);
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         navController = Navigation.findNavController(view);
         initObservers();
@@ -78,7 +81,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
 
     private void initVariantFirestoreOptions() {
         variantsFirestoreAdapter = new VariantsFirestoreAdapter(
-                productViewModel.getVariantRecyclerOptions(productInfo.getProduct_id()),
+                serviceViewModel.getVariantRecyclerOptions(serviceInfo.getService_id()),
                 this
         );
         variantsFirestoreAdapter.setHasStableIds(true);
@@ -90,17 +93,17 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
     }
 
     private void initObservers() {
-        productViewModel.isProductSaved().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+        serviceViewModel.isProductSaved().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
                     navController.popBackStack(R.id.addProductFragment,true);
-                    productViewModel.isProductSaved().setValue(false);
+                    serviceViewModel.isProductSaved().setValue(false);
                 }
             }
         });
 
-        productViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
+        serviceViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
             @Override
             public void onChanged(Category category) {
                 binding.textViewCategoryValue.setText(category.getCategory_name());
@@ -133,26 +136,25 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
-                bundle.putString("product_type", "Product");
-                navController.navigate(R.id.action_editProductFragment_to_categoryFragment,bundle);
+                bundle.putString("product_type", "Service");
+                navController.navigate(R.id.action_editServiceFragment_to_categoryFragment,bundle);
             }
         });
     }
 
     private void initView() {
         try {
-            productInfo = productViewModel.getSelectedProduct().getValue();
-            binding.editTextProductName.setText(productInfo.getProduct_name());
-            binding.editTextPrice.setText(String.valueOf(productInfo.getProduct_price()));
-            binding.editTextDescription.setText(productInfo.getProduct_desc());
-            binding.textViewCategoryValue.setText(productInfo.getCategory_name());
-            binding.editTextQuantity.setText(String.valueOf(productInfo.getProduct_quantity()));
+            serviceInfo = serviceViewModel.getSelectedService().getValue();
+            binding.editTextProductName.setText(serviceInfo.getService_name());
+            binding.editTextPrice.setText(String.valueOf(serviceInfo.getService_price()));
+            binding.editTextDescription.setText(serviceInfo.getService_desc());
+            binding.textViewCategoryValue.setText(serviceInfo.getCategory_name());
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
         }
 
-        productViewModel.getMedia(productInfo.getProduct_id());
-        productViewModel.getMediaList().observe(getViewLifecycleOwner(), new Observer<List<Media>>() {
+        serviceViewModel.getMedia(serviceInfo.getService_id());
+        serviceViewModel.getMediaList().observe(getViewLifecycleOwner(), new Observer<List<Media>>() {
             @Override
             public void onChanged(List<Media> media) {
                 if(media != null) {
@@ -166,18 +168,18 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
                     ErrorLog.WriteDebugLog("MEDIA LIST SIZE " + media.size());
                     initImageRecyclerview(photoList);
 
-                    productViewModel.getMediaList().setValue(null);
+                    serviceViewModel.getMediaList().setValue(null);
                 }
 
             }
         });
 
-        productViewModel.isProductUpdated().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+        serviceViewModel.isProductUpdated().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
                     ErrorLog.WriteDebugLog("PRODUCT UPDATED SUCCESS");
-                    productViewModel.isProductUpdated().setValue(false);
+                    serviceViewModel.isProductUpdated().setValue(false);
                     navController.popBackStack(R.id.editProductFragment,true);
                 }
             }
@@ -198,23 +200,22 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
 
 
         if(!isEmptyFields(product_name,description,category)) {
-            productInfo.setProduct_name(product_name);
-            productInfo.setProduct_price(product_price);
-            productInfo.setProduct_desc(description);
-            productInfo.setDateUpdated(new Date());
-            productInfo.setProduct_quantity(Integer.parseInt(String.valueOf(binding.editTextQuantity.getText())));
+            serviceInfo.setService_name(product_name);
+            serviceInfo.setService_price(product_price);
+            serviceInfo.setService_desc(description);
+            serviceInfo.setDateUpdated(new Date());
 
             if(categoryModel!=null) {
-                productInfo.setCategory_name(category);
-                productInfo.setCategory_id(categoryModel.getCategory_id());
+                serviceInfo.setCategory_name(category);
+                serviceInfo.setCategory_id(categoryModel.getCategory_id());
             }
 
 //            if(!photoList.isEmpty()){
 //                productInfo.setPhoto(photoList);
 //            }
 
-            ErrorLog.WriteDebugLog("PRODUCT ID "+ productInfo.getProduct_id());
-            productViewModel.updateProduct(productInfo,newPhotoList,deletePhotoList);
+            ErrorLog.WriteDebugLog("PRODUCT ID "+ serviceInfo.getService_id());
+            serviceViewModel.updateService(serviceInfo,newPhotoList,deletePhotoList);
         }
     }
 
@@ -320,7 +321,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
 
     @Override
     public void onVariantAdd(Variant variant) {
-        productViewModel.addVariant(variant, productInfo.getProduct_id());
+        serviceViewModel.addVariant(variant, serviceInfo.getService_id());
     }
 
     @Override
@@ -336,7 +337,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
 
     @Override
     public void onVariantDelete(Variant variant) {
-        productViewModel.deleteVariant(variant, productInfo.getProduct_id());
+        serviceViewModel.deleteVariant(variant, serviceInfo.getService_id());
     }
 
     @Override
@@ -346,7 +347,7 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
 
     @Override
     public void onVariantUpdate(Variant variant) {
-        productViewModel.updateVariant(variant, productInfo.getProduct_id());
+        serviceViewModel.updateVariant(variant, serviceInfo.getService_id());
     }
 
     @Override

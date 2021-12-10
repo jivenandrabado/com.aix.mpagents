@@ -72,6 +72,12 @@
         <action
             android:id="@+id/action_homeFragment_to_bookingListFragment"
             app:destination="@id/bookingListFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_addServiceFragment"
+            app:destination="@id/addServiceFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_serviceListFragment"
+            app:destination="@id/serviceListFragment" />
 
     </fragment>
     <fragment
@@ -241,5 +247,33 @@
         android:name="com.aix.mpagents.views.fragments.booking.BookingListFragment"
         android:label="Booking"
         tools:layout="@layout/fragment_booking_list" />
+    <fragment
+        android:id="@+id/addServiceFragment"
+        android:name="com.aix.mpagents.views.fragments.services.AddServiceFragment"
+        android:label="Add Service" >
+        <action
+            android:id="@+id/action_addServiceFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/serviceListFragment"
+        android:name="com.aix.mpagents.views.fragments.services.ServiceListFragment"
+        android:label="My Services"
+        tools:layout="@layout/fragment_service_list" >
+        <action
+            android:id="@+id/action_serviceListFragment_to_searchProductFragment"
+            app:destination="@id/searchProductFragment" />
+        <action
+            android:id="@+id/action_serviceListFragment_to_editServiceFragment"
+            app:destination="@id/editServiceFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editServiceFragment"
+        android:name="com.aix.mpagents.views.fragments.services.EditServiceFragment"
+        android:label="EditServiceFragment" >
+        <action
+            android:id="@+id/action_editServiceFragment_to_categoryFragment"
+            app:destination="@id/categoryFragment" />
+    </fragment>
 
 </navigation>

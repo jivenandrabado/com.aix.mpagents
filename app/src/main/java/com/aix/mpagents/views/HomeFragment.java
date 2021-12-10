@@ -89,10 +89,12 @@ public class HomeFragment extends Fragment {
     }
 
     private void initListener() {
-        binding.buttonAddProducts.setOnClickListener(view1 -> toCreateProduct(getString(R.string.product_type_product)));
-        binding.buttonAddServices.setOnClickListener(view1 -> toCreateProduct(getString(R.string.product_type_service)));
-        binding.buttonProducts.setOnClickListener(view1 -> toProductList(getString(R.string.product_type_product)));
-        binding.buttonServices.setOnClickListener(view1 -> toProductList(getString(R.string.product_type_service)));
+        binding.buttonAddProducts.setOnClickListener(view1 -> toCreateProductOrService(true));
+        binding.buttonAddServices.setOnClickListener(view1 -> toCreateProductOrService(false));
+        binding.buttonProducts.setOnClickListener(view1 ->
+                navController.navigate(R.id.action_homeFragment_to_productListFragment));
+        binding.buttonServices.setOnClickListener(view1 ->
+                navController.navigate(R.id.action_homeFragment_to_serviceListFragment));
 
         binding.buttonBookings.setOnClickListener(v->{
             navController.navigate(R.id.action_homeFragment_to_bookingListFragment);
@@ -111,6 +113,21 @@ public class HomeFragment extends Fragment {
             }
         });
 
+    }
+
+    private void toCreateProductOrService(boolean isProduct) {
+        if(mAccountInfo.hasInfoFillUp()) {
+            if (isProduct) navController.navigate(R.id.action_homeFragment_to_addProductFragment);
+            else navController.navigate(R.id.action_homeFragment_to_addServiceFragment);
+        } else{
+            new AddProductsRequirementsDialog(
+                    !mAccountInfo.getEmail().isEmpty(),
+                    !mAccountInfo.getMobile_no().isEmpty(),
+                    false,
+                    !mAccountInfo.getGov_id_primary().isEmpty(),
+                    navController
+            ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+        }
     }
 
     private void initObservers() {
@@ -169,29 +186,6 @@ public class HomeFragment extends Fragment {
     public void onPause() {
         super.onPause();
         sliderHandler.removeCallbacks(sliderRunnable);
-    }
-
-    private void toCreateProduct(String productType) {
-        if (mAccountInfo.hasInfoFillUp()){
-            Bundle bundle = new Bundle();
-            bundle.putString("product_type",productType);
-            navController.navigate(R.id.action_homeFragment_to_addProductFragment,bundle);
-        }
-        else{
-            new AddProductsRequirementsDialog(
-                    !mAccountInfo.getEmail().isEmpty(),
-                    !mAccountInfo.getMobile_no().isEmpty(),
-                    false,
-                    !mAccountInfo.getGov_id_primary().isEmpty(),
-                    navController
-            ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
-        }
-    }
-
-    private void toProductList(String productType) {
-        Bundle bundle = new Bundle();
-        bundle.putString("product_type",productType);
-        navController.navigate(R.id.action_homeFragment_to_productListFragment, bundle);
     }
 
     private void initShopInfo(){

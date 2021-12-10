@@ -42,7 +42,9 @@
         <entry key="app/src/main/res/layout/fragment_add_product.xml" value="0.33" />
         <entry key="app/src/main/res/layout/fragment_add_service.xml" value="0.19947916666666668" />
         <entry key="app/src/main/res/layout/fragment_booking_list.xml" value="0.1515625" />
+        <entry key="app/src/main/res/layout/fragment_category.xml" value="0.18020833333333333" />
         <entry key="app/src/main/res/layout/fragment_edit_product.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_edit_service.xml" value="0.19583333333333333" />
         <entry key="app/src/main/res/layout/fragment_face_verification.xml" value="0.2635416666666667" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.33" />
@@ -61,6 +63,7 @@
         <entry key="app/src/main/res/layout/item_imageview.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/item_product_variant.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_products.xml" value="0.45580404685835996" />
+        <entry key="app/src/main/res/layout/item_service.xml" value="0.22864583333333333" />
         <entry key="app/src/main/res/layout/item_shop_address.xml" value="0.5" />
         <entry key="app/src/main/res/layout/search_view.xml" value="0.23645833333333333" />
         <entry key="app/src/main/res/menu/asdasd.xml" value="0.34739583333333335" />
