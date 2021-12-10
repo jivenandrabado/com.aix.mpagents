@@ -138,7 +138,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
     private void toSearchResultPage(String s) {
         Bundle bundle = new Bundle();
         bundle.putString("query", s);
-        navController.navigate(R.id.action_serviceListFragment_to_searchProductFragment, bundle);
+        navController.navigate(R.id.action_serviceListFragment_to_searchServiceFragment, bundle);
     }
 
     private void initTabs() {
