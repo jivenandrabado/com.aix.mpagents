@@ -56,7 +56,6 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
     private ProgressDialogFragment progressDialogFragment;
     private ProductType productTypeModel;
     private VariantAdapter variantAdapter;
-    private String productType = "";
     private List<Variant> variants = new ArrayList<>();
 
     @Override
@@ -71,13 +70,6 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
         super.onViewCreated(view, savedInstanceState);
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         navController = Navigation.findNavController(view);
-        try {
-            productType = getArguments().getString("product_type");
-            ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Add " + productType);
-        }catch (Exception e){
-            ErrorLog.WriteErrorLog(e);
-            requireActivity().onBackPressed();
-        }
         initObservers();
         initVariantFirestoreOptions();
         initListeners();
@@ -116,7 +108,7 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
             }
         });
 
-        productViewModel.getProductType(productType).observe(getViewLifecycleOwner(), new Observer<ProductType>() {
+        productViewModel.getProductType("Product").observe(getViewLifecycleOwner(), new Observer<ProductType>() {
             @Override
             public void onChanged(ProductType productType) {
                 if(productType != null) {
@@ -143,7 +135,7 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
         binding.buttonAddImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                chooseImage();
+                productViewModel.chooseImage(chooseImageActivityResult);
             }
         });
 
@@ -151,7 +143,9 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
             @Override
             public void onClick(View view) {
                 if(productTypeModel != null) {
-                    navController.navigate(R.id.action_addProductFragment_to_categoryFragment);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("product_type", "Product");
+                    navController.navigate(R.id.action_addProductFragment_to_categoryFragment, bundle);
                 }else{
                     Toast.makeText(requireContext(),"Please select product type",Toast.LENGTH_LONG).show();
                 }
@@ -235,15 +229,6 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
             return false;
         }
 
-    }
-
-    private void chooseImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        chooseImageActivityResult.launch(intent);
     }
 
     private ActivityResultLauncher<Intent> chooseImageActivityResult = registerForActivityResult(

@@ -23,6 +23,14 @@ public class FirebaseRegistrationRepo {
     private final FirebaseLoginRepo firebaseLoginRepo;
     private final MutableLiveData<Boolean> isRegistered = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
+    private static FirebaseRegistrationRepo instance;
+
+    public static FirebaseRegistrationRepo getInstance(FirebaseLoginRepo firebaseLoginRepo) {
+        if(instance == null){
+            instance = new FirebaseRegistrationRepo(firebaseLoginRepo);
+        }
+        return instance;
+    }
 
     public FirebaseRegistrationRepo(FirebaseLoginRepo firebaseLoginRepo){
         this.firebaseLoginRepo = firebaseLoginRepo;
@@ -40,10 +48,7 @@ public class FirebaseRegistrationRepo {
                                 ErrorLog.WriteDebugLog("registration success");
                                 ErrorLog.WriteDebugLog("Saving user info...");
                                 accountInfo.setAgent_id(Objects.requireNonNull(task.getResult().getUser()).getUid());
-
                                 saveRegistrationToUsers(accountInfo,password, SigninENUM.NONE);
-                                isRegistered.setValue(true);
-
                             } else {
                                 ErrorLog.WriteDebugLog("registration failed");
                                 ErrorLog.WriteErrorLog(task.getException());
@@ -64,12 +69,12 @@ public class FirebaseRegistrationRepo {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
+                        isRegistered.setValue(true);
                         switch (signinENUM){
                             case NONE:
                                 ErrorLog.WriteDebugLog("Logging in to mpagents");
-                                if(mAuth.getCurrentUser() != null) {
+                                if(mAuth.getCurrentUser() != null)
                                     firebaseLoginRepo.loginUserUsernamePassword(accountInfo.getEmail(), password);
-                                }
                                 break;
                             case GOOGLE:
                                 ErrorLog.WriteDebugLog("User info saved from google");

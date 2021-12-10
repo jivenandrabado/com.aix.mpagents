@@ -17,8 +17,17 @@ public class AppConfigRepo {
     private final FirebaseFirestore db;
     private MutableLiveData<Boolean> isForceUpdate = new MutableLiveData<>();
     private ListenerRegistration appConfigRegistratin;
+    private static AppConfigRepo instance;
+
     public AppConfigRepo() {
         this.db = FirebaseFirestore.getInstance();
+    }
+
+    public static AppConfigRepo getInstance() {
+        if(instance == null){
+            instance = new AppConfigRepo();
+        }
+        return instance;
     }
 
     public void initAppVersionControl(Context context){

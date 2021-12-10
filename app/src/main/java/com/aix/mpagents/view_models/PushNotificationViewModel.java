@@ -6,21 +6,32 @@ import androidx.lifecycle.ViewModel;
 import com.aix.mpagents.models.PushNotification;
 import com.aix.mpagents.repositories.PushNotificationRepo;
 
+import java.util.List;
+
 public class PushNotificationViewModel extends ViewModel {
 
     private final PushNotificationRepo pushNotificationRepo ;
 
     public PushNotificationViewModel() {
-        this.pushNotificationRepo = new PushNotificationRepo();
+        this.pushNotificationRepo = PushNotificationRepo.getInstance();
     }
 
     public void addSnapshotForPushNotif(){
         pushNotificationRepo.addSnapshotForPushNotif();
     }
 
+    public void addSnapshotForPushNotifList(){
+        pushNotificationRepo.addSnapshotForPushNotifList();
+    }
+
     public MutableLiveData<PushNotification> getPushNotif1(){
         return pushNotificationRepo.getPushNotif1();
     }
+
+    public MutableLiveData<List<PushNotification>> getPushList(){
+        return pushNotificationRepo.getPushList();
+    }
+
     public MutableLiveData<PushNotification> getPushNotif2(){
         return pushNotificationRepo.getPushNotif2();
     }

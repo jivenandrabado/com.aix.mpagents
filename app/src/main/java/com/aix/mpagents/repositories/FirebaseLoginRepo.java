@@ -21,6 +21,7 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
@@ -38,6 +39,7 @@ public class FirebaseLoginRepo {
     private MutableLiveData<String> verificationId = new MutableLiveData<>();
     static MutableLiveData<String> userPhoneNumber = new MutableLiveData<>();
     private MutableLiveData<PhoneAuthProvider.ForceResendingToken> resendCodeToken = new MutableLiveData<>();
+    private static FirebaseLoginRepo instance;
 
     private final GoogleSignInOptions gso = new GoogleSignInOptions.
             Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).
@@ -63,10 +65,18 @@ public class FirebaseLoginRepo {
         }
     };
 
+    public static FirebaseLoginRepo getInstance() {
+        if(instance == null) {
+            instance = new FirebaseLoginRepo();
+        }
+
+        return instance;
+    }
+
     public FirebaseLoginRepo() {
         mAuth = FirebaseAuth.getInstance();
         toastUtil = new ToastUtil();
-        firebaseRegistrationRepo = new FirebaseRegistrationRepo(this);
+        firebaseRegistrationRepo = FirebaseRegistrationRepo.getInstance(this);
     }
 
     public void loginUserUsernamePassword(String email, String password) {
@@ -210,16 +220,17 @@ public class FirebaseLoginRepo {
                                 // Sign in success, update UI with the signed-in user's information
                                 ErrorLog.WriteDebugLog("signInWithCredential:success");
 //                                accountInfo.setShop_email(email);
+                                FirebaseUser user = task.getResult().getUser();
                                 accountInfo.setDate_created(new Date());
-                                accountInfo.setFirst_name(StringUtils.capitalize(StringUtils.getFistName(mAuth.getCurrentUser().getDisplayName())));
-                                accountInfo.setLast_name(StringUtils.capitalize(StringUtils.getLastName(mAuth.getCurrentUser().getDisplayName())));
-                                if(mAuth.getCurrentUser().getPhoneNumber() != null){
-                                    accountInfo.setMobile_no(mAuth.getCurrentUser().getPhoneNumber());
+                                accountInfo.setFirst_name(StringUtils.capitalize(StringUtils.getFistName(user.getDisplayName())));
+                                accountInfo.setLast_name(StringUtils.capitalize(StringUtils.getLastName(user.getDisplayName())));
+                                if(user.getPhoneNumber() != null){
+                                    accountInfo.setMobile_no(user.getPhoneNumber());
                                 }
-                                accountInfo.setProfile_pic(mAuth.getCurrentUser().getPhotoUrl().toString());
-                                accountInfo.setEmail(mAuth.getCurrentUser().getEmail() == null ? "" : mAuth.getCurrentUser().getEmail());
+                                accountInfo.setProfile_pic(user.getPhotoUrl().toString());
+                                accountInfo.setEmail(user.getEmail() == null ? "" : user.getEmail());
                                 accountInfo.setDate_created(new Date());
-                                accountInfo.setAgent_id(mAuth.getUid());
+                                accountInfo.setAgent_id(user.getUid());
                                 firebaseRegistrationRepo.checkUserExist(accountInfo, SigninENUM.GOOGLE);
                             } else {
                                 ErrorLog.WriteErrorLog(task.getException());

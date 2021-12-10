@@ -132,7 +132,9 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
         binding.textViewCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navController.navigate(R.id.action_editProductFragment_to_categoryFragment);
+                Bundle bundle = new Bundle();
+                bundle.putString("product_type", "Product");
+                navController.navigate(R.id.action_editProductFragment_to_categoryFragment,bundle);
             }
         });
     }
