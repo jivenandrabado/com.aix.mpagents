@@ -46,6 +46,7 @@ import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.ServiceViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.ServiceFirestoreAdapter;
+import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
 import com.aix.mpagents.views.fragments.products.ProductsBottomSheetDialog;
 import com.google.android.material.tabs.TabLayout;
 
@@ -107,6 +108,10 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
             serviceViewModel.addListener();
         });
 
+        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), result -> {
+            accountInfo = result;
+        });
+
         serviceViewModel.getAllServicesInfo().observe(getViewLifecycleOwner(), result -> {
             services.clear();
             services.addAll(result);
@@ -164,7 +169,19 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
     }
 
     private void initListeners() {
-
+        binding.buttonAddServices.setOnClickListener(v -> {
+            if (accountInfo.hasInfoFillUp())
+                navController.navigate(R.id.action_productListFragment_to_addProductFragment);
+            else{
+                new AddProductsRequirementsDialog(
+                        !accountInfo.getEmail().isEmpty(),
+                        !accountInfo.getMobile_no().isEmpty(),
+                        false,
+                        !accountInfo.getGov_id_primary().isEmpty(),
+                        navController
+                ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+            }
+        });
     }
 
     @Override
@@ -319,7 +336,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
         int isSearchClose = (!isOpen) ? View.VISIBLE : View.INVISIBLE;
         binding.recyclerViewProducts.setVisibility(isSearchClose);
         binding.tabLayout.setVisibility(isSearchClose);
-        binding.buttonAddProduct.setVisibility(isSearchClose);
+        binding.buttonAddServices.setVisibility(isSearchClose);
         binding.listViewSearchProducts.setVisibility(isSearchOpen);
     }
 
