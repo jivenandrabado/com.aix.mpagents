@@ -203,6 +203,8 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
             productInfo.setProduct_desc(description);
             productInfo.setDateUpdated(new Date());
             productInfo.setProduct_quantity(Integer.parseInt(String.valueOf(binding.editTextQuantity.getText())));
+            productInfo.setCategory_name(category);
+            productInfo.setIs_deleted(false);
 
             if(categoryModel!=null) {
                 productInfo.setCategory_name(category);

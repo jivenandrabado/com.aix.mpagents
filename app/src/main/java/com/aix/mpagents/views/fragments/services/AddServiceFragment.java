@@ -127,7 +127,7 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
             }
         });
 
-        productViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
+        serviceViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
             @Override
             public void onChanged(Category category) {
                 binding.textViewCategoryValue.setText(category.getCategory_name());

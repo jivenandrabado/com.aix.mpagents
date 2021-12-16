@@ -23,7 +23,6 @@ public class ServiceViewModel extends ViewModel {
     private FirebaseVariantRepo variantRepo = FirebaseVariantRepo.getInstance();
     private MutableLiveData<ServiceInfo> selectedService = new MutableLiveData<>();
     private MutableLiveData<Category> selectedCategory = new MutableLiveData<>();
-    private MutableLiveData<ProductInfo> selectedProduct = new MutableLiveData<>();
 
     public MutableLiveData<Boolean> isProductSaved() {
         return serviceRepo.getIsServiceSaved();

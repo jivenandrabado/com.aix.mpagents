@@ -266,6 +266,12 @@
         <action
             android:id="@+id/action_serviceListFragment_to_editServiceFragment"
             app:destination="@id/editServiceFragment" />
+        <action
+            android:id="@+id/action_serviceListFragment_to_searchServiceFragment"
+            app:destination="@id/searchServiceFragment" />
+        <action
+            android:id="@+id/action_serviceListFragment_to_addServiceFragment"
+            app:destination="@id/addServiceFragment" />
     </fragment>
     <fragment
         android:id="@+id/editServiceFragment"
@@ -274,6 +280,14 @@
         <action
             android:id="@+id/action_editServiceFragment_to_categoryFragment"
             app:destination="@id/categoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchServiceFragment"
+        android:name="com.aix.mpagents.views.fragments.services.SearchServiceFragment"
+        android:label="SearchServiceFragment" >
+        <action
+            android:id="@+id/action_searchServiceFragment_to_editServiceFragment"
+            app:destination="@id/editServiceFragment" />
     </fragment>
 
 </navigation>

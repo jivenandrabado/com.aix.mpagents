@@ -97,7 +97,7 @@ public class EditServiceFragment extends Fragment implements EditProductInterfac
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
-                    navController.popBackStack(R.id.addProductFragment,true);
+                    navController.popBackStack(R.id.editServiceFragment,true);
                     serviceViewModel.isProductSaved().setValue(false);
                 }
             }

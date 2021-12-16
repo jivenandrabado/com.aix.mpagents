@@ -64,7 +64,9 @@ public class MainActivity extends AppCompatActivity {
                 || destination.getId() == R.id.phoneLoginFragment
                 || destination.getId() == R.id.phoneVerificationFragment
                 || destination.getId() == R.id.forgotPasswordFragment
-                || destination.getId() == R.id.serviceListFragment){
+                || destination.getId() == R.id.serviceListFragment
+                || destination.getId() == R.id.addServiceFragment
+                || destination.getId() == R.id.editServiceFragment){
                     bottomNavigationView.setVisibility(View.GONE);
 
                 }else{
