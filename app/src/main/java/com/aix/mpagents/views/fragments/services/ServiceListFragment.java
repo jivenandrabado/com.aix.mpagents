@@ -171,7 +171,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
     private void initListeners() {
         binding.buttonAddServices.setOnClickListener(v -> {
             if (accountInfo.hasInfoFillUp())
-                navController.navigate(R.id.action_productListFragment_to_addProductFragment);
+                navController.navigate(R.id.action_serviceListFragment_to_addServiceFragment);
             else{
                 new AddProductsRequirementsDialog(
                         !accountInfo.getEmail().isEmpty(),

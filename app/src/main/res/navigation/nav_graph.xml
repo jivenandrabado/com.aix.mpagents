@@ -269,6 +269,9 @@
         <action
             android:id="@+id/action_serviceListFragment_to_searchServiceFragment"
             app:destination="@id/searchServiceFragment" />
+        <action
+            android:id="@+id/action_serviceListFragment_to_addServiceFragment"
+            app:destination="@id/addServiceFragment" />
     </fragment>
     <fragment
         android:id="@+id/editServiceFragment"
