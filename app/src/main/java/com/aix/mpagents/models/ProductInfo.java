@@ -9,7 +9,7 @@ public class ProductInfo {
 
 
     public static class Status{
-        public static String ONLINE = "online";
+        public static String ACTIVE = "active";
         public static String INACTIVE = "inactive";
         public static String DRAFT = "draft";
         public static String DELETED = "deleted";

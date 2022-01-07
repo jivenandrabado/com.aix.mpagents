@@ -46,6 +46,7 @@ public class PhoneLoginFragment extends Fragment {
 
     private void initObservers() {
         loginViewModel.getVerificationId().observe(getViewLifecycleOwner(), result -> {
+            ErrorLog.WriteDebugLog(result);
             navController.navigate(R.id.action_phoneLoginFragment_to_phoneVerificationFragment);
         });
     }

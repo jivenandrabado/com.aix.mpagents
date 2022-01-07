@@ -16,6 +16,7 @@ import androidx.navigation.Navigation;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.DialogAddProductRequirementsBinding;
+import com.aix.mpagents.interfaces.ProductRequirementsInterface;
 import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 
@@ -23,7 +24,7 @@ public class AddProductsRequirementsDialog extends DialogFragment {
 
 
     private DialogAddProductRequirementsBinding binding;
-    private NavController navController;
+    private ProductRequirementsInterface productRequirementsInterface;
     private Boolean isEmailVerified;
     private Boolean hasPhone;
     private Boolean hasBank;
@@ -37,12 +38,12 @@ public class AddProductsRequirementsDialog extends DialogFragment {
         super.onDestroy();
     }
 
-    public AddProductsRequirementsDialog(Boolean isEmailVerified, Boolean hasPhone, Boolean hasBank, Boolean hasGovId, NavController navController) {
+    public AddProductsRequirementsDialog(Boolean isEmailVerified, Boolean hasPhone, Boolean hasBank, Boolean hasGovId, ProductRequirementsInterface productRequirementsInterface) {
         this.isEmailVerified = isEmailVerified;
         this.hasPhone = hasPhone;
         this.hasBank = hasBank;
         this.hasGovId = hasGovId;
-        this.navController = navController;
+        this.productRequirementsInterface = productRequirementsInterface;
     }
 
     @Nullable
@@ -64,7 +65,7 @@ public class AddProductsRequirementsDialog extends DialogFragment {
     private void initListeners() {
         View.OnClickListener toEditAccount = v -> {
             dismiss();
-            navController.navigate(R.id.action_homeFragment_to_businessProfileFragment);
+            productRequirementsInterface.onEditDetails();
         };
         binding.textViewEmailVerified.setOnClickListener(toEditAccount);
         binding.textViewContactNumber.setOnClickListener(toEditAccount);

@@ -21,6 +21,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentHomeBinding;
+import com.aix.mpagents.interfaces.ProductRequirementsInterface;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.PushNotification;
 import com.aix.mpagents.utilities.ErrorLog;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements ProductRequirementsInterface {
     private FragmentHomeBinding binding;
     private UserSharedViewModel userSharedViewModel;
     private NavController navController;
@@ -125,7 +126,7 @@ public class HomeFragment extends Fragment {
                     !mAccountInfo.getMobile_no().isEmpty(),
                     false,
                     !mAccountInfo.getGov_id_primary().isEmpty(),
-                    navController
+                    this
             ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
         }
     }
@@ -282,5 +283,15 @@ public class HomeFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_lobby_toolbar, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onEditDetails() {
+        navController.navigate(R.id.action_homeFragment_to_businessProfileFragment);
+    }
+
+    @Override
+    public void onEditAddress() {
+
     }
 }

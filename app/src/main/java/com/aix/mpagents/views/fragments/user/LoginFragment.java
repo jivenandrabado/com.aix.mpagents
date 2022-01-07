@@ -69,7 +69,6 @@ public class LoginFragment extends Fragment implements LoginInterface {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentLoginBinding.inflate(inflater,container,false);
-
         return binding.getRoot();
     }
 

@@ -1,14 +1,12 @@
 package com.aix.mpagents.views.fragments.products;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,14 +20,10 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -40,6 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentProductListBinding;
 import com.aix.mpagents.interfaces.ProductInterface;
+import com.aix.mpagents.interfaces.ProductRequirementsInterface;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.utilities.AlertUtils;
@@ -50,7 +45,6 @@ import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -59,7 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class ProductListFragment extends Fragment implements ProductInterface, TabLayout.OnTabSelectedListener {
+public class ProductListFragment extends Fragment implements ProductInterface, TabLayout.OnTabSelectedListener, ProductRequirementsInterface {
 
     private FragmentProductListBinding binding;
     private ProductViewModel productViewModel;
@@ -118,7 +112,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
                         !mAccountInfo.getMobile_no().isEmpty(),
                         false,
                         !mAccountInfo.getGov_id_primary().isEmpty(),
-                        navController
+                        this
                 ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
             }
         });
@@ -164,7 +158,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     }
 
     private void initProductsRecyclerView(){
-        productsFirestoreAdapter = new ProductsFirestoreAdapter(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ONLINE),this,requireContext());
+        productsFirestoreAdapter = new ProductsFirestoreAdapter(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ACTIVE),this,requireContext());
         productsFirestoreAdapter.setHasStableIds(true);
 
         binding.recyclerViewProducts.setAdapter(productsFirestoreAdapter);
@@ -219,10 +213,10 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     public void onOnlineProduct(ProductInfo productInfo) {
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE)
-                productViewModel.changeProductStatus(productInfo, ProductInfo.Status.ONLINE);
+                productViewModel.changeProductStatus(productInfo, ProductInfo.Status.ACTIVE);
             dialog.dismiss();
         };
-        AlertUtils.productAlert(requireContext(),productInfo,onclick, ProductInfo.Status.ONLINE);
+        AlertUtils.productAlert(requireContext(),productInfo,onclick, ProductInfo.Status.ACTIVE);
     }
 
     @Override
@@ -237,7 +231,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
 
     @Override
     public void onShareProduct(ProductInfo productInfo) {
-        if(!productInfo.getProduct_status().equals(ProductInfo.Status.ONLINE)){
+        if(!productInfo.getProduct_status().equals(ProductInfo.Status.ACTIVE)){
             Toast.makeText(requireContext(), "Product is not online.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -267,7 +261,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
 
     @Override
     public void onDeleteProduct(ProductInfo productInfo) {
-        if(productInfo.getProduct_status().equals(ProductInfo.Status.ONLINE)){
+        if(productInfo.getProduct_status().equals(ProductInfo.Status.ACTIVE)){
             Toast.makeText(requireContext(), "Unable to delete. Product is online.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -294,7 +288,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     public void onTabSelected(TabLayout.Tab tab) {
         switch (tab.getId()){
             case R.id.online:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ONLINE));
+                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ACTIVE));
                 break;
             case R.id.draft:
                 productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.DRAFT));
@@ -386,4 +380,13 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             binding.listViewSearchProducts.setVisibility(isSearchOpen);
     }
 
+    @Override
+    public void onEditDetails() {
+        navController.navigate(R.id.action_productListFragment_to_businessProfileFragment);
+    }
+
+    @Override
+    public void onEditAddress() {
+
+    }
 }

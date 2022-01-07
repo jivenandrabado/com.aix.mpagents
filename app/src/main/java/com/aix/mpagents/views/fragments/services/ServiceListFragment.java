@@ -34,7 +34,7 @@ import android.widget.Toast;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentServiceListBinding;
-import com.aix.mpagents.interfaces.ProductInterface;
+import com.aix.mpagents.interfaces.ProductRequirementsInterface;
 import com.aix.mpagents.interfaces.ServiceInterface;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ProductInfo;
@@ -47,7 +47,6 @@ import com.aix.mpagents.view_models.ServiceViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.ServiceFirestoreAdapter;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
-import com.aix.mpagents.views.fragments.products.ProductsBottomSheetDialog;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ServiceListFragment extends Fragment implements ServiceInterface, TabLayout.OnTabSelectedListener {
+public class ServiceListFragment extends Fragment implements ServiceInterface, TabLayout.OnTabSelectedListener, ProductRequirementsInterface {
 
     private FragmentServiceListBinding binding;
     private NavController navController;
@@ -178,7 +177,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
                         !accountInfo.getMobile_no().isEmpty(),
                         false,
                         !accountInfo.getGov_id_primary().isEmpty(),
-                        navController
+                        this
                 ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
             }
         });
@@ -194,11 +193,11 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
     public void onOnlineProduct(ServiceInfo service) {
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE) {
-                serviceViewModel.changeStatus(service, ProductInfo.Status.ONLINE);
+                serviceViewModel.changeStatus(service, ProductInfo.Status.ACTIVE);
             }
             dialog.dismiss();
         };
-        AlertUtils.serviceAlert(requireContext(),service,onclick, ProductInfo.Status.ONLINE);
+        AlertUtils.serviceAlert(requireContext(),service,onclick, ProductInfo.Status.ACTIVE);
     }
 
     @Override
@@ -214,7 +213,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
 
     @Override
     public void onShareProduct(ServiceInfo service) {
-        if(!service.getService_status().equals(ProductInfo.Status.ONLINE)){
+        if(!service.getService_status().equals(ProductInfo.Status.ACTIVE)){
             Toast.makeText(requireContext(), "Product is not online.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -244,7 +243,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
 
     @Override
     public void onDeleteProduct(ServiceInfo service) {
-        if(service.getService_status().equals(ProductInfo.Status.ONLINE)){
+        if(service.getService_status().equals(ProductInfo.Status.ACTIVE)){
             Toast.makeText(requireContext(), "Unable to delete. Product is online.", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -374,5 +373,15 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
         }
         serviceViewModel.detachListener();
         accountInfoViewModel.detachAccountInfoListener();
+    }
+
+    @Override
+    public void onEditDetails() {
+        navController.navigate(R.id.action_serviceListFragment_to_businessProfileFragment);
+    }
+
+    @Override
+    public void onEditAddress() {
+
     }
 }

@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class FirebaseUserHelper {
 
     private static FirebaseAuth mAuth;
-    public static  final String googleClientOauth = "551893323175-0nrplobganheahbtn7rrn78c2d5fcu27.apps.googleusercontent.com";
+    public static  final String googleClientOauth = "654705842577-5hdppa6l19ig27lehmg2lg1i9orqneuk.apps.googleusercontent.com";
     private static final int RC_SIGN_IN = 9001;
     public GoogleSignInClient mGoogleSignInClient;
 

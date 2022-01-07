@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.aix.mpagents.R;
@@ -40,9 +41,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initAuthStateListener();
         initNavigationComponent();
+        initNavConfig();
         initBottomNav();
         initOnNavigationDestinationChange();
         initAppConfig();
+    }
+
+    private void initNavConfig() {
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration
+                .Builder(R.id.loginFragment, R.id.homeFragment)
+                .build();
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     }
 
     private void initOnNavigationDestinationChange() {
@@ -51,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDestinationChanged(@NonNull NavController controller, @NonNull NavDestination destination, @Nullable Bundle arguments) {
                 if(destination.getId() == R.id.loginFragment
-                        || destination.getId() == R.id.registrationFragment
+                || destination.getId() == R.id.registrationFragment
                 || destination.getId() == R.id.businessProfileFragment
                 || destination.getId() == R.id.shopAddressFragment
                 || destination.getId() == R.id.addAddressfragment
@@ -68,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
                 || destination.getId() == R.id.addServiceFragment
                 || destination.getId() == R.id.editServiceFragment){
                     bottomNavigationView.setVisibility(View.GONE);
-
                 }else{
                     bottomNavigationView.setVisibility(View.VISIBLE);
                 }
