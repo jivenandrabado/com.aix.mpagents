@@ -432,7 +432,7 @@
             android:layout_marginTop="16dp"
             android:paddingStart="8dp"
             android:paddingTop="8dp"
-            android:paddingEnd="0dp"
+            android:paddingEnd="8dp"
             android:paddingBottom="8dp"
             android:scaleType="fitXY"
             app:layout_constraintEnd_toEndOf="parent"
