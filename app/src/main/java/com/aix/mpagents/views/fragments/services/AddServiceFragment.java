@@ -39,23 +39,22 @@ import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.view_models.ServiceViewModel;
 import com.aix.mpagents.views.adapters.AddProductPhotoViewAdapter;
 import com.aix.mpagents.views.adapters.VariantAdapter;
+import com.aix.mpagents.views.fragments.base.BaseFragment;
+import com.aix.mpagents.views.fragments.base.BaseServiceFragment;
 import com.aix.mpagents.views.fragments.dialogs.AddVariantDialog;
-import com.aix.mpagents.views.fragments.dialogs.ProgressDialogFragment;
+import com.aix.mpagents.views.fragments.dialogs.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AddServiceFragment extends Fragment implements AddProductInterface, VariantInterface {
+public class AddServiceFragment extends BaseServiceFragment implements AddProductInterface, VariantInterface {
 
     private FragmentAddServiceBinding binding;
     private ProductViewModel productViewModel;
-    private ServiceViewModel serviceViewModel;
     private List<String> photoList = new ArrayList<>();
-    private NavController navController;
     private Category categoryModel;
     private AddProductPhotoViewAdapter addProductPhotoViewAdapter;
-    private ProgressDialogFragment progressDialogFragment;
     private ProductType productTypeModel;
     private VariantAdapter variantAdapter;
     private List<Variant> variants = new ArrayList<>();
@@ -93,20 +92,15 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
             }
     );
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentAddServiceBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    public AddServiceFragment() {
+        super(R.layout.fragment_add_service);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        binding = FragmentAddServiceBinding.bind(getView());
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
-        serviceViewModel = new ViewModelProvider(requireActivity()).get(ServiceViewModel.class);
-        progressDialogFragment = new ProgressDialogFragment();
         navController = Navigation.findNavController(view);
         initObservers();
         initVariantFirestoreOptions();
@@ -114,20 +108,18 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
     }
 
     private void initObservers() {
-        serviceViewModel.isProductSaved().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+        getServiceViewModel().isProductSaved().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
                     navController.popBackStack(R.id.addServiceFragment,true);
-                    if(progressDialogFragment!=null){
-                        progressDialogFragment.dismiss();
-                    }
-                    serviceViewModel.isProductSaved().setValue(false);
+                    showLoading(false);
+                    getServiceViewModel().isProductSaved().setValue(false);
                 }
             }
         });
 
-        serviceViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
+        getServiceViewModel().getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
             @Override
             public void onChanged(Category category) {
                 binding.textViewCategoryValue.setText(category.getCategory_name());
@@ -202,7 +194,7 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
     }
 
     private void addService(){
-
+        showLoading(true);
         String product_name, description, category, product_type;
         double product_price = 0;
         product_name = String.valueOf(binding.editTextProductName.getText()).trim();
@@ -226,34 +218,29 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
             serviceInfo.setIs_deleted(false);
             serviceInfo.setService_status(ProductInfo.Status.DRAFT);
             serviceInfo.setSearch_name(product_name.toLowerCase() + " " + description.toLowerCase() );
-            serviceViewModel.addService(serviceInfo, photoList, variants);
-            showProgressDialog();
+            getServiceViewModel().addService(serviceInfo, photoList, variants);
         }
-    }
-
-    private void showProgressDialog(){
-        progressDialogFragment.show(getChildFragmentManager(),"ADD PRODUCT PROGRESS DIALOG");
     }
 
     private boolean isEmptyFields(String product_name, String description, String category, List<String> photoList, String product_type){
 
         if (TextUtils.isEmpty(product_name)){
-            Toast.makeText(requireContext(), "Empty Product Name", Toast.LENGTH_LONG).show();
+            showToast("Empty Product Name");
             return true;
         }else if (String.valueOf(binding.editTextPrice.getText()).isEmpty()){
-            Toast.makeText(requireContext(), "Empty Prodcut Price", Toast.LENGTH_LONG).show();
+            showToast("Empty Prodcut Price");
             return true;
         }else if (TextUtils.isEmpty(description)) {
-            Toast.makeText(requireContext(), "Empty Description", Toast.LENGTH_LONG).show();
+            showToast("Empty Description");
             return true;
         }else if (TextUtils.isEmpty(category)) {
-            Toast.makeText(requireContext(), "Empty Category", Toast.LENGTH_LONG).show();
+            showToast("Empty Category");
             return true;
         }else if (photoList.isEmpty()) {
-            Toast.makeText(requireContext(), "No product photo", Toast.LENGTH_LONG).show();
+            showToast("No product photo");
             return true;
         }else if (TextUtils.isEmpty(product_type)) {
-            Toast.makeText(requireContext(), "Empty Product Type", Toast.LENGTH_LONG).show();
+            showToast("Empty Product Type");
             return true;
         }else {
             return false;

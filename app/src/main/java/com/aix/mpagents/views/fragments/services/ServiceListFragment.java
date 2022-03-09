@@ -1,30 +1,21 @@
 package com.aix.mpagents.views.fragments.services;
 
-import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.text.InputType;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,7 +25,6 @@ import android.widget.Toast;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentServiceListBinding;
-import com.aix.mpagents.interfaces.ProductInterface;
 import com.aix.mpagents.interfaces.RequirementsDialogListener;
 import com.aix.mpagents.interfaces.ServiceInterface;
 import com.aix.mpagents.models.AccountInfo;
@@ -43,12 +33,9 @@ import com.aix.mpagents.models.ServiceInfo;
 import com.aix.mpagents.utilities.AlertUtils;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.MenuUtils;
-import com.aix.mpagents.view_models.AccountInfoViewModel;
-import com.aix.mpagents.view_models.ServiceViewModel;
-import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.ServiceFirestoreAdapter;
+import com.aix.mpagents.views.fragments.base.BaseServiceFragment;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
-import com.aix.mpagents.views.fragments.products.ProductsBottomSheetDialog;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -56,74 +43,54 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ServiceListFragment extends Fragment implements ServiceInterface, TabLayout.OnTabSelectedListener, RequirementsDialogListener {
+public class ServiceListFragment extends BaseServiceFragment implements ServiceInterface, TabLayout.OnTabSelectedListener, RequirementsDialogListener {
 
     private FragmentServiceListBinding binding;
-    private NavController navController;
-    private ServiceViewModel serviceViewModel;
+
     private ServiceFirestoreAdapter serviceFirestoreAdapter;
+
     private ArrayAdapter<String> servicesNamesAdapter;
+
     private List<String> serviceNames = new ArrayList<>();
+
     private List<ServiceInfo> services = new ArrayList<>();
+
     private SearchView searchView = null;
-    private UserSharedViewModel userSharedViewModel;
-    private AccountInfoViewModel accountInfoViewModel;
+
     private AccountInfo accountInfo;
+
     private HashMap<Integer,String> tabs = new HashMap<>();
 
-
-    private ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if(result.getResultCode() == Activity.RESULT_OK){
-                    Toast.makeText(requireContext(), "Product shared!", Toast.LENGTH_SHORT).show();
-                }
-            }
-    );
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentServiceListBinding.inflate(inflater, container, false);
-        setHasOptionsMenu(true);
-        return binding.getRoot();
+    public ServiceListFragment() {
+        super(R.layout.fragment_service_list);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController = Navigation.findNavController(view);
-        serviceViewModel = new ViewModelProvider(requireActivity()).get(ServiceViewModel.class);
-        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
-        accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
-        initObservers();
+        binding = FragmentServiceListBinding.bind(getView());
+        setHasOptionsMenu(true);
         initProductsRecyclerView();
         initTabs();
         initListeners();
     }
 
-    private void initObservers() {
-        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result ->{
-            accountInfoViewModel.addAccountInfoSnapshot();
-            serviceViewModel.addListener();
-        });
+    @Override
+    public void onInfoLoaded(AccountInfo userInfo) {
+        super.onInfoLoaded(userInfo);
+        accountInfo = userInfo;
+    }
 
-        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), result -> {
-            accountInfo = result;
-        });
-
-        serviceViewModel.getAllServicesInfo().observe(getViewLifecycleOwner(), result -> {
-            services.clear();
-            services.addAll(result);
-            updateProductNameList();
-        });
-
-        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), result -> accountInfo = result);
+    @Override
+    public void onAllServiceLoaded(List<ServiceInfo> list) {
+        super.onAllServiceLoaded(list);
+        services.clear();
+        services.addAll(list);
+        updateProductNameList();
     }
 
     private void initProductsRecyclerView() {
-        serviceFirestoreAdapter = new ServiceFirestoreAdapter(serviceViewModel.getServiceRecyclerOptions(),this, requireContext());
+        serviceFirestoreAdapter = new ServiceFirestoreAdapter(getServiceViewModel().getServiceRecyclerOptions(),this, requireContext());
         serviceFirestoreAdapter.setHasStableIds(true);
 
         binding.recyclerViewProducts.setAdapter(serviceFirestoreAdapter);
@@ -188,7 +155,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
 
     @Override
     public void onEditProduct(ServiceInfo service) {
-        serviceViewModel.getSelectedService().setValue(service);
+        getServiceViewModel().getSelectedService().setValue(service);
         navController.navigate(R.id.action_serviceListFragment_to_editServiceFragment);
     }
 
@@ -196,7 +163,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
     public void onOnlineProduct(ServiceInfo service) {
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE) {
-                serviceViewModel.changeStatus(service, ProductInfo.Status.ONLINE);
+                getServiceViewModel().changeStatus(service, ProductInfo.Status.ONLINE);
             }
             dialog.dismiss();
         };
@@ -207,7 +174,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
     public void onInactiveProduct(ServiceInfo service) {
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE) {
-                serviceViewModel.changeStatus(service, ProductInfo.Status.INACTIVE);
+                getServiceViewModel().changeStatus(service, ProductInfo.Status.INACTIVE);
             }
             dialog.dismiss();
         };
@@ -252,7 +219,7 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
         }
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE)
-                serviceViewModel.changeStatus(service, ProductInfo.Status.DELETED);
+                getServiceViewModel().changeStatus(service, ProductInfo.Status.DELETED);
             dialog.dismiss();
         };
         AlertUtils.serviceAlert(requireContext(), service, onclick, ProductInfo.Status.DELETED,
@@ -273,13 +240,13 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
     public void onTabSelected(TabLayout.Tab tab) {
         switch (tab.getId()){
             case R.id.online:
-                serviceFirestoreAdapter.updateOptions(serviceViewModel.getServiceRecyclerOptions());
+                serviceFirestoreAdapter.updateOptions(getServiceViewModel().getServiceRecyclerOptions());
                 break;
             case R.id.draft:
-                serviceFirestoreAdapter.updateOptions(serviceViewModel.getServiceRecyclerOptions(ProductInfo.Status.DRAFT));
+                serviceFirestoreAdapter.updateOptions(getServiceViewModel().getServiceRecyclerOptions(ProductInfo.Status.DRAFT));
                 break;
             case R.id.inactive:
-                serviceFirestoreAdapter.updateOptions(serviceViewModel.getServiceRecyclerOptions(ProductInfo.Status.INACTIVE));
+                serviceFirestoreAdapter.updateOptions(getServiceViewModel().getServiceRecyclerOptions(ProductInfo.Status.INACTIVE));
                 break;
         }
         serviceFirestoreAdapter.notifyDataSetChanged();
@@ -365,7 +332,6 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
         if(serviceFirestoreAdapter!=null) {
             serviceFirestoreAdapter.startListening();
         }
-
     }
 
     @Override
@@ -374,8 +340,6 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
         if(serviceFirestoreAdapter!=null) {
             serviceFirestoreAdapter.stopListening();
         }
-        serviceViewModel.detachListener();
-        accountInfoViewModel.detachAccountInfoListener();
     }
 
     @Override

@@ -36,14 +36,15 @@ import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.AddProductPhotoViewAdapter;
 import com.aix.mpagents.views.adapters.VariantAdapter;
+import com.aix.mpagents.views.fragments.base.BaseFragment;
 import com.aix.mpagents.views.fragments.dialogs.AddVariantDialog;
-import com.aix.mpagents.views.fragments.dialogs.ProgressDialogFragment;
+import com.aix.mpagents.views.fragments.dialogs.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AddProductFragment extends Fragment implements AddProductInterface, VariantInterface {
+public class AddProductFragment extends BaseFragment implements AddProductInterface, VariantInterface {
 
     private FragmentAddProductBinding binding;
     private ProductViewModel productViewModel;
@@ -51,26 +52,28 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
     private NavController navController;
     private Category categoryModel;
     private AddProductPhotoViewAdapter addProductPhotoViewAdapter;
-    private ProgressDialogFragment progressDialogFragment;
     private ProductType productTypeModel;
     private VariantAdapter variantAdapter;
     private List<Variant> variants = new ArrayList<>();
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentAddProductBinding.inflate(inflater,container,false);
-        return binding.getRoot();
+    public AddProductFragment() {
+        super(R.layout.fragment_add_product);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        binding = FragmentAddProductBinding.bind(getView());
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         navController = Navigation.findNavController(view);
         initObservers();
         initVariantFirestoreOptions();
         initListeners();
+    }
+
+    @Override
+    public void isUserLogin(Boolean isLogin) {
+
     }
 
     private void initVariantFirestoreOptions() {
@@ -90,9 +93,7 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
                     navController.popBackStack(R.id.addProductFragment,true);
-                    if(progressDialogFragment!=null){
-                        progressDialogFragment.dismiss();
-                    }
+                    showLoading(false);
                     productViewModel.isProductSaved().setValue(false);
                 }
             }
@@ -153,21 +154,10 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
         binding.textViewAddVariant.setOnClickListener(v -> {
             new AddVariantDialog(this).show(requireActivity().getSupportFragmentManager(), "ADD_VARIANT");
         });
-
-//        binding.textViewProductType.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                navController.navigate(R.id.action_addProductFragment_to_productTypeFragment);
-//            }
-//        });
-    }
-
-    private void showProgressDialog(){
-        progressDialogFragment = new ProgressDialogFragment();
-        progressDialogFragment.show(getChildFragmentManager(),"ADD PRODUCT PROGRESS DIALOG");
     }
 
     private void addProduct() {
+        showLoading(true);
 
         String product_name, description, category, product_type;
         double product_price = 0;
@@ -199,7 +189,7 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
             productInfo.setProduct_type(productTypeModel.getName());
 
             productViewModel.addProduct(productInfo, photoList, variants);
-            showProgressDialog();
+
         }
     }
 
