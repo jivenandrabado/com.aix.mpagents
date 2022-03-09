@@ -22,7 +22,6 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 public class VariantsFirestoreAdapter extends FirestoreRecyclerAdapter<Variant, VariantAdapter.ViewHolder> {
     private VariantInterface variantInterface;
-    private Context context;
 
     public VariantsFirestoreAdapter(@NonNull FirestoreRecyclerOptions<Variant> options, VariantInterface variantInterface) {
         super(options);
@@ -44,6 +43,6 @@ public class VariantsFirestoreAdapter extends FirestoreRecyclerAdapter<Variant, 
 
     @Override
     public void onDataChanged() {
-        super.onDataChanged();
+        notifyItemChanged(getItemCount()-1);
     }
 }

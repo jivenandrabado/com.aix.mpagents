@@ -1,5 +1,6 @@
 package com.aix.mpagents.views.activities;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -77,16 +78,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void onBackPressed() {
-        if(navController.getCurrentDestination().getId() == R.id.homeFragment){
+        if(navController.getBackStack().size() == 0){
             if(HomeFragment.backCounter == 0){
                 HomeFragment.backCounter++;
                 Toast.makeText(this, "Press again to exit.", Toast.LENGTH_SHORT).show();
             }else finish();
-            return;
-        }
-        super.onBackPressed();
+        }else super.onBackPressed();
     }
 
     private void initAuthStateListener(){

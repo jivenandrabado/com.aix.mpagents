@@ -81,7 +81,6 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
                 productViewModel.getVariantRecyclerOptions(productInfo.getProduct_id()),
                 this
         );
-        variantsFirestoreAdapter.setHasStableIds(true);
 
         binding.recyclerViewVariants.setAdapter(variantsFirestoreAdapter);
         binding.recyclerViewVariants.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -354,5 +353,17 @@ public class EditProductFragment extends Fragment implements EditProductInterfac
     @Override
     public void onVariantUpdate(int position, Variant variant) {
 
+    }
+
+    @Override
+    public Variant getIsVariantDuplicate(String name) {
+        Variant variant = null;
+        for(Variant variant1:  variantsFirestoreAdapter.getSnapshots()){
+            if(name.trim().equalsIgnoreCase(variant1.variant_name.trim())){
+                variant = variant1;
+                break;
+            }
+        }
+        return variant;
     }
 }

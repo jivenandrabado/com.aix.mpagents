@@ -34,11 +34,13 @@ import com.aix.mpagents.models.Media;
 import com.aix.mpagents.models.ServiceInfo;
 import com.aix.mpagents.models.Variant;
 import com.aix.mpagents.utilities.ErrorLog;
+import com.aix.mpagents.utilities.ToastUtil;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.view_models.ServiceViewModel;
 import com.aix.mpagents.views.adapters.EditProductPhotoViewAdapter;
 import com.aix.mpagents.views.adapters.VariantsFirestoreAdapter;
 import com.aix.mpagents.views.fragments.dialogs.AddVariantDialog;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,7 +54,7 @@ public class EditServiceFragment extends Fragment implements EditProductInterfac
     private ProductViewModel productViewModel;
     private NavController navController;
     private ServiceInfo serviceInfo;
-
+    private ToastUtil toastUtil;
     private List<String> photoList = new ArrayList<>();
     private List<String> newPhotoList = new ArrayList<>();
     private List<String> deletePhotoList = new ArrayList<>();
@@ -73,6 +75,7 @@ public class EditServiceFragment extends Fragment implements EditProductInterfac
         serviceViewModel = new ViewModelProvider(requireActivity()).get(ServiceViewModel.class);
         productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
         navController = Navigation.findNavController(view);
+        toastUtil = new ToastUtil();
         initObservers();
         initListeners();
         initView();
@@ -178,9 +181,9 @@ public class EditServiceFragment extends Fragment implements EditProductInterfac
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
-                    ErrorLog.WriteDebugLog("PRODUCT UPDATED SUCCESS");
+                    toastUtil.makeText(requireContext(),"Service Updated", Toast.LENGTH_SHORT);
                     serviceViewModel.isProductUpdated().setValue(false);
-                    navController.popBackStack(R.id.editProductFragment,true);
+                    navController.popBackStack(R.id.editServiceFragment,true);
                 }
             }
         });
@@ -353,5 +356,17 @@ public class EditServiceFragment extends Fragment implements EditProductInterfac
     @Override
     public void onVariantUpdate(int position, Variant variant) {
 
+    }
+
+    @Override
+    public Variant getIsVariantDuplicate(String name) {
+        Variant variant = null;
+        for(Variant variant1:  variantsFirestoreAdapter.getSnapshots()){
+            if(name.trim().equalsIgnoreCase(variant1.variant_name.trim())){
+                variant = variant1;
+                break;
+            }
+        }
+        return variant;
     }
 }

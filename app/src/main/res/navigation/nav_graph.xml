@@ -282,7 +282,7 @@
     <fragment
         android:id="@+id/editServiceFragment"
         android:name="com.aix.mpagents.views.fragments.services.EditServiceFragment"
-        android:label="EditServiceFragment" >
+        android:label="Edit Service" >
         <action
             android:id="@+id/action_editServiceFragment_to_categoryFragment"
             app:destination="@id/categoryFragment" />

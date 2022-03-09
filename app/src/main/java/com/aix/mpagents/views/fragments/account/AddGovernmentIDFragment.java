@@ -145,7 +145,7 @@ public class AddGovernmentIDFragment extends Fragment {
         if(selectedIDUri == null ||
                 binding.editTextIdType.getText().toString().isEmpty() ||
                 binding.editTextIdNumber.getText().toString().isEmpty()){
-            Toast.makeText(requireContext(), "Please complete the form" + selectedIDUri, Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), "Please complete the form", Toast.LENGTH_SHORT).show();
         } else {
             uploadDialog.show(getChildFragmentManager(), "UPLOAD_DIALOG");
             accountInfoViewModel.uploadIDtoFirebase(selectedIDUri, new GovernmentIDInterface(){
@@ -173,15 +173,20 @@ public class AddGovernmentIDFragment extends Fragment {
     }
 
     private Uri generateUriFromBitmap(Bitmap croppedImage) throws IOException {
-        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
-        File cameraDir = new File(dir, "Camera/");
-        if (!cameraDir.exists()) cameraDir.mkdir();
-        File file =  new File(cameraDir, "LK_"+ System.currentTimeMillis() + ".png");
-        FileOutputStream fileOutputStream = new FileOutputStream(file);
-        croppedImage.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-        fileOutputStream.flush();
-        fileOutputStream.close();
-        return Uri.fromFile(file);
+        try {
+            if(croppedImage == null) return null;
+            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+            File cameraDir = new File(dir, "Camera/");
+            if (!cameraDir.exists()) cameraDir.mkdir();
+            File file =  new File(cameraDir, "LK_"+ System.currentTimeMillis() + ".png");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+            croppedImage.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            return Uri.fromFile(file);
+        }catch (Exception ignored){
+            return null;
+        }
     }
 
     private void mediaSelector() {

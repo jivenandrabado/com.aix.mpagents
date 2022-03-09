@@ -41,4 +41,14 @@ public class AlertUtils {
                 .setNegativeButton("Cancel", onclick)
                 .show();
     }
+
+
+    public static void duplicationAlert(Context context, DialogInterface.OnClickListener onClickListener) {
+        new AlertDialog.Builder(context)
+                .setTitle("Duplicate")
+                .setMessage("The product has duplicate. Do you want to update it?")
+                .setPositiveButton("Ok", onClickListener)
+                .setNegativeButton("Cancel", onClickListener)
+                .show();
+    }
 }

@@ -5,7 +5,6 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -322,5 +320,17 @@ public class AddProductFragment extends Fragment implements AddProductInterface,
         variants.get(position).setVariant_name(variant.getVariant_name());
         variants.get(position).setStock(variant.getStock());
         variantAdapter.notifyItemChanged(position);
+    }
+
+    @Override
+    public Variant getIsVariantDuplicate(String name) {
+        Variant variant = null;
+        for(Variant variant1: variants){
+            if(name.trim().equalsIgnoreCase(variant1.variant_name.trim())){
+                variant = variant1;
+                break;
+            }
+        }
+        return variant;
     }
 }

@@ -315,7 +315,7 @@ public class FirebaseServiceRepo {
             productMap.put("category_id",serviceInfo.getCategory_id());
 
 
-            db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(serviceInfo.getService_id()).update(productMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            db.collection(FirestoreConstants.MPARTNER_SERVICES).document(serviceInfo.getService_id()).update(productMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {

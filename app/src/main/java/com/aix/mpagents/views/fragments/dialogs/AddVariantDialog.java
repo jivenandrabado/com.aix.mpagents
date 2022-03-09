@@ -1,6 +1,7 @@
 package com.aix.mpagents.views.fragments.dialogs;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.DialogAddVariantBinding;
 import com.aix.mpagents.interfaces.VariantInterface;
 import com.aix.mpagents.models.Variant;
+import com.aix.mpagents.utilities.AlertUtils;
 
 public class AddVariantDialog extends DialogFragment {
 
@@ -87,8 +89,23 @@ public class AddVariantDialog extends DialogFragment {
         name = binding.editTextVariantName.getText().toString();
         stock = binding.editTextVariantStock.getText().toString();
         if(isNotEmpty(name, stock)){
-            if(variant != null) updateVariant(name,stock);
-            else addVariant(name,stock);
+            if(variantInterface.getIsVariantDuplicate(name) != null){
+                AlertUtils.duplicationAlert(requireContext(), (dialog, which) -> {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            variant = variantInterface.getIsVariantDuplicate(name);
+                            if(variant != null) updateVariant(name,stock);
+                            else addVariant(name,stock);
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            dialog.dismiss();
+                            break;
+                    }
+                });
+            }else {
+                if(variant != null) updateVariant(name,stock);
+                else addVariant(name,stock);
+            }
         }
     }
 

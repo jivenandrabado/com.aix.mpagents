@@ -303,6 +303,18 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
     }
 
     @Override
+    public Variant getIsVariantDuplicate(String name) {
+        Variant variant = null;
+        for(Variant variant1: variants){
+            if(name.trim().equalsIgnoreCase(variant1.variant_name.trim())){
+                variant = variant1;
+                break;
+            }
+        }
+        return variant;
+    }
+
+    @Override
     public void onImageRemove(int photoPosition) {
         photoList.remove(photoPosition);
         addProductPhotoViewAdapter.notifyItemRemoved(photoPosition);
