@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentServiceListBinding;
 import com.aix.mpagents.interfaces.ProductInterface;
+import com.aix.mpagents.interfaces.RequirementsDialogListener;
 import com.aix.mpagents.interfaces.ServiceInterface;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ProductInfo;
@@ -55,7 +56,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ServiceListFragment extends Fragment implements ServiceInterface, TabLayout.OnTabSelectedListener {
+public class ServiceListFragment extends Fragment implements ServiceInterface, TabLayout.OnTabSelectedListener, RequirementsDialogListener {
 
     private FragmentServiceListBinding binding;
     private NavController navController;
@@ -173,13 +174,14 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
             if (accountInfo.hasInfoFillUp())
                 navController.navigate(R.id.action_serviceListFragment_to_addServiceFragment);
             else{
-                new AddProductsRequirementsDialog(
+                AddProductsRequirementsDialog.showFragment(
                         !accountInfo.getEmail().isEmpty(),
                         !accountInfo.getMobile_no().isEmpty(),
                         false,
                         !accountInfo.getGov_id_primary().isEmpty(),
-                        navController
-                ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+                        requireActivity().getSupportFragmentManager(),
+                        this
+                );
             }
         });
     }
@@ -374,5 +376,10 @@ public class ServiceListFragment extends Fragment implements ServiceInterface, T
         }
         serviceViewModel.detachListener();
         accountInfoViewModel.detachAccountInfoListener();
+    }
+
+    @Override
+    public void onNavigateToEditAccount() {
+        navController.navigate(R.id.action_serviceListFragment_to_businessProfileFragment);
     }
 }

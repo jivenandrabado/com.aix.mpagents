@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentProductListBinding;
 import com.aix.mpagents.interfaces.ProductInterface;
+import com.aix.mpagents.interfaces.RequirementsDialogListener;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.utilities.AlertUtils;
@@ -59,7 +60,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class ProductListFragment extends Fragment implements ProductInterface, TabLayout.OnTabSelectedListener {
+public class ProductListFragment extends Fragment implements ProductInterface, TabLayout.OnTabSelectedListener, RequirementsDialogListener {
 
     private FragmentProductListBinding binding;
     private ProductViewModel productViewModel;
@@ -113,13 +114,14 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             if (mAccountInfo.hasInfoFillUp())
                 navController.navigate(R.id.action_productListFragment_to_addProductFragment);
             else{
-                new AddProductsRequirementsDialog(
+                AddProductsRequirementsDialog.showFragment(
                         !mAccountInfo.getEmail().isEmpty(),
                         !mAccountInfo.getMobile_no().isEmpty(),
                         false,
                         !mAccountInfo.getGov_id_primary().isEmpty(),
-                        navController
-                ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+                        requireActivity().getSupportFragmentManager(),
+                        this
+                );
             }
         });
     }
@@ -386,4 +388,8 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             binding.listViewSearchProducts.setVisibility(isSearchOpen);
     }
 
+    @Override
+    public void onNavigateToEditAccount() {
+        navController.navigate(R.id.action_productListFragment_to_businessProfileFragment);
+    }
 }
