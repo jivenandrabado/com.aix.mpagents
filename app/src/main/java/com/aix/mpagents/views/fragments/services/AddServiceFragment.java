@@ -2,10 +2,12 @@ package com.aix.mpagents.views.fragments.services;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -34,6 +36,7 @@ import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.models.ProductType;
 import com.aix.mpagents.models.ServiceInfo;
 import com.aix.mpagents.models.Variant;
+import com.aix.mpagents.utilities.AlertUtils;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.view_models.ServiceViewModel;
@@ -68,6 +71,23 @@ public class AddServiceFragment extends BaseAddEditServiceItemFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        AlertUtils.addProductServiceExit(requireContext(), (dialog, which) -> {
+                            switch (which){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    navController.popBackStack(R.id.addServiceFragment, true);
+                                    dialog.dismiss();
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    dialog.dismiss();
+                                    break;
+                            }
+                        }, "Add Service");
+                    }
+                });
 
         binding = FragmentAddServiceBinding.bind(getView());
 

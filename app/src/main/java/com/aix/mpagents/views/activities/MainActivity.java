@@ -1,6 +1,7 @@
 package com.aix.mpagents.views.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -78,14 +79,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @SuppressLint("RestrictedApi")
     @Override
     public void onBackPressed() {
-        if(navController.getBackStack().size() == 0){
+        if(navController.getCurrentDestination().getId() == R.id.homeFragment){
             if(HomeFragment.backCounter == 0){
                 HomeFragment.backCounter++;
                 Toast.makeText(this, "Press again to exit.", Toast.LENGTH_SHORT).show();
-            }else finish();
+            }
         }else super.onBackPressed();
     }
 
@@ -161,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onSupportNavigateUp() {
-        navController.navigateUp();
-        return super.onSupportNavigateUp();
+        onBackPressed();
+        return false;
     }
 
     @Override

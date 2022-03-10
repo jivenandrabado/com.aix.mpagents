@@ -128,15 +128,6 @@ public class ProductViewModel extends ViewModel {
         return productRepo.getVariantRecyclerOptions(product_id);
     }
 
-    public void chooseImage(ActivityResultLauncher<Intent> activityResult) {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        activityResult.launch(intent);
-    }
-
     public MutableLiveData<List<String>> getPictureSelectedList() {
         return pictureSelectedList;
     }

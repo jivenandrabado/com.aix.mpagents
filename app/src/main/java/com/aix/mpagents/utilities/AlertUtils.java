@@ -51,4 +51,13 @@ public class AlertUtils {
                 .setNegativeButton("Cancel", onClickListener)
                 .show();
     }
+
+    public static void addProductServiceExit(Context context, DialogInterface.OnClickListener onClickListener, String title) {
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage("Are you sure you want to leave this page? All the details will be cleared.")
+                .setPositiveButton("Ok", onClickListener)
+                .setNegativeButton("Cancel", onClickListener)
+                .show();
+    }
 }

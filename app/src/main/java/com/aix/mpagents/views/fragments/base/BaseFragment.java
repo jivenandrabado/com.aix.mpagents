@@ -90,4 +90,8 @@ public abstract class BaseFragment extends Fragment {
     public String getSignInMethod(){
         return userSharedViewModel.getSignInMethod();
     }
+
+    public void onBackPressed(){
+        requireActivity().onBackPressed();
+    }
 }
