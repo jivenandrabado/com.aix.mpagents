@@ -103,6 +103,8 @@
     <string name="delete_variant">Delete</string>
     <string name="update">Update</string>
     <string name="service_name">Service Name</string>
+    <string name="makeOnline">Make Online</string>
+    <string name="makeInactive">Make Inactive</string>
 
 
     <string-array name="id_types">

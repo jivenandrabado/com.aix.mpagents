@@ -21,6 +21,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentHomeBinding;
+import com.aix.mpagents.interfaces.RequirementsDialogListener;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.PushNotification;
 import com.aix.mpagents.utilities.ErrorLog;
@@ -30,6 +31,7 @@ import com.aix.mpagents.view_models.PushNotificationViewModel;
 import com.aix.mpagents.view_models.RegistrationViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.BannerAdapter;
+import com.aix.mpagents.views.fragments.base.BaseFragment;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
 import com.aix.mpagents.views.fragments.dialogs.WelcomeMessageDialog;
 import com.bumptech.glide.Glide;
@@ -38,10 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends BaseFragment implements RequirementsDialogListener {
+
     private FragmentHomeBinding binding;
-    private UserSharedViewModel userSharedViewModel;
-    private NavController navController;
     private AccountInfoViewModel accountInfoViewModel;
     private OrderViewModel orderViewModel;
     private PushNotificationViewModel pushNotificationViewModel;
@@ -49,7 +50,7 @@ public class HomeFragment extends Fragment {
     private BannerAdapter viewPagerAdapter;
     private RegistrationViewModel registrationViewModel;
     private List<String> links = new ArrayList<>();
-    private Long slideTimer = 3000L;
+    private final Long slideTimer = 3000L;
     private Handler sliderHandler = new Handler();
     private Runnable sliderRunnable = () -> {
         int nextBanner = binding.viewPagerBannerContainer.getCurrentItem() + 1;
@@ -60,32 +61,37 @@ public class HomeFragment extends Fragment {
 
     public static int backCounter = 0;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public HomeFragment() {
+        super(R.layout.fragment_home);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentHomeBinding.inflate(inflater,container,false);
-//        setHasOptionsMenu(true);
-        return binding.getRoot();
-    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
+        binding = FragmentHomeBinding.bind(getView());
         pushNotificationViewModel = new ViewModelProvider(requireActivity()).get(PushNotificationViewModel.class);
         registrationViewModel = new ViewModelProvider(requireActivity()).get(RegistrationViewModel.class);
-        navController = Navigation.findNavController(view);
         viewPagerAdapter = new BannerAdapter(links);
         initPushNotif();
         initViewPager();
         initObservers();
         initListener();
+    }
+
+    @Override
+    public void isUserLogin(Boolean isLogin) {
+        if(isLogin){
+            ErrorLog.WriteDebugLog("User logged in");
+            if(accountInfoViewModel == null){
+                accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
+            }
+            initShopInfo();
+            initPendingOrderListener();
+        }else{
+            navController.navigate(R.id.action_homeFragment_to_loginFragment);
+            ErrorLog.WriteDebugLog("User logged out");
+        }
     }
 
     private void initListener() {
@@ -99,19 +105,9 @@ public class HomeFragment extends Fragment {
         binding.buttonBookings.setOnClickListener(v->{
             navController.navigate(R.id.action_homeFragment_to_bookingListFragment);
         });
-        binding.buttonOrders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.action_homeFragment_to_ordersFragment3);
-            }
-        });
+        binding.buttonOrders.setOnClickListener(view -> navController.navigate(R.id.action_homeFragment_to_ordersFragment3));
 
-        binding.buttonGoToOrders.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navController.navigate(R.id.action_homeFragment_to_ordersFragment3);
-            }
-        });
+        binding.buttonGoToOrders.setOnClickListener(view -> navController.navigate(R.id.action_homeFragment_to_ordersFragment3));
 
     }
 
@@ -120,43 +116,24 @@ public class HomeFragment extends Fragment {
             if (isProduct) navController.navigate(R.id.action_homeFragment_to_addProductFragment);
             else navController.navigate(R.id.action_homeFragment_to_addServiceFragment);
         } else{
-            new AddProductsRequirementsDialog(
+
+            AddProductsRequirementsDialog.showFragment(
                     !mAccountInfo.getEmail().isEmpty(),
                     !mAccountInfo.getMobile_no().isEmpty(),
                     false,
                     !mAccountInfo.getGov_id_primary().isEmpty(),
-                    navController
-            ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+                    requireActivity().getSupportFragmentManager(),
+                    this
+            );
         }
     }
 
     private void initObservers() {
 
-        registrationViewModel.isRegistered().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean){
-                    new WelcomeMessageDialog().show(requireActivity().getSupportFragmentManager(), "WELCOME_DIALOG");
-                    registrationViewModel.isRegistered().setValue(false);
-                }
-            }
-        });
-
-        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean){
-                    ErrorLog.WriteDebugLog("User logged in");
-                    if(accountInfoViewModel == null){
-                        accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
-                    }
-                    initShopInfo();
-                    initPendingOrderListener();
-                }else{
-                    navController.navigate(R.id.action_homeFragment_to_loginFragment);
-                    ErrorLog.WriteDebugLog("User logged out");
-                }
-
+        registrationViewModel.isRegistered().observe(getViewLifecycleOwner(), aBoolean -> {
+            if(aBoolean){
+                new WelcomeMessageDialog().show(requireActivity().getSupportFragmentManager(), "WELCOME_DIALOG");
+                registrationViewModel.isRegistered().setValue(false);
             }
         });
     }
@@ -282,5 +259,10 @@ public class HomeFragment extends Fragment {
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_lobby_toolbar, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onNavigateToEditAccount() {
+        navController.navigate(R.id.action_homeFragment_to_businessProfileFragment);
     }
 }

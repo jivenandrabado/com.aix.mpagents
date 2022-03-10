@@ -16,10 +16,10 @@ public class DataBindingUtils {
     public static void productOnlineInactive(TextView view, ProductInfo productInfo, ProductInterface productInterface){
         if(productInfo.getProduct_status().equalsIgnoreCase(ProductInfo.Status.INACTIVE) ||
                 productInfo.getProduct_status().equalsIgnoreCase(ProductInfo.Status.DRAFT)){
-            view.setText(view.getContext().getString(R.string.online));
+            view.setText(view.getContext().getString(R.string.makeOnline));
             view.setOnClickListener(v -> productInterface.onOnlineProduct(productInfo));
         }else {
-            view.setText(view.getContext().getString(R.string.inactive));
+            view.setText(view.getContext().getString(R.string.makeInactive));
             view.setOnClickListener(v -> productInterface.onInactiveProduct(productInfo));
         }
     }
@@ -28,10 +28,10 @@ public class DataBindingUtils {
     public static void serviceOnlineInactive(TextView view, ServiceInfo serviceInfo, ServiceInterface serviceInterface){
         if(serviceInfo.getService_status().equalsIgnoreCase(ServiceInfo.Status.INACTIVE) ||
                 serviceInfo.getService_status().equalsIgnoreCase(ServiceInfo.Status.DRAFT)){
-            view.setText(view.getContext().getString(R.string.online));
+            view.setText(view.getContext().getString(R.string.makeOnline));
             view.setOnClickListener(v -> serviceInterface.onOnlineProduct(serviceInfo));
         }else {
-            view.setText(view.getContext().getString(R.string.inactive));
+            view.setText(view.getContext().getString(R.string.makeInactive));
             view.setOnClickListener(v -> serviceInterface.onInactiveProduct(serviceInfo));
         }
     }

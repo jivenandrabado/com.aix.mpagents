@@ -19,34 +19,29 @@ import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentPhoneLoginBinding;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.LoginViewModel;
+import com.aix.mpagents.views.fragments.base.BaseLoginFragment;
 
 
-public class PhoneLoginFragment extends Fragment {
+public class PhoneLoginFragment extends BaseLoginFragment {
 
     private FragmentPhoneLoginBinding binding;
-    private LoginViewModel loginViewModel;
-    private NavController navController;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentPhoneLoginBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    public PhoneLoginFragment() {
+        super(R.layout.fragment_phone_login);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
-        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+        binding = FragmentPhoneLoginBinding.bind(getView());
         initObservers();
         initListeners();
-        super.onViewCreated(view, savedInstanceState);
     }
 
     private void initObservers() {
-        loginViewModel.getVerificationId().observe(getViewLifecycleOwner(), result -> {
-            navController.navigate(R.id.action_phoneLoginFragment_to_phoneVerificationFragment);
+        getLoginViewModel().getVerificationId().observe(getViewLifecycleOwner(), result -> {
+            if(result != null) navController.navigate(R.id.action_phoneLoginFragment_to_phoneVerificationFragment);
         });
     }
 
@@ -75,7 +70,7 @@ public class PhoneLoginFragment extends Fragment {
             Toast.makeText(requireContext(), "Not a valid mobile number!", Toast.LENGTH_SHORT).show();
         }else {
             ErrorLog.WriteDebugLog("toVerificationPage "+ number);
-            loginViewModel.phoneVerificationSetup(number, requireActivity());
+            getLoginViewModel().phoneVerificationSetup(number, requireActivity());
         }
     }
 }

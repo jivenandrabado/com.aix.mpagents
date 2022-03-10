@@ -41,4 +41,23 @@ public class AlertUtils {
                 .setNegativeButton("Cancel", onclick)
                 .show();
     }
+
+
+    public static void duplicationAlert(Context context, DialogInterface.OnClickListener onClickListener) {
+        new AlertDialog.Builder(context)
+                .setTitle("Duplicate")
+                .setMessage("The product has duplicate. Do you want to update it?")
+                .setPositiveButton("Ok", onClickListener)
+                .setNegativeButton("Cancel", onClickListener)
+                .show();
+    }
+
+    public static void addProductServiceExit(Context context, DialogInterface.OnClickListener onClickListener, String title) {
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage("Are you sure you want to leave this page? All the details will be cleared.")
+                .setPositiveButton("Ok", onClickListener)
+                .setNegativeButton("Cancel", onClickListener)
+                .show();
+    }
 }

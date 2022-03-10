@@ -30,18 +30,20 @@ import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.utilities.MenuUtils;
 import com.aix.mpagents.view_models.ServiceViewModel;
 import com.aix.mpagents.views.adapters.ServiceAdapter;
+import com.aix.mpagents.views.fragments.base.BaseServiceFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class SearchServiceFragment extends Fragment implements ServiceInterface {
+public class SearchServiceFragment extends BaseServiceFragment implements ServiceInterface {
 
     private FragmentSearchProductBinding binding;
+
     private ServiceAdapter serviceAdapter;
-    private ServiceViewModel serviceViewModel;
+
     private List<ServiceInfo> serviceInfoList = new ArrayList<>();
-    private NavController navController;
+
     private String query = "";
 
     private ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
@@ -53,24 +55,14 @@ public class SearchServiceFragment extends Fragment implements ServiceInterface 
             }
     );
 
-
     public SearchServiceFragment() {
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
-        binding = FragmentSearchProductBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+        super(R.layout.fragment_search_product);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController = Navigation.findNavController(view);
-        serviceViewModel = new ViewModelProvider(requireActivity()).get(ServiceViewModel.class);
+        binding = FragmentSearchProductBinding.bind(getView());
         try {
             query = requireArguments().getString("query");
             ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Search \"" + query + "\"");
@@ -82,22 +74,23 @@ public class SearchServiceFragment extends Fragment implements ServiceInterface 
     }
 
     private void initRecyclerView() {
-        serviceViewModel.addListener();
         serviceAdapter = new ServiceAdapter(serviceInfoList, this,requireContext());
         serviceAdapter.setHasStableIds(true);
 //
         binding.recyclerViewProducts.setAdapter(serviceAdapter);
         binding.recyclerViewProducts.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerViewProducts.setItemAnimator(null);
+    }
 
-        serviceViewModel.getAllServicesInfo().observe(getViewLifecycleOwner(), result -> {
-            serviceInfoList.clear();
-            for(ServiceInfo service: result){
-                if(service.getService_name().toLowerCase().contains(query.toLowerCase()))
+    @Override
+    public void onAllServiceLoaded(List<ServiceInfo> list) {
+        super.onAllServiceLoaded(list);
+        serviceInfoList.clear();
+        for(ServiceInfo service: list){
+            if(service.getService_name().toLowerCase().contains(query.toLowerCase()))
                 serviceInfoList.add(service);
-            }
-            serviceAdapter.notifyDataSetChanged();
-        });
+        }
+        serviceAdapter.notifyDataSetChanged();
     }
 
     private void getSearchItem(String args) {
@@ -105,20 +98,8 @@ public class SearchServiceFragment extends Fragment implements ServiceInterface 
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        serviceViewModel.detachListener();
-        super.onPause();
-    }
-
-
-    @Override
     public void onEditProduct(ServiceInfo serviceInfo) {
-        serviceViewModel.getSelectedService().setValue(serviceInfo);
+        getServiceViewModel().getSelectedService().setValue(serviceInfo);
         navController.navigate(R.id.action_searchServiceFragment_to_editServiceFragment);
     }
 
@@ -126,7 +107,7 @@ public class SearchServiceFragment extends Fragment implements ServiceInterface 
     public void onOnlineProduct(ServiceInfo serviceInfo) {
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE)
-                serviceViewModel.changeStatus(serviceInfo, ServiceInfo.Status.ONLINE);
+                getServiceViewModel().changeStatus(serviceInfo, ServiceInfo.Status.ONLINE);
             dialog.dismiss();
         };
         AlertUtils.serviceAlert(requireContext(), serviceInfo,onclick, ServiceInfo.Status.ONLINE);
@@ -136,7 +117,7 @@ public class SearchServiceFragment extends Fragment implements ServiceInterface 
     public void onInactiveProduct(ServiceInfo serviceInfo) {
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE)
-                serviceViewModel.changeStatus(serviceInfo, ServiceInfo.Status.INACTIVE);
+                getServiceViewModel().changeStatus(serviceInfo, ServiceInfo.Status.INACTIVE);
             dialog.dismiss();
         };
         AlertUtils.serviceAlert(requireContext(),serviceInfo,onclick, ServiceInfo.Status.INACTIVE);
@@ -180,7 +161,7 @@ public class SearchServiceFragment extends Fragment implements ServiceInterface 
         }
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE)
-                serviceViewModel.changeStatus(serviceInfo, ServiceInfo.Status.DELETED);
+                getServiceViewModel().changeStatus(serviceInfo, ServiceInfo.Status.DELETED);
             dialog.dismiss();
         };
         AlertUtils.serviceAlert(requireContext(), serviceInfo, onclick, ServiceInfo.Status.DELETED,

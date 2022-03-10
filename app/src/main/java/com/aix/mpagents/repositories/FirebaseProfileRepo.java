@@ -40,7 +40,6 @@ public class FirebaseProfileRepo {
     private FirebaseAuth mAuth;
     private ToastUtil toastUtil;
     private FirebaseFirestore db;
-    private String userId;
     private final MutableLiveData<AccountInfo> userInfoMutableLiveData = new MutableLiveData<>();
     public final MutableLiveData<Boolean> updateProfileSuccess = new MutableLiveData<>();
     public final MutableLiveData<String> errorMessage = new MutableLiveData<>();
@@ -63,8 +62,10 @@ public class FirebaseProfileRepo {
         mAuth = FirebaseAuth.getInstance();
         toastUtil = new ToastUtil();
         db = FirebaseFirestore.getInstance();
-        userId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+    }
 
+    public String getUserID(){
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
 
@@ -74,7 +75,7 @@ public class FirebaseProfileRepo {
 
     public void updateAgentInfo(Map<String,Object> account_info) {
         try{
-            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).update(account_info).addOnCompleteListener(new OnCompleteListener<Void>() {
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(getUserID())).update(account_info).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
@@ -94,7 +95,7 @@ public class FirebaseProfileRepo {
 
     public void uploadIDtoFirebase(Uri path, GovernmentIDInterface resultHandler){
         try {
-            StorageReference mediaRef = storageRef.child("MPAgents/" + userId + "/" + path.getLastPathSegment());
+            StorageReference mediaRef = storageRef.child("MPAgents/" + getUserID() + "/" + path.getLastPathSegment());
 //            InputStream stream = new FileInputStream(new File(path));
 
             UploadTask uploadTask = mediaRef.putFile(path);
@@ -119,7 +120,7 @@ public class FirebaseProfileRepo {
 
     public void uploadToFirebaseStorage(Uri path) {
         try {
-            StorageReference mediaRef = storageRef.child(userId + "/" + path.getLastPathSegment());
+            StorageReference mediaRef = storageRef.child(getUserID() + "/" + path.getLastPathSegment());
 //            InputStream stream = new FileInputStream(new File(path));
 
             UploadTask uploadTask = mediaRef.putFile(path);
@@ -155,10 +156,10 @@ public class FirebaseProfileRepo {
 
     public void saveAddress(ShopAddress shopAddress) {
         try{
-            String address_id = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            String address_id = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(getUserID())).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document().getId();
             shopAddress.setAddress_id(address_id);
-            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(getUserID())).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(address_id).set(shopAddress)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -176,7 +177,7 @@ public class FirebaseProfileRepo {
     public void updateAddress(ShopAddress shopAddress) {
         try{
 
-            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(getUserID())).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(shopAddress.getAddress_id()).set(shopAddress)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -193,7 +194,7 @@ public class FirebaseProfileRepo {
 
     public void updateAddressForDefault(ShopAddress shopAddress) {
         try{
-            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(getUserID())).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(shopAddress.getAddress_id()).set(shopAddress)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -212,7 +213,7 @@ public class FirebaseProfileRepo {
             Map<String,Object> addressMap = new HashMap<>();
             addressMap.put("is_deleted", true);
             addressMap.put("date_deleted", new Date());
-            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId)).collection(FirestoreConstants.MPARTNER_ADDRESSES)
+            db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(getUserID())).collection(FirestoreConstants.MPARTNER_ADDRESSES)
                     .document(shopAddress.getAddress_id()).update(addressMap)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -233,7 +234,7 @@ public class FirebaseProfileRepo {
 
     public FirestoreRecyclerOptions getShopAddressFirestoreRecyclerOptions() {
         Query query = db.collection(FirestoreConstants.MPARTNER_AGENTS)
-                .document(userId)
+                .document(getUserID())
                 .collection(FirestoreConstants.MPARTNER_ADDRESSES)
                 .whereEqualTo("is_deleted",false);
         return new FirestoreRecyclerOptions.Builder<ShopAddress>()
@@ -244,7 +245,7 @@ public class FirebaseProfileRepo {
     public void addAccountInfoSnapshotListener() {
 
         try{
-        accountInfoListener = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(userId))
+        accountInfoListener = db.collection(FirestoreConstants.MPARTNER_AGENTS).document(String.valueOf(getUserID()))
                 .addSnapshotListener((value, error) -> {
                     if(value.exists()) {
                         AccountInfo accountInfo = value.toObject(AccountInfo.class);
@@ -273,7 +274,7 @@ public class FirebaseProfileRepo {
         try{
             List<ShopAddress> addresses = new ArrayList<>();
             db.collection(FirestoreConstants.MPARTNER_AGENTS)
-                    .document(userId)
+                    .document(getUserID())
                     .collection(FirestoreConstants.MPARTNER_ADDRESSES).get().addOnCompleteListener(task -> {
                 if(task.isSuccessful()){
                     for(DocumentSnapshot document: task.getResult().getDocuments()){

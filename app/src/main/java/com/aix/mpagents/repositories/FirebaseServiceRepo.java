@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.Media;
+import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.models.ServiceInfo;
 import com.aix.mpagents.models.Variant;
 import com.aix.mpagents.utilities.ErrorLog;
@@ -315,7 +316,7 @@ public class FirebaseServiceRepo {
             productMap.put("category_id",serviceInfo.getCategory_id());
 
 
-            db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(serviceInfo.getService_id()).update(productMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+            db.collection(FirestoreConstants.MPARTNER_SERVICES).document(serviceInfo.getService_id()).update(productMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
@@ -419,13 +420,18 @@ public class FirebaseServiceRepo {
         try{
             servicesListener = db.collection(FirestoreConstants.MPARTNER_SERVICES)
                     .whereEqualTo("merchant_id", userId)
+                    .whereNotEqualTo("service_status", ProductInfo.Status.DELETED)
                     .addSnapshotListener((value, error) -> {
-                        List<ServiceInfo> services = new ArrayList<>();
-                        for(DocumentSnapshot product: value.getDocuments()){
-                            ServiceInfo serviceInfo = product.toObject(ServiceInfo.class);
-                            services.add(serviceInfo);
+                        try {
+                            List<ServiceInfo> services = new ArrayList<>();
+                            for(DocumentSnapshot product: value.getDocuments()){
+                                ServiceInfo serviceInfo = product.toObject(ServiceInfo.class);
+                                services.add(serviceInfo);
+                            }
+                            allService.setValue(services);
+                        }catch (Exception e){
+                            ErrorLog.WriteErrorLog(e);
                         }
-                        allService.setValue(services);
                     });
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);

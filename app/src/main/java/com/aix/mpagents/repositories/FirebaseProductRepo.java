@@ -534,13 +534,18 @@ public class FirebaseProductRepo {
         try{
             productsListener = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
                     .whereEqualTo("merchant_id", userId)
+                    .whereNotEqualTo("product_status", ProductInfo.Status.DELETED)
                     .addSnapshotListener((value, error) -> {
-                        List<ProductInfo> products = new ArrayList<>();
-                        for(DocumentSnapshot product: value.getDocuments()){
-                            ProductInfo productInfo = product.toObject(ProductInfo.class);
-                            products.add(productInfo);
+                        try {
+                            List<ProductInfo> products = new ArrayList<>();
+                            for(DocumentSnapshot product: value.getDocuments()){
+                                ProductInfo productInfo = product.toObject(ProductInfo.class);
+                                products.add(productInfo);
+                            }
+                            allProducts.setValue(products);
+                        }catch (Exception e){
+                            ErrorLog.WriteErrorLog(e);
                         }
-                        allProducts.setValue(products);
                     });
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
@@ -569,8 +574,8 @@ public class FirebaseProductRepo {
     public FirestoreRecyclerOptions<Variant> getVariantRecyclerOptions(String product_id) {
         try{
             Query newQuery = db.collection(FirestoreConstants.MPARTNER_PRODUCTS).document(product_id)
-                    .collection(FirestoreConstants.MPARTNER_PRODUCT_VARIANT);
-//                    .orderBy("date_created");
+                    .collection(FirestoreConstants.MPARTNER_PRODUCT_VARIANT)
+                    .orderBy("date_created", Query.Direction.ASCENDING);
             return new FirestoreRecyclerOptions.Builder<Variant>()
                     .setQuery(newQuery, Variant.class)
                     .build();

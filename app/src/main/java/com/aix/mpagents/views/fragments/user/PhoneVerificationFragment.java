@@ -21,64 +21,57 @@ import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentPhoneVerificationBinding;
 import com.aix.mpagents.view_models.LoginViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
+import com.aix.mpagents.views.fragments.base.BaseLoginFragment;
 
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
 
 
-public class PhoneVerificationFragment extends Fragment {
+public class PhoneVerificationFragment extends BaseLoginFragment {
 
     private FragmentPhoneVerificationBinding binding;
-    private LoginViewModel loginViewModel;
-    private NavController navController;
-    private UserSharedViewModel userSharedViewModel;
+
     public MutableLiveData<String> verificationCode = new MutableLiveData<>();
+
+    private CountDownTimer timer;
+
+    public PhoneVerificationFragment() {
+        super(R.layout.fragment_phone_verification);
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        navController = Navigation.findNavController(view);
-        loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
-        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
+        super.onViewCreated(view, savedInstanceState);
+        binding = FragmentPhoneVerificationBinding.bind(getView());
+        binding.setView(this);
+        binding.setLifecycleOwner(this);
         initTimer(60);
         initObservers();
         initListeners();
-        super.onViewCreated(view, savedInstanceState);
     }
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentPhoneVerificationBinding.inflate(inflater, container, false);
-        binding.setView(this);
-        binding.setLifecycleOwner(this);
-        return binding.getRoot();
+    public void isUserLogin(Boolean isLogin) {
+        if(isLogin) {
+            showLoading(false);
+            navController.navigate(R.id.action_phoneVerificationFragment_to_homeFragment);
+        }
     }
 
     private void initObservers() {
-        loginViewModel.getIsResendAvailable().observe(getViewLifecycleOwner(), result -> {
+        getLoginViewModel().getIsResendAvailable().observe(getViewLifecycleOwner(), result -> {
             if(result)
                 binding.textViewResendVerificationCode.setTextColor(ContextCompat.getColor(requireContext(), R.color.mpagents_base_color));
             else
                 binding.textViewResendVerificationCode.setTextColor(ContextCompat.getColor(requireContext(), R.color.silver));
             binding.textViewResendVerificationCode.setEnabled(result);
         });
-        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result -> {
-            if(result) navController.navigate(R.id.action_phoneVerificationFragment_to_homeFragment);
-        });
-
-        loginViewModel.getErrorMessage().observe(getViewLifecycleOwner(), result -> {
-            if(result.isEmpty()) return;
-            Toast.makeText(requireContext(), result, Toast.LENGTH_SHORT).show();
-            loginViewModel.getErrorMessage().setValue("");
-        });
-
-
     }
     private void initListeners() {
         binding.textViewResendVerificationCode.requestFocus();
         binding.textViewResendVerificationCode.setOnClickListener(v -> {
             initTimer(60);
-            loginViewModel.resendLoginPhoneCode(requireActivity());
+            getLoginViewModel().resendLoginPhoneCode(requireActivity());
         });
 
         binding.buttonLoginWithPhone.setOnClickListener(v -> {
@@ -90,8 +83,9 @@ public class PhoneVerificationFragment extends Fragment {
 
     private void phoneLogin() {
         if(isVerificationNotEmpty()){
+            showLoading(true);
             UIUtil.hideKeyboard(requireActivity());
-            loginViewModel.loginWithPhone(verificationCode.getValue());
+            getLoginViewModel().loginWithPhone(verificationCode.getValue());
         }
     }
 
@@ -100,9 +94,9 @@ public class PhoneVerificationFragment extends Fragment {
     }
 
     private void initTimer(int seconds) {
-        loginViewModel.getIsResendAvailable().setValue(false);
+        getLoginViewModel().getIsResendAvailable().setValue(false);
         Long milliSeconds = seconds * 1000L;
-        new CountDownTimer(milliSeconds, 1000) {
+        timer = new CountDownTimer(milliSeconds, 1000) {
             @SuppressLint("SetTextI18n")
             @Override
             public void onTick(long l) {
@@ -111,8 +105,14 @@ public class PhoneVerificationFragment extends Fragment {
             @Override
             public void onFinish() {
                 binding.textViewResendVerificationCode.setText(requireContext().getString(R.string.resendCode));
-                loginViewModel.getIsResendAvailable().setValue(true);
+                getLoginViewModel().getIsResendAvailable().setValue(true);
             }
         }.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
     }
 }

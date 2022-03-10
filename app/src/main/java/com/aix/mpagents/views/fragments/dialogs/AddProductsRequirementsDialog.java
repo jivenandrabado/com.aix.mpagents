@@ -10,12 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.DialogAddProductRequirementsBinding;
+import com.aix.mpagents.interfaces.RequirementsDialogListener;
 import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 
@@ -23,13 +25,14 @@ public class AddProductsRequirementsDialog extends DialogFragment {
 
 
     private DialogAddProductRequirementsBinding binding;
-    private NavController navController;
     private Boolean isEmailVerified;
     private Boolean hasPhone;
     private Boolean hasBank;
     private Boolean hasGovId;
     private AccountInfoViewModel accountInfoViewModel;
     private UserSharedViewModel userSharedViewModel;
+    private RequirementsDialogListener listener;
+    private static final String TAG = "AddProductsRequirementsDialog";
 
     @Override
     public void onDestroy() {
@@ -37,12 +40,12 @@ public class AddProductsRequirementsDialog extends DialogFragment {
         super.onDestroy();
     }
 
-    public AddProductsRequirementsDialog(Boolean isEmailVerified, Boolean hasPhone, Boolean hasBank, Boolean hasGovId, NavController navController) {
+    public AddProductsRequirementsDialog(Boolean isEmailVerified, Boolean hasPhone, Boolean hasBank, Boolean hasGovId, RequirementsDialogListener listener) {
         this.isEmailVerified = isEmailVerified;
         this.hasPhone = hasPhone;
         this.hasBank = hasBank;
         this.hasGovId = hasGovId;
-        this.navController = navController;
+        this.listener = listener;
     }
 
     @Nullable
@@ -63,8 +66,8 @@ public class AddProductsRequirementsDialog extends DialogFragment {
 
     private void initListeners() {
         View.OnClickListener toEditAccount = v -> {
+            listener.onNavigateToEditAccount();
             dismiss();
-            navController.navigate(R.id.action_homeFragment_to_businessProfileFragment);
         };
         binding.textViewEmailVerified.setOnClickListener(toEditAccount);
         binding.textViewContactNumber.setOnClickListener(toEditAccount);
@@ -93,6 +96,16 @@ public class AddProductsRequirementsDialog extends DialogFragment {
             System.out.println("getAgentStatus " + agentStatus);
             binding.textViewAgentStatus.setText(agentStatus);
         });
+    }
+
+    public static void showFragment(Boolean isEmailVerified, Boolean hasPhone, Boolean hasBank, Boolean hasGovId, FragmentManager fragmentManager, RequirementsDialogListener listener){
+        new AddProductsRequirementsDialog(
+                isEmailVerified,
+                hasPhone,
+                hasBank,
+                hasGovId,
+                listener
+        ).show(fragmentManager, TAG);
     }
 
     @Override

@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentProductListBinding;
 import com.aix.mpagents.interfaces.ProductInterface;
+import com.aix.mpagents.interfaces.RequirementsDialogListener;
 import com.aix.mpagents.models.AccountInfo;
 import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.utilities.AlertUtils;
@@ -49,6 +50,7 @@ import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
 import com.aix.mpagents.views.adapters.ProductsFirestoreAdapter;
+import com.aix.mpagents.views.fragments.base.BaseProductFragment;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.tabs.TabLayout;
@@ -59,53 +61,42 @@ import java.util.List;
 import java.util.Map;
 
 
-public class ProductListFragment extends Fragment implements ProductInterface, TabLayout.OnTabSelectedListener {
+public class ProductListFragment extends BaseProductFragment implements ProductInterface, TabLayout.OnTabSelectedListener, RequirementsDialogListener {
 
     private FragmentProductListBinding binding;
-    private ProductViewModel productViewModel;
-    private ProductsFirestoreAdapter productsFirestoreAdapter;
-    private AccountInfoViewModel accountInfoViewModel;
-    private UserSharedViewModel userSharedViewModel;
-    private ProductsBottomSheetDialog productsBottomSheetDialog;
-    private NavController navController;
-    private HashMap<Integer,String> tabs = new HashMap<>();
-    private List<ProductInfo> products = new ArrayList<>();
-    private ArrayAdapter<String> productNamesAdapter;
-    private List<String> productNames = new ArrayList<>();
-    private SearchView searchView = null;
-    private AccountInfo mAccountInfo;
-    private String productType = "Product";
-    
-    private ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if(result.getResultCode() == Activity.RESULT_OK){
-                    Toast.makeText(requireContext(), "Product shared!", Toast.LENGTH_SHORT).show();
-                }
-            }
-    );
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentProductListBinding.inflate(inflater,container,false);
-        setHasOptionsMenu(true);
-        return binding.getRoot();
+    private ProductsFirestoreAdapter productsFirestoreAdapter;
+
+    private ProductsBottomSheetDialog productsBottomSheetDialog;
+
+    private HashMap<Integer,String> tabs = new HashMap<>();
+
+    private List<ProductInfo> products = new ArrayList<>();
+
+    private ArrayAdapter<String> productNamesAdapter;
+
+    private List<String> productNames = new ArrayList<>();
+
+    private SearchView searchView = null;
+
+    private AccountInfo mAccountInfo;
+
+    public ProductListFragment() {
+        super(R.layout.fragment_product_list);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
-        accountInfoViewModel  = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
-        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
-        navController = Navigation.findNavController(view);
-        initProductsRecyclerView();
-        initTabs();
-        initObservers();
-        initListeners();
+        binding = FragmentProductListBinding.bind(getView());
 
+        setHasOptionsMenu(true);
+
+        initProductsRecyclerView();
+
+        initTabs();
+
+        initListeners();
     }
 
     private void initListeners() {
@@ -113,33 +104,31 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             if (mAccountInfo.hasInfoFillUp())
                 navController.navigate(R.id.action_productListFragment_to_addProductFragment);
             else{
-                new AddProductsRequirementsDialog(
+                AddProductsRequirementsDialog.showFragment(
                         !mAccountInfo.getEmail().isEmpty(),
                         !mAccountInfo.getMobile_no().isEmpty(),
                         false,
                         !mAccountInfo.getGov_id_primary().isEmpty(),
-                        navController
-                ).show(requireActivity().getSupportFragmentManager(), "REQUIREMENTS_DIALOG");
+                        requireActivity().getSupportFragmentManager(),
+                        this
+                );
             }
         });
     }
 
-    private void initObservers() {
-
-        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), result ->{
-            accountInfoViewModel.addAccountInfoSnapshot();
-            productViewModel.addProductsListener();
-        });
-
-        productViewModel.getAllProductInfo().observe(getViewLifecycleOwner(), result -> {
-            products.clear();
-            products.addAll(result);
-            updateProductNameList();
-        });
-
-        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), result -> mAccountInfo = result);
+    @Override
+    public void onAllProductsLoaded(List<ProductInfo> list) {
+        super.onAllProductsLoaded(list);
+        products.clear();
+        products.addAll(list);
+        updateProductNameList();
     }
 
+    @Override
+    public void onInfoLoaded(AccountInfo userInfo) {
+        super.onInfoLoaded(userInfo);
+        mAccountInfo = userInfo;
+    }
 
     private void initTabs() {
         tabs.put(R.id.draft, "Draft");
@@ -164,22 +153,21 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     }
 
     private void initProductsRecyclerView(){
-        productsFirestoreAdapter = new ProductsFirestoreAdapter(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ONLINE),this,requireContext());
+        productsFirestoreAdapter = new ProductsFirestoreAdapter(getProductViewModel().getProductRecyclerOptions(ProductInfo.Status.ONLINE),this,requireContext());
+
         productsFirestoreAdapter.setHasStableIds(true);
 
         binding.recyclerViewProducts.setAdapter(productsFirestoreAdapter);
+
         binding.recyclerViewProducts.setLayoutManager(new LinearLayoutManager(requireContext()));
         //temporary fix for recyclerview
         binding.recyclerViewProducts.setItemAnimator(null);
 
         productNamesAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, productNames);
+
         binding.listViewSearchProducts.setAdapter(productNamesAdapter);
-        binding.listViewSearchProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                toSearchResultPage(((TextView) view).getText().toString());
-            }
-        });
+
+        binding.listViewSearchProducts.setOnItemClickListener((adapterView, view, i, l) -> toSearchResultPage(((TextView) view).getText().toString()));
 
     }
 
@@ -197,21 +185,19 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
         if(productsFirestoreAdapter!=null) {
             productsFirestoreAdapter.stopListening();
         }
-        productViewModel.detachProductsListener();
-        accountInfoViewModel.detachAccountInfoListener();
     }
 
     @Override
     public void onProductClick(ProductInfo productInfo) {
         ErrorLog.WriteDebugLog("On Product Click "+ productInfo.getProduct_name());
-        productViewModel.getSelectedProduct().setValue(productInfo);
+        getProductViewModel().getSelectedProduct().setValue(productInfo);
         productsBottomSheetDialog = new ProductsBottomSheetDialog(this);
         productsBottomSheetDialog.show(getChildFragmentManager(),"PRODUCTS BOTTOM SHEET DIALOG");
     }
 
     @Override
     public void onEditProduct(ProductInfo productInfo) {
-        productViewModel.getSelectedProduct().setValue(productInfo);
+        getProductViewModel().getSelectedProduct().setValue(productInfo);
         navController.navigate(R.id.action_productListFragment_to_editProductFragment);
     }
 
@@ -219,7 +205,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     public void onOnlineProduct(ProductInfo productInfo) {
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE)
-                productViewModel.changeProductStatus(productInfo, ProductInfo.Status.ONLINE);
+                getProductViewModel().changeProductStatus(productInfo, ProductInfo.Status.ONLINE);
             dialog.dismiss();
         };
         AlertUtils.productAlert(requireContext(),productInfo,onclick, ProductInfo.Status.ONLINE);
@@ -229,7 +215,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     public void onInactiveProduct(ProductInfo productInfo) {
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE)
-                productViewModel.changeProductStatus(productInfo, ProductInfo.Status.INACTIVE);
+                getProductViewModel().changeProductStatus(productInfo, ProductInfo.Status.INACTIVE);
             dialog.dismiss();
         };
         AlertUtils.productAlert(requireContext(),productInfo,onclick, ProductInfo.Status.INACTIVE);
@@ -238,7 +224,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     @Override
     public void onShareProduct(ProductInfo productInfo) {
         if(!productInfo.getProduct_status().equals(ProductInfo.Status.ONLINE)){
-            Toast.makeText(requireContext(), "Product is not online.", Toast.LENGTH_SHORT).show();
+            showToast("Product is not online.");
             return;
         }
         Intent shareIntent = new Intent();
@@ -268,12 +254,12 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     @Override
     public void onDeleteProduct(ProductInfo productInfo) {
         if(productInfo.getProduct_status().equals(ProductInfo.Status.ONLINE)){
-            Toast.makeText(requireContext(), "Unable to delete. Product is online.", Toast.LENGTH_SHORT).show();
+            showToast("Unable to delete. Product is online.");
             return;
         }
         DialogInterface.OnClickListener onclick = (dialog, i) -> {
             if (i == DialogInterface.BUTTON_POSITIVE)
-                productViewModel.changeProductStatus(productInfo, ProductInfo.Status.DELETED);
+                getProductViewModel().changeProductStatus(productInfo, ProductInfo.Status.DELETED);
             dialog.dismiss();
         };
         AlertUtils.productAlert(requireContext(), productInfo, onclick, ProductInfo.Status.DELETED,
@@ -294,17 +280,16 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     public void onTabSelected(TabLayout.Tab tab) {
         switch (tab.getId()){
             case R.id.online:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.ONLINE));
+                productsFirestoreAdapter.updateOptions(getProductViewModel().getProductRecyclerOptions(ProductInfo.Status.ONLINE));
                 break;
             case R.id.draft:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.DRAFT));
+                productsFirestoreAdapter.updateOptions(getProductViewModel().getProductRecyclerOptions(ProductInfo.Status.DRAFT));
                 break;
             case R.id.inactive:
-                productsFirestoreAdapter.updateOptions(productViewModel.getProductRecyclerOptions(ProductInfo.Status.INACTIVE));
+                productsFirestoreAdapter.updateOptions(getProductViewModel().getProductRecyclerOptions(ProductInfo.Status.INACTIVE));
                 break;
         }
         productsFirestoreAdapter.notifyDataSetChanged();
-//        binding.recyclerViewProducts.setAdapter(productsFirestoreAdapter);
     }
 
     @Override
@@ -320,12 +305,14 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.search_menu, menu);
+
         MenuItem searchItem = menu.findItem(R.id.search);
+
         SearchManager searchManager = (SearchManager) requireActivity().getSystemService(Context.SEARCH_SERVICE);
+
         try {
-            if (searchItem != null) {
-                searchView = (SearchView) searchItem.getActionView();
-            }
+            if (searchItem != null) searchView = (SearchView) searchItem.getActionView();
+
             if (searchView != null) {
                 searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().getComponentName()));
                 searchView.setQueryHint(requireContext().getString(R.string.search));
@@ -341,8 +328,7 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
 
                     @Override
                     public boolean onQueryTextChange(String s) {
-                        if(s.length() > 0) setOpenSearchRecycler(true);
-                        else setOpenSearchRecycler(false);
+                        setOpenSearchRecycler(s.length() > 0);
                         updateProductNameList(s);
                         return false;
                     }
@@ -386,4 +372,8 @@ public class ProductListFragment extends Fragment implements ProductInterface, T
             binding.listViewSearchProducts.setVisibility(isSearchOpen);
     }
 
+    @Override
+    public void onNavigateToEditAccount() {
+        navController.navigate(R.id.action_productListFragment_to_businessProfileFragment);
+    }
 }

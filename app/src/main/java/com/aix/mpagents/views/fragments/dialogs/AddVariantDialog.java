@@ -1,6 +1,7 @@
 package com.aix.mpagents.views.fragments.dialogs;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -17,12 +18,16 @@ import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.DialogAddVariantBinding;
 import com.aix.mpagents.interfaces.VariantInterface;
 import com.aix.mpagents.models.Variant;
+import com.aix.mpagents.utilities.AlertUtils;
 
 public class AddVariantDialog extends DialogFragment {
 
     private DialogAddVariantBinding binding;
+
     private VariantInterface variantInterface;
+
     private int position;
+
     private Variant variant;
 
     public AddVariantDialog(VariantInterface variantInterface){
@@ -87,27 +92,50 @@ public class AddVariantDialog extends DialogFragment {
         name = binding.editTextVariantName.getText().toString();
         stock = binding.editTextVariantStock.getText().toString();
         if(isNotEmpty(name, stock)){
-            if(variant != null) updateVariant(name,stock);
-            else addVariant(name,stock);
+            if(variant == null && variantInterface.getIsVariantDuplicate(name) != null){
+                AlertUtils.duplicationAlert(requireContext(), (dialog, which) -> {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            variant = variantInterface.getIsVariantDuplicate(name);
+                            if(variant != null) updateVariant(name,stock);
+                            else addVariant(name,stock);
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            dialog.dismiss();
+                            break;
+                    }
+                });
+            }else {
+                if(variant != null) updateVariant(name,stock);
+                else addVariant(name,stock);
+            }
         }
     }
 
     private void updateVariant(String name, String stock) {
-        variant.setVariant_name(name);
-        variant.setStock(Integer.parseInt(stock));
-        if(variant.getVariant_id() != null)
-            variantInterface.onVariantUpdate(variant);
-        else
-            variantInterface.onVariantUpdate(position,variant);
-        dismiss();
+        if(Integer.parseInt(stock) > 0){
+            variant.setVariant_name(name);
+            variant.setStock(Integer.parseInt(stock));
+            if(variant.getVariant_id() != null)
+                variantInterface.onVariantUpdate(variant);
+            else
+                variantInterface.onVariantUpdate(position,variant);
+            dismiss();
+        }else {
+            Toast.makeText(requireContext(), "Stock is empty", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addVariant(String name, String stock) {
-        Variant variant = new Variant();
-        variant.setVariant_name(name);
-        variant.setStock(Integer.parseInt(stock));
-        variantInterface.onVariantAdd(variant);
-        dismiss();
+        if(Integer.parseInt(stock) > 0){
+            Variant variant = new Variant();
+            variant.setVariant_name(name);
+            variant.setStock(Integer.parseInt(stock));
+            variantInterface.onVariantAdd(variant);
+            dismiss();
+        }else {
+            Toast.makeText(requireContext(), "Stock is empty", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean isNotEmpty(String variantName, String stock) {

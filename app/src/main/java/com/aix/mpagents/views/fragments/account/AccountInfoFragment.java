@@ -38,6 +38,7 @@ import com.aix.mpagents.utilities.LayoutViewHelper;
 import com.aix.mpagents.utilities.ToastUtil;
 import com.aix.mpagents.view_models.AccountInfoViewModel;
 import com.aix.mpagents.view_models.UserSharedViewModel;
+import com.aix.mpagents.views.fragments.base.BaseFragment;
 import com.aix.mpagents.views.fragments.dialogs.UploadDialog;
 import com.bumptech.glide.Glide;
 import com.google.android.material.textfield.TextInputEditText;
@@ -48,45 +49,27 @@ import java.util.Map;
 import java.util.Objects;
 
 
-public class AccountInfoFragment extends Fragment implements AccountInfoInterface {
-    private NavController navController;
+public class AccountInfoFragment extends BaseFragment implements AccountInfoInterface {
+
     private FragmentAccountInformationBinding binding;
+
     private AccountInfoViewModel accountInfoViewModel;
-    private UserSharedViewModel userSharedViewModel;
-    private ToastUtil toastUtil;
+
     private UploadDialog uploadDialog;
 
     private LayoutViewHelper layoutViewHelper;
 
     public AccountInfoFragment() {
-        // Required empty public constructor
+        super(R.layout.fragment_account_information);
     }
 
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentAccountInformationBinding.inflate(inflater,container,false);
-
-        return binding.getRoot();
-    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navController = Navigation.findNavController(view);
-        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
+        binding = FragmentAccountInformationBinding.bind(getView());
         accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
         binding.setAccountInfoInterface(this);
-        toastUtil = new ToastUtil();
         layoutViewHelper = new LayoutViewHelper(requireActivity());
         uploadDialog = new UploadDialog();
         initObservers();
@@ -95,49 +78,30 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
 
     }
 
+    @Override
+    public void isUserLogin(Boolean isLogin) {
+        super.isUserLogin(isLogin);
+        if(isLogin){
+            if(!Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).isAnonymous()) {
+                ErrorLog.WriteDebugLog("Display user profile");
+                accountInfoViewModel.addAccountInfoSnapshot();
+            }else{
+                ErrorLog.WriteDebugLog("Init anonymous user");
+                accountInfoViewModel.detachAccountInfoListener();
+            }
+        }else{
+            ErrorLog.WriteDebugLog("No User");
+        }
+    }
+
     private void initObservers() {
-        userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean){
-                    if(!Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).isAnonymous()) {
-                        ErrorLog.WriteDebugLog("Display user profile");
-                        //init user info
-//                        accountInfoViewModel.getShopInfo();
-
-                        accountInfoViewModel.addAccountInfoSnapshot();
-                    }else{
-                        ErrorLog.WriteDebugLog("Init anonymous user");
-                        accountInfoViewModel.detachAccountInfoListener();
-                    }
-                }else{
-                    ErrorLog.WriteDebugLog("No User");
-                }
-            }
-        });
-
-        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), new Observer<AccountInfo>() {
-            @Override
-            public void onChanged(AccountInfo accountInfo) {
-                initHasUser(accountInfo);
-            }
-        });
+        accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), accountInfo -> initHasUser(accountInfo));
     }
 
     private void initListeners() {
-        binding.buttonSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onSave();
-            }
-        });
+        binding.buttonSave.setOnClickListener(view -> onSave());
 
-        binding.textViewStoreLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                chooseImage();
-            }
-        });
+        binding.textViewStoreLogo.setOnClickListener(view -> chooseImage());
 
         binding.editAddGovernmentID.setOnClickListener(v -> {
             if(((TextInputEditText) v).getText().toString().isEmpty())
@@ -159,26 +123,18 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
 
 
     private void initHasUser(AccountInfo accountInfo) {
-//        binding.editTextShopEmail.setText(accountInfo.getShop_email());
         binding.editAddGovernmentID.setText(accountInfo.getGov_id_type_primary());
         if(!accountInfo.getGov_id_type_primary().isEmpty()){
             binding.editAddGovernmentID.setHint("Government ID");
         }
 
-//        if(accountInfo.isIs_individual()){
-//            binding.editUserType.setText("Individual");
-//        }else if(accountInfo.isIs_corporate()){
-//            binding.editUserType.setText("Corporate");
-//        }else if(accountInfo.isIs_agent()){
-//            binding.editUserType.setText("Agent");
-//        }
         binding.editTextFirstName.setText(accountInfo.getFirst_name());
         binding.editTextMiddleName.setText(accountInfo.getMiddle_name());
         binding.editTextLastName.setText(accountInfo.getLast_name());
 
 
         //Connected to login
-        if(userSharedViewModel.getSignInMethod().equalsIgnoreCase("email")){
+        if(getSignInMethod().equalsIgnoreCase("email")){
             binding.imageButtonEmail.setVisibility(View.GONE);
         }else binding.imageButtonMobileNo.setVisibility(View.GONE);
 
@@ -187,7 +143,6 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
         if(!accountInfo.getMobile_no().isEmpty()){
             binding.editMobileNo.setText(accountInfo.getMobile_no());
         }
-
 
         if(!accountInfo.getProfile_pic().isEmpty()){
             Glide.with(requireContext()).load(Uri.parse(accountInfo.getProfile_pic()))
@@ -236,7 +191,7 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
-                    toastUtil.toastProfileUpdateSuccess(requireContext());
+                    showToast("Profile update success");
                     accountInfoViewModel.updateProfileSuccess().setValue(false);
 
                     if(uploadDialog.isVisible()){
@@ -246,14 +201,10 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
             }
         });
 
-        accountInfoViewModel.getErrorMessage().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(String s) {
-                if(!s.isEmpty()) {
-                    toastUtil.makeText(requireContext(),
-                            s,
-                            Toast.LENGTH_LONG);
-                }
+        accountInfoViewModel.getErrorMessage().observe(getViewLifecycleOwner(), s -> {
+            if(!s.isEmpty()) {
+                showToast(s);
+                accountInfoViewModel.getErrorMessage().setValue("");
             }
         });
     }
@@ -345,8 +296,7 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
     private void chooseImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setAction(Intent.ACTION_PICK);
         chooseImageActivityResult.launch(intent);
     }
 
@@ -382,7 +332,7 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
     private boolean isMobileNoValid(String mobile_no){
         int mobileNoLength = 13;
         if(TextUtils.isEmpty(mobile_no) || mobile_no.length() < mobileNoLength || mobile_no.length() > mobileNoLength){
-            toastUtil.makeText(requireContext(), "Invalid mobile no.", Toast.LENGTH_LONG);
+            showToast("Invalid mobile no.");
             return true;
         }
 
@@ -394,13 +344,11 @@ public class AccountInfoFragment extends Fragment implements AccountInfoInterfac
     @Override
     public void onResume() {
         super.onResume();
-//        layoutViewHelper.showActionBar();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-//        layoutViewHelper.hideActionBar();
     }
 
     @Override

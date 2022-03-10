@@ -2,10 +2,12 @@ package com.aix.mpagents.views.fragments.services;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -27,161 +29,120 @@ import android.widget.Toast;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentAddServiceBinding;
-import com.aix.mpagents.interfaces.AddProductInterface;
+import com.aix.mpagents.interfaces.EditProductInterface;
 import com.aix.mpagents.interfaces.VariantInterface;
 import com.aix.mpagents.models.Category;
 import com.aix.mpagents.models.ProductInfo;
 import com.aix.mpagents.models.ProductType;
 import com.aix.mpagents.models.ServiceInfo;
 import com.aix.mpagents.models.Variant;
+import com.aix.mpagents.utilities.AlertUtils;
 import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.view_models.ServiceViewModel;
 import com.aix.mpagents.views.adapters.AddProductPhotoViewAdapter;
 import com.aix.mpagents.views.adapters.VariantAdapter;
+import com.aix.mpagents.views.fragments.base.BaseAddEditServiceItemFragment;
+import com.aix.mpagents.views.fragments.base.BaseFragment;
+import com.aix.mpagents.views.fragments.base.BaseServiceFragment;
 import com.aix.mpagents.views.fragments.dialogs.AddVariantDialog;
-import com.aix.mpagents.views.fragments.dialogs.ProgressDialogFragment;
+import com.aix.mpagents.views.fragments.dialogs.ProgressDialog;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class AddServiceFragment extends Fragment implements AddProductInterface, VariantInterface {
+public class AddServiceFragment extends BaseAddEditServiceItemFragment {
 
     private FragmentAddServiceBinding binding;
-    private ProductViewModel productViewModel;
-    private ServiceViewModel serviceViewModel;
-    private List<String> photoList = new ArrayList<>();
-    private NavController navController;
+
     private Category categoryModel;
+
     private AddProductPhotoViewAdapter addProductPhotoViewAdapter;
-    private ProgressDialogFragment progressDialogFragment;
-    private ProductType productTypeModel;
+
     private VariantAdapter variantAdapter;
+
     private List<Variant> variants = new ArrayList<>();
 
-    private ActivityResultLauncher<Intent> chooseImageActivityResult = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode() == Activity.RESULT_OK){
-                        Intent data = result.getData();
-
-                        ClipData clipData = data.getClipData();
-                        if (clipData != null) {
-                            for (int i = 0; i < clipData.getItemCount(); i++) {
-                                Uri imageUri = clipData.getItemAt(i).getUri();
-                                // your code for multiple image selection
-                                ErrorLog.WriteDebugLog("DATA RECEIVED "+imageUri);
-                                photoList.add(String.valueOf(imageUri));
-                                initImageRecyclerview(photoList);
-
-                            }
-                        } else {
-                            Uri uri = data.getData();
-                            // your codefor single image selection
-                            ErrorLog.WriteDebugLog("DATA RECEIVED "+uri);
-                            photoList.add(String.valueOf(uri));
-                            initImageRecyclerview(photoList);
-
-                        }
-
-                        ErrorLog.WriteDebugLog( "PHOTO LIST "+ photoList.size());
-                    }
-                }
-            }
-    );
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentAddServiceBinding.inflate(inflater, container, false);
-        return binding.getRoot();
+    public AddServiceFragment() {
+        super(R.layout.fragment_add_service);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
-        serviceViewModel = new ViewModelProvider(requireActivity()).get(ServiceViewModel.class);
-        progressDialogFragment = new ProgressDialogFragment();
-        navController = Navigation.findNavController(view);
-        initObservers();
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        AlertUtils.addProductServiceExit(requireContext(), (dialog, which) -> {
+                            switch (which){
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    navController.popBackStack(R.id.addServiceFragment, true);
+                                    dialog.dismiss();
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    dialog.dismiss();
+                                    break;
+                            }
+                        }, "Add Service");
+                    }
+                });
+
+        binding = FragmentAddServiceBinding.bind(getView());
+
         initVariantFirestoreOptions();
+
         initListeners();
     }
 
-    private void initObservers() {
-        serviceViewModel.isProductSaved().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean){
-                    navController.popBackStack(R.id.addServiceFragment,true);
-                    if(progressDialogFragment!=null){
-                        progressDialogFragment.dismiss();
-                    }
-                    serviceViewModel.isProductSaved().setValue(false);
-                }
-            }
-        });
+    @Override
+    public void onCategorySelected(Category category) {
+        binding.textViewCategoryValue.setText(category.getCategory_name());
 
-        serviceViewModel.getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
-            @Override
-            public void onChanged(Category category) {
-                binding.textViewCategoryValue.setText(category.getCategory_name());
-                categoryModel = category;
-            }
-        });
+        categoryModel = category;
 
-        productViewModel.getProductType("Service").observe(getViewLifecycleOwner(), new Observer<ProductType>() {
-            @Override
-            public void onChanged(ProductType productType) {
-                if(productType != null) {
-//                    binding.textViewProductTypeValue.setText(productType.getName());
-                    productTypeModel = productType;
-                    productViewModel.getSelectedProductType().setValue(productType);
-                }
-            }
-        });
+    }
+
+    @Override
+    public void onPictureSelected(List<String> uriList) {
+        initImageRecyclerview(uriList);
+    }
+
+    @Override
+    public void onItemSaved() {
+        super.onItemSaved();
+
+        navController.popBackStack(R.id.addServiceFragment,true);
+
+        showLoading(false);
     }
 
     private void initVariantFirestoreOptions() {
         variantAdapter = new VariantAdapter(this, variants);
+
         variantAdapter.setHasStableIds(true);
 
         binding.recyclerViewVariants.setAdapter(variantAdapter);
+
         binding.recyclerViewVariants.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         //temporary fix for recyclerview
         binding.recyclerViewVariants.setItemAnimator(null);
     }
 
     private void initListeners() {
-        binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addService();
-            }
-        });
+        binding.buttonSubmit.setOnClickListener(view -> addService());
 
-        binding.buttonAddImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                productViewModel.chooseImage(chooseImageActivityResult);
-            }
-        });
+        binding.buttonAddImage.setOnClickListener(view -> chooseImage());
 
-        binding.textViewCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(productTypeModel != null) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("product_type", "Service");
-                    navController.navigate(R.id.action_addServiceFragment_to_categoryFragment,bundle);
-                }else{
-                    Toast.makeText(requireContext(),"Please select product type",Toast.LENGTH_LONG).show();
-                }
+        binding.textViewCategory.setOnClickListener(view -> {
+            if(getProductType() != null) {
+                Bundle bundle = new Bundle();
+                bundle.putString("product_type", "Service");
+                navController.navigate(R.id.action_addServiceFragment_to_categoryFragment,bundle);
+            }else{
+                Toast.makeText(requireContext(),"Please select product type",Toast.LENGTH_LONG).show();
             }
         });
 
@@ -194,27 +155,33 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
     private void initImageRecyclerview(List<String> photoList){
 
         addProductPhotoViewAdapter = new AddProductPhotoViewAdapter(photoList,requireContext(),this);
+
         addProductPhotoViewAdapter.setHasStableIds(true);
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+
         binding.recyclerView.setAdapter(addProductPhotoViewAdapter);
 
     }
 
     private void addService(){
+        showLoading(true);
 
-        String product_name, description, category, product_type;
+        String product_name, description, category;
+
         double product_price = 0;
+
         product_name = String.valueOf(binding.editTextProductName.getText()).trim();
+
         if(!String.valueOf(binding.editTextPrice.getText()).isEmpty()) {
             product_price = Double.parseDouble(String.valueOf(binding.editTextPrice.getText()).trim());
         }
+
         description = String.valueOf(binding.editTextDescription.getText()).trim();
+
         category = String.valueOf(binding.textViewCategoryValue.getText()).trim();
-        product_type = productTypeModel.getName();
 
-
-        if(!isEmptyFields(product_name,description,category, photoList, product_type)) {
+        if(!isEmptyFields(product_name,description,category, String.valueOf(product_price), addProductPhotoViewAdapter.getItems(), getProductType().getName())) {
             ServiceInfo serviceInfo = new ServiceInfo();
             serviceInfo.setService_name(product_name);
             serviceInfo.setService_price(product_price);
@@ -226,40 +193,12 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
             serviceInfo.setIs_deleted(false);
             serviceInfo.setService_status(ProductInfo.Status.DRAFT);
             serviceInfo.setSearch_name(product_name.toLowerCase() + " " + description.toLowerCase() );
-            serviceViewModel.addService(serviceInfo, photoList, variants);
-            showProgressDialog();
-        }
+            getServiceViewModel().addService(serviceInfo, addProductPhotoViewAdapter.getItems(), variants);
+
+        }else showLoading(false);
     }
 
-    private void showProgressDialog(){
-        progressDialogFragment.show(getChildFragmentManager(),"ADD PRODUCT PROGRESS DIALOG");
-    }
 
-    private boolean isEmptyFields(String product_name, String description, String category, List<String> photoList, String product_type){
-
-        if (TextUtils.isEmpty(product_name)){
-            Toast.makeText(requireContext(), "Empty Product Name", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (String.valueOf(binding.editTextPrice.getText()).isEmpty()){
-            Toast.makeText(requireContext(), "Empty Prodcut Price", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (TextUtils.isEmpty(description)) {
-            Toast.makeText(requireContext(), "Empty Description", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (TextUtils.isEmpty(category)) {
-            Toast.makeText(requireContext(), "Empty Category", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (photoList.isEmpty()) {
-            Toast.makeText(requireContext(), "No product photo", Toast.LENGTH_LONG).show();
-            return true;
-        }else if (TextUtils.isEmpty(product_type)) {
-            Toast.makeText(requireContext(), "Empty Product Type", Toast.LENGTH_LONG).show();
-            return true;
-        }else {
-            return false;
-        }
-
-    }
 
     @Override
     public void onVariantAdd(Variant variant) {
@@ -286,7 +225,9 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
     @Override
     public void onVariantDelete(int position, Variant variant) {
         variants.remove(position);
+
         variantAdapter.notifyItemRemoved(position);
+
         variantAdapter.notifyItemRangeChanged(0, position);
     }
 
@@ -298,13 +239,27 @@ public class AddServiceFragment extends Fragment implements AddProductInterface,
     @Override
     public void onVariantUpdate(int position, Variant variant) {
         variants.get(position).setVariant_name(variant.getVariant_name());
+
         variants.get(position).setStock(variant.getStock());
+
         variantAdapter.notifyItemChanged(position);
     }
 
     @Override
-    public void onImageRemove(int photoPosition) {
-        photoList.remove(photoPosition);
-        addProductPhotoViewAdapter.notifyItemRemoved(photoPosition);
+    public Variant getIsVariantDuplicate(String name) {
+        Variant variant = null;
+        for(Variant variant1: variants){
+            if(name.trim().equalsIgnoreCase(variant1.variant_name.trim())){
+                variant = variant1;
+                break;
+            }
+        }
+        return variant;
+    }
+
+    @Override
+    public void onImageRemove(String uri, int position) {
+        addProductPhotoViewAdapter.getItems().remove(position);
+        addProductPhotoViewAdapter.notifyItemRemoved(position);
     }
 }

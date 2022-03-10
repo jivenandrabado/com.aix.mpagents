@@ -160,6 +160,9 @@
         <action
             android:id="@+id/action_productListFragment_to_searchProductFragment"
             app:destination="@id/searchProductFragment" />
+        <action
+            android:id="@+id/action_productListFragment_to_businessProfileFragment"
+            app:destination="@id/businessProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/categoryFragment"
@@ -272,11 +275,14 @@
         <action
             android:id="@+id/action_serviceListFragment_to_addServiceFragment"
             app:destination="@id/addServiceFragment" />
+        <action
+            android:id="@+id/action_serviceListFragment_to_businessProfileFragment"
+            app:destination="@id/businessProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/editServiceFragment"
         android:name="com.aix.mpagents.views.fragments.services.EditServiceFragment"
-        android:label="EditServiceFragment" >
+        android:label="Edit Service" >
         <action
             android:id="@+id/action_editServiceFragment_to_categoryFragment"
             app:destination="@id/categoryFragment" />
