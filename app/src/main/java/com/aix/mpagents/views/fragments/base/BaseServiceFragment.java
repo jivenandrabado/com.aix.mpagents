@@ -15,6 +15,7 @@ import java.util.List;
 public abstract class BaseServiceFragment extends BaseItemsFragment{
 
     private ServiceViewModel serviceViewModel;
+
     public BaseServiceFragment(int contentLayoutId) {
         super(contentLayoutId);
     }
@@ -22,6 +23,7 @@ public abstract class BaseServiceFragment extends BaseItemsFragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         serviceViewModel = new ViewModelProvider(requireActivity()).get(ServiceViewModel.class);
 
         serviceViewModel.getAllServicesInfo().observe(getViewLifecycleOwner(), this::onAllServiceLoaded);

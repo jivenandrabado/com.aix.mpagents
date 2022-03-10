@@ -39,6 +39,7 @@ import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.view_models.ServiceViewModel;
 import com.aix.mpagents.views.adapters.EditProductPhotoViewAdapter;
 import com.aix.mpagents.views.adapters.VariantsFirestoreAdapter;
+import com.aix.mpagents.views.fragments.base.BaseAddEditServiceItemFragment;
 import com.aix.mpagents.views.fragments.base.BaseServiceFragment;
 import com.aix.mpagents.views.fragments.dialogs.AddVariantDialog;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -47,15 +48,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class EditServiceFragment extends BaseServiceFragment implements EditProductInterface, VariantInterface {
+public class EditServiceFragment extends BaseAddEditServiceItemFragment {
 
     private FragmentEditServiceBinding binding;
 
     private ServiceInfo serviceInfo;
-
-    private List<String> photoList = new ArrayList<>();
-
-    private List<String> newPhotoList = new ArrayList<>();
 
     private List<String> deletePhotoList = new ArrayList<>();
 
@@ -72,11 +69,27 @@ public class EditServiceFragment extends BaseServiceFragment implements EditProd
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         binding = FragmentEditServiceBinding.bind(getView());
-        initObservers();
+
         initListeners();
+
         initView();
+
         initVariantFirestoreOptions();
+    }
+
+    @Override
+    public void onCategorySelected(Category category) {
+        binding.textViewCategoryValue.setText(category.getCategory_name());
+        categoryModel = category;
+    }
+
+    @Override
+    public void onItemSaved() {
+        super.onItemSaved();
+
+        navController.popBackStack(R.id.editServiceFragment,true);
     }
 
     private void initVariantFirestoreOptions() {
@@ -84,32 +97,14 @@ public class EditServiceFragment extends BaseServiceFragment implements EditProd
                 getServiceViewModel().getVariantRecyclerOptions(serviceInfo.getService_id()),
                 this
         );
+
         variantsFirestoreAdapter.setHasStableIds(true);
 
         binding.recyclerViewVariants.setAdapter(variantsFirestoreAdapter);
+
         binding.recyclerViewVariants.setLayoutManager(new LinearLayoutManager(requireContext()));
-        //temporary fix for recyclerview
+
         binding.recyclerViewVariants.setItemAnimator(null);
-    }
-
-    private void initObservers() {
-        getServiceViewModel().isProductSaved().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean){
-                    navController.popBackStack(R.id.editServiceFragment,true);
-                    getServiceViewModel().isProductSaved().setValue(false);
-                }
-            }
-        });
-
-        getServiceViewModel().getSelectedCategory().observe(getViewLifecycleOwner(), new Observer<Category>() {
-            @Override
-            public void onChanged(Category category) {
-                binding.textViewCategoryValue.setText(category.getCategory_name());
-                categoryModel = category;
-            }
-        });
     }
 
     private void initListeners() {
@@ -132,64 +127,66 @@ public class EditServiceFragment extends BaseServiceFragment implements EditProd
     private void initView() {
         try {
             serviceInfo = getServiceViewModel().getSelectedService().getValue();
+
             binding.editTextProductName.setText(serviceInfo.getService_name());
+
             binding.editTextPrice.setText(String.valueOf(serviceInfo.getService_price()));
+
             binding.editTextDescription.setText(serviceInfo.getService_desc());
+
             binding.textViewCategoryValue.setText(serviceInfo.getCategory_name());
+
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);
         }
 
         getServiceViewModel().getMedia(serviceInfo.getService_id());
-        getServiceViewModel().getMediaList().observe(getViewLifecycleOwner(), new Observer<List<Media>>() {
-            @Override
-            public void onChanged(List<Media> media) {
-                if(media != null) {
-                    photoList.clear();
-                    for (int i = 0; i < media.size(); i++) {
-                        if (!photoList.contains(media.get(i).getPath())) {
-                            photoList.add(media.get(i).getPath());
-                        }
-                    }
 
-                    ErrorLog.WriteDebugLog("MEDIA LIST SIZE " + media.size());
-                    initImageRecyclerview(photoList);
+        getServiceViewModel().getMediaList().observe(getViewLifecycleOwner(), media -> {
+            if(media != null) {
 
-                    getServiceViewModel().getMediaList().setValue(null);
-                }
+                List<String> uris = new ArrayList<>();
 
+                for (int i = 0; i < media.size(); i++) uris.add(media.get(i).getPath());
+
+                initImageRecyclerview(uris);
+
+                getServiceViewModel().getMediaList().setValue(null);
             }
         });
+    }
 
-        getServiceViewModel().isProductUpdated().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean){
-                    showToast("Service Updated");
-                    getServiceViewModel().isProductUpdated().setValue(false);
-                    navController.popBackStack(R.id.editServiceFragment,true);
-                }
-            }
-        });
+    @Override
+    public void onItemUpdated() {
+        super.onItemUpdated();
 
+        showToast("Service Updated");
+
+        navController.popBackStack(R.id.editServiceFragment,true);
     }
 
     private void updateProduct() {
 
         String product_name, description, category;
+
         double product_price = 0;
+
         product_name = String.valueOf(binding.editTextProductName.getText()).trim();
-        if(!String.valueOf(binding.editTextPrice.getText()).isEmpty()) {
+
+        if(!String.valueOf(binding.editTextPrice.getText()).isEmpty())
             product_price = Double.parseDouble(String.valueOf(binding.editTextPrice.getText()).trim());
-        }
+
         description = String.valueOf(binding.editTextDescription.getText()).trim();
+
         category = String.valueOf(binding.textViewCategoryValue.getText()).trim();
 
-
-        if(!isEmptyFields(product_name,description,category)) {
+        if(!isEmptyFields(product_name, description, category, String.valueOf(product_price), editProductPhotoViewAdapter.getItems(), getProductType().getName())) {
             serviceInfo.setService_name(product_name);
+
             serviceInfo.setService_price(product_price);
+
             serviceInfo.setService_desc(description);
+
             serviceInfo.setDateUpdated(new Date());
 
             if(categoryModel!=null) {
@@ -198,107 +195,41 @@ public class EditServiceFragment extends BaseServiceFragment implements EditProd
             }
 
             ErrorLog.WriteDebugLog("PRODUCT ID "+ serviceInfo.getService_id());
-            getServiceViewModel().updateService(serviceInfo,newPhotoList,deletePhotoList);
+
+            getServiceViewModel().updateService(serviceInfo,editProductPhotoViewAdapter.getItems(),deletePhotoList);
         }
     }
-
-    private boolean isEmptyFields(String product_name, String description, String category){
-
-        if (TextUtils.isEmpty(product_name)){
-            showToast("Empty Product Name");
-            return true;
-        }else if (String.valueOf(binding.editTextPrice.getText()).isEmpty()){
-            showToast("Empty Prodcut Price");
-            return true;
-        }else if (TextUtils.isEmpty(description)) {
-            showToast("Empty Description");
-            return true;
-        }else if (TextUtils.isEmpty(category)) {
-            showToast("Empty Category");
-            return true;
-        }else{
-            return false;
-        }
-
-    }
-
-
-    private void chooseImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        chooseImageActivityResult.launch(intent);
-    }
-
-    private ActivityResultLauncher<Intent> chooseImageActivityResult = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    if(result.getResultCode() == Activity.RESULT_OK){
-                        Intent data = result.getData();
-
-                        ClipData clipData = data.getClipData();
-                        if (clipData != null) {
-                            for (int i = 0; i < clipData.getItemCount(); i++) {
-                                Uri imageUri = clipData.getItemAt(i).getUri();
-                                // code for multiple image selection
-                                ErrorLog.WriteDebugLog("DATA RECEIVED "+imageUri);
-                                newPhotoList.add(String.valueOf(imageUri));
-                                photoList.add(String.valueOf(imageUri));
-                            }
-                            initImageRecyclerview(photoList);
-
-                        } else {
-                            Uri uri = data.getData();
-                            // your code for single image selection
-                            ErrorLog.WriteDebugLog("DATA RECEIVED "+uri);
-                            newPhotoList.add(String.valueOf(uri));
-                            photoList.add(String.valueOf(uri));
-                            initImageRecyclerview(photoList);
-
-                        }
-
-                        ErrorLog.WriteDebugLog("PHOTO LIST "+ photoList.size());
-                    }
-                }
-            }
-    );
 
     private void initImageRecyclerview(List<String> photoList){
 
         editProductPhotoViewAdapter = new EditProductPhotoViewAdapter(photoList,requireContext(),this);
+
         editProductPhotoViewAdapter.setHasStableIds(true);
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        binding.recyclerView.setAdapter(editProductPhotoViewAdapter);
 
+        binding.recyclerView.setAdapter(editProductPhotoViewAdapter);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if(variantsFirestoreAdapter != null){
-            variantsFirestoreAdapter.startListening();
-        }
+        if(variantsFirestoreAdapter != null) variantsFirestoreAdapter.startListening();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
         variantsFirestoreAdapter.stopListening();
     }
 
     @Override
-    public void onImageRemove(int photoPosition) {
+    public void onImageRemove(String uri, int position) {
 
-        newPhotoList.remove(photoList.get(photoPosition));
-        deletePhotoList.add(photoList.get(photoPosition));
-        photoList.remove(photoPosition);
-        editProductPhotoViewAdapter.notifyItemRemoved(photoPosition);
+        deletePhotoList.add(uri);
 
+        editProductPhotoViewAdapter.notifyItemRemoved(position);
 
     }
 
@@ -349,4 +280,10 @@ public class EditServiceFragment extends BaseServiceFragment implements EditProd
         }
         return variant;
     }
+
+    @Override
+    public void onPictureSelected(List<String> uriList) {
+        initImageRecyclerview(uriList);
+    }
+
 }

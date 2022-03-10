@@ -23,8 +23,11 @@ import com.aix.mpagents.utilities.AlertUtils;
 public class AddVariantDialog extends DialogFragment {
 
     private DialogAddVariantBinding binding;
+
     private VariantInterface variantInterface;
+
     private int position;
+
     private Variant variant;
 
     public AddVariantDialog(VariantInterface variantInterface){
@@ -89,7 +92,7 @@ public class AddVariantDialog extends DialogFragment {
         name = binding.editTextVariantName.getText().toString();
         stock = binding.editTextVariantStock.getText().toString();
         if(isNotEmpty(name, stock)){
-            if(variantInterface.getIsVariantDuplicate(name) != null){
+            if(variant == null && variantInterface.getIsVariantDuplicate(name) != null){
                 AlertUtils.duplicationAlert(requireContext(), (dialog, which) -> {
                     switch (which){
                         case DialogInterface.BUTTON_POSITIVE:

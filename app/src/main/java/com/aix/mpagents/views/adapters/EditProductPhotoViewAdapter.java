@@ -22,38 +22,41 @@ import java.util.List;
 public class EditProductPhotoViewAdapter extends RecyclerView.Adapter<EditProductPhotoViewAdapter.ViewHolder> {
 
     private Context context;
-    private List<String> photo_path = new ArrayList<>();
+
+    private List<String> photo_path;
+
     private EditProductInterface editProductInterface;
 
     public EditProductPhotoViewAdapter(List<String> photo_path, Context context, EditProductInterface editProductInterface) {
+
         this.photo_path = photo_path;
+
         this.context = context;
+
         this.editProductInterface = editProductInterface;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+
         ItemImageviewBinding binding = ItemImageviewBinding.inflate(layoutInflater, parent, false);
+
         return new ViewHolder(binding);
     }
 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(context).load(Uri.parse(photo_path.get(position)))
-//                .apply(requestOptions)
-//                .transition(DrawableTransitionOptions.withCrossFade())
+        String photo = photo_path.get(position);
+
+        Glide.with(context).load(Uri.parse(photo))
                 .centerCrop()
                 .error(R.drawable.ic_baseline_photo_24).into(holder.imageView);
 
-        holder.imageButtonRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                editProductInterface.onImageRemove(holder.getAbsoluteAdapterPosition());
-            }
-        });
+        holder.imageButtonRemove.setOnClickListener(view -> editProductInterface.onImageRemove(photo, position));
     }
 
     @Override
@@ -61,13 +64,21 @@ public class EditProductPhotoViewAdapter extends RecyclerView.Adapter<EditProduc
         return photo_path.size();
     }
 
+    public List<String> getItems(){
+        return photo_path;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
+
         ImageView imageView;
+
         ImageButton imageButtonRemove;
 
         public ViewHolder(@NonNull ItemImageviewBinding binding) {
             super(binding.getRoot());
+
             imageView = binding.imageViewPhoto;
+
             imageButtonRemove = binding.imageButtonRemove;
         }
     }

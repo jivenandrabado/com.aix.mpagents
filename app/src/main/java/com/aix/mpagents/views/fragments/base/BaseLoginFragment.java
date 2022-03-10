@@ -32,26 +32,36 @@ public abstract class BaseLoginFragment extends BaseFragment{
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
+
                     showLoading(true);
+
                     Intent data = result.getData();
+
                     ErrorLog.WriteDebugLog("Activity result received" + data);
+
                     Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+
                     try {
                         // Google Sign In was successful, authenticate with Firebase
                         GoogleSignInAccount account = task.getResult(ApiException.class);
+
                         ErrorLog.WriteDebugLog("firebaseAuthWithGoogle:" + account.getId());
+
                         AccountInfo accountInfo = new AccountInfo();
 
                         ErrorLog.WriteDebugLog("firebaseAuthWithGoogle:" + account.getId());
+
                         loginViewModel.loginWithGoogle(account.getIdToken(), accountInfo);
+
                     } catch (ApiException e) {
+
                         showLoading(false);
+
                         ErrorLog.WriteDebugLog("Google sign in failed");
+
                     }
 
-                }else{
-                    ErrorLog.WriteDebugLog("Activity result error" +result.getResultCode());
-                }
+                }else ErrorLog.WriteDebugLog("Activity result error" +result.getResultCode());
             });
 
     public BaseLoginFragment(int contentLayoutId) {
@@ -61,12 +71,19 @@ public abstract class BaseLoginFragment extends BaseFragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+
         firebaseUserHelper = new FirebaseUserHelper();
+
         loginViewModel.getErrorMessage().observe(getViewLifecycleOwner(), message -> {
+
             if(!message.isEmpty()){
+
                 showToast(message);
+
                 loginViewModel.getErrorMessage().setValue("");
+
             }
         });
     }

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.ItemImageviewBinding;
 import com.aix.mpagents.interfaces.AddProductInterface;
+import com.aix.mpagents.interfaces.EditProductInterface;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
@@ -22,36 +23,37 @@ import java.util.List;
 public class AddProductPhotoViewAdapter extends RecyclerView.Adapter<AddProductPhotoViewAdapter.ViewHolder>{
 
     private Context context;
+
     private List<String> photo_path = new ArrayList<>();
-    private AddProductInterface addProductInterface;
-    public AddProductPhotoViewAdapter(List<String> photo_path, Context context, AddProductInterface addProductInterface) {
+
+    private EditProductInterface editProductInterface;
+    public AddProductPhotoViewAdapter(List<String> photo_path, Context context, EditProductInterface editProductInterface) {
         this.photo_path = photo_path;
+
         this.context = context;
-        this.addProductInterface = addProductInterface;
+
+        this.editProductInterface = editProductInterface;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+
         ItemImageviewBinding binding = ItemImageviewBinding.inflate(layoutInflater,parent,false);
+
         return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Glide.with(context).load(Uri.parse(photo_path.get(position)))
-//                .apply(requestOptions)
-//                .transition(DrawableTransitionOptions.withCrossFade())
+        String uri = photo_path.get(position);
+
+        Glide.with(context).load(uri)
                 .centerCrop()
                 .error(R.drawable.ic_baseline_photo_24).into(holder.imageView);
 
-        holder.imageButtonRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addProductInterface.onImageRemove(holder.getAbsoluteAdapterPosition());
-            }
-        });
+        holder.imageButtonRemove.setOnClickListener(view -> editProductInterface.onImageRemove(uri, position));
     }
 
     @Override
@@ -59,8 +61,11 @@ public class AddProductPhotoViewAdapter extends RecyclerView.Adapter<AddProductP
         return photo_path.size();
     }
 
+    public List<String> getItems(){
+        return photo_path;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ItemImageviewBinding binding;
         ImageView imageView;
         ImageButton imageButtonRemove;
         public ViewHolder(@NonNull ItemImageviewBinding binding) {

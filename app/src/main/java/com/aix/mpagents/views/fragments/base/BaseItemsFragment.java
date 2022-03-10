@@ -11,14 +11,10 @@ import com.aix.mpagents.view_models.AccountInfoViewModel;
 
 public abstract class BaseItemsFragment extends BaseFragment{
 
-
-
     protected ActivityResultLauncher<Intent> onShareResult = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                if(result.getResultCode() == Activity.RESULT_OK){
-                    Toast.makeText(requireContext(), "Product shared!", Toast.LENGTH_SHORT).show();
-                }
+                if(result.getResultCode() == Activity.RESULT_OK) showToast("Product shared!");
             }
     );
 

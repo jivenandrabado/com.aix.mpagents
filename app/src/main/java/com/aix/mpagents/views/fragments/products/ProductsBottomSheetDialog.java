@@ -21,9 +21,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 public class ProductsBottomSheetDialog extends BottomSheetDialogFragment {
 
     private ProductViewModel productViewModel;
+
     private BottomSheetDialogProductsBinding binding;
+
     private ProductInfo productInfo;
+
     private DeleteProductDialog deleteProductDialog;
+
     private ProductInterface productInterface;
 
     public ProductsBottomSheetDialog(ProductInterface productInterface) {
@@ -35,8 +39,8 @@ public class ProductsBottomSheetDialog extends BottomSheetDialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = BottomSheetDialogProductsBinding.inflate(inflater,container,false);
-        return binding.getRoot();
 
+        return binding.getRoot();
     }
 
     @Override
@@ -45,28 +49,15 @@ public class ProductsBottomSheetDialog extends BottomSheetDialogFragment {
 
         initViews();
 
-        binding.textViewDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                initProductDeleteDialog();
-            }
-        });
+        binding.textViewDelete.setOnClickListener(view1 -> initProductDeleteDialog());
 
-        binding.textViewEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                productInterface.onEditProduct(productViewModel.getSelectedProduct().getValue());
-            }
-        });
+        binding.textViewEdit.setOnClickListener(view12 -> productInterface.onEditProduct(productViewModel.getSelectedProduct().getValue()));
 
 
-        productViewModel.isProductDeleted().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean aBoolean) {
-                if(aBoolean){
-                    dismiss();
-                    productViewModel.isProductDeleted().setValue(false);
-                }
+        productViewModel.isProductDeleted().observe(getViewLifecycleOwner(), aBoolean -> {
+            if(aBoolean){
+                dismiss();
+                productViewModel.isProductDeleted().setValue(false);
             }
         });
     }

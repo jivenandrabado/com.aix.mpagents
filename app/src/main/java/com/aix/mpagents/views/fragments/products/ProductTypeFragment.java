@@ -19,39 +19,35 @@ import com.aix.mpagents.interfaces.ProductTypeInterface;
 import com.aix.mpagents.models.ProductType;
 import com.aix.mpagents.view_models.ProductViewModel;
 import com.aix.mpagents.views.adapters.ProductTypeFirestoreAdapter;
+import com.aix.mpagents.views.fragments.base.BaseProductFragment;
 
 
-public class ProductTypeFragment extends Fragment implements ProductTypeInterface {
+public class ProductTypeFragment extends BaseProductFragment implements ProductTypeInterface {
 
     private FragmentProductTypeBinding binding;
-    private ProductViewModel productViewModel;
+
     private ProductTypeFirestoreAdapter productTypeFirestoreAdapter;
-    private NavController navController;
 
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        binding = FragmentProductTypeBinding.inflate(inflater,container,false);
-        return binding.getRoot();
+    public ProductTypeFragment() {
+        super(R.layout.fragment_product_type);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        navController = Navigation.findNavController(view);
-        productViewModel = new ViewModelProvider(requireActivity()).get(ProductViewModel.class);
+        binding = FragmentProductTypeBinding.bind(getView());
 
         initProductType();
 
     }
 
     private void initProductType(){
-        productTypeFirestoreAdapter = new ProductTypeFirestoreAdapter(productViewModel.getProductTypeRecyclerOptions(),this);
+        productTypeFirestoreAdapter = new ProductTypeFirestoreAdapter(getProductViewModel().getProductTypeRecyclerOptions(),this);
+
         productTypeFirestoreAdapter.setHasStableIds(true);
 
         binding.recyclerViewProductType.setAdapter(productTypeFirestoreAdapter);
+
         binding.recyclerViewProductType.setLayoutManager(new LinearLayoutManager(requireContext()));
         //temporary fix for recyclerview
         binding.recyclerViewProductType.setItemAnimator(null);
@@ -75,10 +71,9 @@ public class ProductTypeFragment extends Fragment implements ProductTypeInterfac
         }
     }
 
-
     @Override
     public void onProductTypeClick(ProductType productType) {
-        productViewModel.getSelectedProductType().setValue(productType);
+        getProductViewModel().getSelectedProductType().setValue(productType);
         navController.popBackStack(R.id.productTypeFragment,true);
     }
 }

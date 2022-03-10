@@ -42,24 +42,36 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         navController = Navigation.findNavController(view);
+
         userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
+
         accountInfoViewModel = new ViewModelProvider(requireActivity()).get(AccountInfoViewModel.class);
+
         userSharedViewModel.isUserLoggedin().observe(getViewLifecycleOwner(), this::isUserLogin);
+
         accountInfoViewModel.getAccountInfo().observe(getViewLifecycleOwner(), this::onInfoLoaded);
     }
 
     public void showLoading(boolean isLoading){
+
         if(loading == null) loading = new ProgressDialog(requireContext());
+
         if(isLoading) loading.show();
+
         else loading.dismiss();
+
     }
 
     public void onInfoLoaded(AccountInfo userInfo){ }
 
     public void showToast(String message){
+
         if(toastUtil == null) toastUtil = new ToastUtil();
+
         toastUtil.makeText(requireContext(), message, Toast.LENGTH_SHORT);
+
     }
 
     public void isUserLogin(Boolean isLogin){
@@ -68,8 +80,11 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public void onPause() {
+
         super.onPause();
+
         accountInfoViewModel.detachAccountInfoListener();
+
     }
 
     public String getSignInMethod(){
