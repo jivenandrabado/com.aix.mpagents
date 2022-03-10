@@ -55,7 +55,7 @@ public abstract class BaseAddEditServiceItemFragment extends BaseServiceFragment
                             Uri uri = data.getData();
                             uriList.add(String.valueOf(uri));
                         }
-                        onPictureSelected(uriList);
+                        getServiceViewModel().getPictureSelectedList().setValue(uriList);
                     }
                 }
             }
@@ -80,6 +80,8 @@ public abstract class BaseAddEditServiceItemFragment extends BaseServiceFragment
         getServiceViewModel().isProductUpdated().observe(getViewLifecycleOwner(), isUpdated -> {
             if(isUpdated) onItemUpdated();
         });
+
+        getServiceViewModel().getPictureSelectedList().observe(getViewLifecycleOwner(), this::onPictureSelected);
     }
 
     public void onProductTypeSet(ProductType type){

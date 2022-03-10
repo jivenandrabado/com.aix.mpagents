@@ -27,6 +27,7 @@ public class ProductViewModel extends ViewModel {
     private MutableLiveData<Category> selectedCategory = new MutableLiveData<>();
     private MutableLiveData<ProductInfo> selectedProduct = new MutableLiveData<>();
     private MutableLiveData<ProductType> selectedProductType = new MutableLiveData<>();
+    private MutableLiveData<List<String>> pictureSelectedList = new MutableLiveData<>();
 
     public void addProduct(ProductInfo productInfo, List<String> photoList, List<Variant> variants){
         productRepo.addProduct(productInfo,photoList,variants);
@@ -134,5 +135,9 @@ public class ProductViewModel extends ViewModel {
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         activityResult.launch(intent);
+    }
+
+    public MutableLiveData<List<String>> getPictureSelectedList() {
+        return pictureSelectedList;
     }
 }

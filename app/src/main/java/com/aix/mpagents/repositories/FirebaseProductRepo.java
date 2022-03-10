@@ -534,13 +534,18 @@ public class FirebaseProductRepo {
         try{
             productsListener = db.collection(FirestoreConstants.MPARTNER_PRODUCTS)
                     .whereEqualTo("merchant_id", userId)
+                    .whereNotEqualTo("product_status", ProductInfo.Status.DELETED)
                     .addSnapshotListener((value, error) -> {
-                        List<ProductInfo> products = new ArrayList<>();
-                        for(DocumentSnapshot product: value.getDocuments()){
-                            ProductInfo productInfo = product.toObject(ProductInfo.class);
-                            products.add(productInfo);
+                        try {
+                            List<ProductInfo> products = new ArrayList<>();
+                            for(DocumentSnapshot product: value.getDocuments()){
+                                ProductInfo productInfo = product.toObject(ProductInfo.class);
+                                products.add(productInfo);
+                            }
+                            allProducts.setValue(products);
+                        }catch (Exception e){
+                            ErrorLog.WriteErrorLog(e);
                         }
-                        allProducts.setValue(products);
                     });
         }catch (Exception e){
             ErrorLog.WriteErrorLog(e);

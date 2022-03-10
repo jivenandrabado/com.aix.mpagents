@@ -32,16 +32,16 @@ public class PhoneLoginFragment extends BaseLoginFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
         binding = FragmentPhoneLoginBinding.bind(getView());
         initObservers();
         initListeners();
-        super.onViewCreated(view, savedInstanceState);
     }
 
     private void initObservers() {
         getLoginViewModel().getVerificationId().observe(getViewLifecycleOwner(), result -> {
-            navController.navigate(R.id.action_phoneLoginFragment_to_phoneVerificationFragment);
+            if(result != null) navController.navigate(R.id.action_phoneLoginFragment_to_phoneVerificationFragment);
         });
     }
 

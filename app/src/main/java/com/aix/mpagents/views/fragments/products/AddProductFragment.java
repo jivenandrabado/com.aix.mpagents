@@ -138,7 +138,6 @@ public class AddProductFragment extends BaseAddEditProductItemFragment {
 
         category = String.valueOf(binding.textViewCategoryValue.getText()).trim();
 
-
         if(!isEmptyFields(product_name,description,category, String.valueOf(product_price), addProductPhotoViewAdapter.getItems(), getProductType().getName())) {
             ProductInfo productInfo = new ProductInfo();
             productInfo.setProduct_name(product_name);
@@ -159,7 +158,7 @@ public class AddProductFragment extends BaseAddEditProductItemFragment {
 
             getProductViewModel().addProduct(productInfo, addProductPhotoViewAdapter.getItems(), variants);
 
-        }
+        }else showLoading(false);
     }
 
     private void initImageRecyclerview(List<String> photoList){

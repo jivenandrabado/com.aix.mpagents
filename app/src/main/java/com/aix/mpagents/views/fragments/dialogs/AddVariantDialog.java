@@ -113,21 +113,29 @@ public class AddVariantDialog extends DialogFragment {
     }
 
     private void updateVariant(String name, String stock) {
-        variant.setVariant_name(name);
-        variant.setStock(Integer.parseInt(stock));
-        if(variant.getVariant_id() != null)
-            variantInterface.onVariantUpdate(variant);
-        else
-            variantInterface.onVariantUpdate(position,variant);
-        dismiss();
+        if(Integer.parseInt(stock) > 0){
+            variant.setVariant_name(name);
+            variant.setStock(Integer.parseInt(stock));
+            if(variant.getVariant_id() != null)
+                variantInterface.onVariantUpdate(variant);
+            else
+                variantInterface.onVariantUpdate(position,variant);
+            dismiss();
+        }else {
+            Toast.makeText(requireContext(), "Stock is empty", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addVariant(String name, String stock) {
-        Variant variant = new Variant();
-        variant.setVariant_name(name);
-        variant.setStock(Integer.parseInt(stock));
-        variantInterface.onVariantAdd(variant);
-        dismiss();
+        if(Integer.parseInt(stock) > 0){
+            Variant variant = new Variant();
+            variant.setVariant_name(name);
+            variant.setStock(Integer.parseInt(stock));
+            variantInterface.onVariantAdd(variant);
+            dismiss();
+        }else {
+            Toast.makeText(requireContext(), "Stock is empty", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean isNotEmpty(String variantName, String stock) {

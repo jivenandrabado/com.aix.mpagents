@@ -99,13 +99,10 @@ public class ServiceListFragment extends BaseServiceFragment implements ServiceI
         binding.recyclerViewProducts.setItemAnimator(null);
 
         servicesNamesAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, serviceNames);
+
         binding.listViewSearchProducts.setAdapter(servicesNamesAdapter);
-        binding.listViewSearchProducts.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                toSearchResultPage(((TextView) view).getText().toString());
-            }
-        });
+
+        binding.listViewSearchProducts.setOnItemClickListener((adapterView, view, i, l) -> toSearchResultPage(((TextView) view).getText().toString()));
     }
 
     private void toSearchResultPage(String s) {

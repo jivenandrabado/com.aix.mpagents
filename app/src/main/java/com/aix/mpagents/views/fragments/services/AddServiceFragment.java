@@ -53,8 +53,6 @@ public class AddServiceFragment extends BaseAddEditServiceItemFragment {
 
     private FragmentAddServiceBinding binding;
 
-    private List<String> photoList = new ArrayList<>();
-
     private Category categoryModel;
 
     private AddProductPhotoViewAdapter addProductPhotoViewAdapter;
@@ -163,7 +161,7 @@ public class AddServiceFragment extends BaseAddEditServiceItemFragment {
 
         category = String.valueOf(binding.textViewCategoryValue.getText()).trim();
 
-        if(!isEmptyFields(product_name,description,category, String.valueOf(product_price), photoList, getProductType().getName())) {
+        if(!isEmptyFields(product_name,description,category, String.valueOf(product_price), addProductPhotoViewAdapter.getItems(), getProductType().getName())) {
             ServiceInfo serviceInfo = new ServiceInfo();
             serviceInfo.setService_name(product_name);
             serviceInfo.setService_price(product_price);
@@ -175,8 +173,9 @@ public class AddServiceFragment extends BaseAddEditServiceItemFragment {
             serviceInfo.setIs_deleted(false);
             serviceInfo.setService_status(ProductInfo.Status.DRAFT);
             serviceInfo.setSearch_name(product_name.toLowerCase() + " " + description.toLowerCase() );
-            getServiceViewModel().addService(serviceInfo, photoList, variants);
-        }
+            getServiceViewModel().addService(serviceInfo, addProductPhotoViewAdapter.getItems(), variants);
+
+        }else showLoading(false);
     }
 
 

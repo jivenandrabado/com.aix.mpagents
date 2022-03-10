@@ -182,7 +182,8 @@ public class EditProductFragment extends BaseAddEditProductItemFragment{
             }
 
             getProductViewModel().updateProduct(productInfo,editProductPhotoViewAdapter.getItems(),deletePhotoList);
-        }
+
+        }else showLoading(false);
     }
 
     @Override

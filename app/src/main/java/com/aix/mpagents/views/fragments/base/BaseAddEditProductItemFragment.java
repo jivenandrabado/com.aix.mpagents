@@ -46,7 +46,7 @@ public abstract class BaseAddEditProductItemFragment extends BaseProductFragment
                         Uri uri = data.getData();
                         uriList.add(String.valueOf(uri));
                     }
-                    onPictureSelected(uriList);
+                    getProductViewModel().getPictureSelectedList().setValue(uriList);
                 }
             }
     );
@@ -54,7 +54,6 @@ public abstract class BaseAddEditProductItemFragment extends BaseProductFragment
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
 
         getProductViewModel().getProductType("Service").observe(getViewLifecycleOwner(), productType -> {
             if(productType != null) onProductTypeSet(productType);
@@ -69,6 +68,8 @@ public abstract class BaseAddEditProductItemFragment extends BaseProductFragment
         getProductViewModel().isProductUpdated().observe(getViewLifecycleOwner(), isUpdated -> {
             if(isUpdated) onItemUpdated();
         });
+
+        getProductViewModel().getPictureSelectedList().observe(getViewLifecycleOwner(), this::onPictureSelected);
     }
 
     public void onProductTypeSet(ProductType type){

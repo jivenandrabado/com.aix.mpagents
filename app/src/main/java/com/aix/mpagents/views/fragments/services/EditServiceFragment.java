@@ -197,7 +197,8 @@ public class EditServiceFragment extends BaseAddEditServiceItemFragment {
             ErrorLog.WriteDebugLog("PRODUCT ID "+ serviceInfo.getService_id());
 
             getServiceViewModel().updateService(serviceInfo,editProductPhotoViewAdapter.getItems(),deletePhotoList);
-        }
+
+        }else showLoading(false);
     }
 
     private void initImageRecyclerview(List<String> photoList){

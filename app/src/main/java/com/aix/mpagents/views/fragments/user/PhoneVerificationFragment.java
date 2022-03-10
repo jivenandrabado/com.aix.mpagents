@@ -32,31 +32,30 @@ public class PhoneVerificationFragment extends BaseLoginFragment {
 
     public MutableLiveData<String> verificationCode = new MutableLiveData<>();
 
+    private CountDownTimer timer;
+
     public PhoneVerificationFragment() {
         super(R.layout.fragment_phone_verification);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding = FragmentPhoneVerificationBinding.bind(getView());
+        binding.setView(this);
+        binding.setLifecycleOwner(this);
         initTimer(60);
         initObservers();
         initListeners();
-        super.onViewCreated(view, savedInstanceState);
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentPhoneVerificationBinding.inflate(inflater, container, false);
-        binding.setView(this);
-        binding.setLifecycleOwner(this);
-        return binding.getRoot();
-    }
 
     @Override
     public void isUserLogin(Boolean isLogin) {
-        if(isLogin) navController.navigate(R.id.action_phoneVerificationFragment_to_homeFragment);
+        if(isLogin) {
+            showLoading(false);
+            navController.navigate(R.id.action_phoneVerificationFragment_to_homeFragment);
+        }
     }
 
     private void initObservers() {
@@ -84,6 +83,7 @@ public class PhoneVerificationFragment extends BaseLoginFragment {
 
     private void phoneLogin() {
         if(isVerificationNotEmpty()){
+            showLoading(true);
             UIUtil.hideKeyboard(requireActivity());
             getLoginViewModel().loginWithPhone(verificationCode.getValue());
         }
@@ -96,7 +96,7 @@ public class PhoneVerificationFragment extends BaseLoginFragment {
     private void initTimer(int seconds) {
         getLoginViewModel().getIsResendAvailable().setValue(false);
         Long milliSeconds = seconds * 1000L;
-        new CountDownTimer(milliSeconds, 1000) {
+        timer = new CountDownTimer(milliSeconds, 1000) {
             @SuppressLint("SetTextI18n")
             @Override
             public void onTick(long l) {
@@ -108,5 +108,11 @@ public class PhoneVerificationFragment extends BaseLoginFragment {
                 getLoginViewModel().getIsResendAvailable().setValue(true);
             }
         }.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
     }
 }

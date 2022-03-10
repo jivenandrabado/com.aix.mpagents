@@ -70,7 +70,6 @@ public abstract class BaseLoginFragment extends BaseFragment{
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
         loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
 
@@ -86,6 +85,7 @@ public abstract class BaseLoginFragment extends BaseFragment{
 
             }
         });
+        super.onViewCreated(view, savedInstanceState);
     }
 
     protected LoginViewModel getLoginViewModel(){

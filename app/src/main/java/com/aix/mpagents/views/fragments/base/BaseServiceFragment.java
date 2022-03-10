@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.aix.mpagents.models.ServiceInfo;
+import com.aix.mpagents.utilities.ErrorLog;
 import com.aix.mpagents.view_models.ServiceViewModel;
 
 import java.util.List;
@@ -29,7 +30,9 @@ public abstract class BaseServiceFragment extends BaseItemsFragment{
         serviceViewModel.getAllServicesInfo().observe(getViewLifecycleOwner(), this::onAllServiceLoaded);
     }
 
-    public void onAllServiceLoaded(List<ServiceInfo> list){}
+    public void onAllServiceLoaded(List<ServiceInfo> list){
+        ErrorLog.WriteDebugLog(String.valueOf(list.size()));
+    }
 
     @Override
     public void isUserLogin(Boolean isLogin) {
