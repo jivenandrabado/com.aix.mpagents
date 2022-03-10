@@ -27,7 +27,6 @@ import android.widget.Toast;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentAddServiceBinding;
-import com.aix.mpagents.interfaces.AddProductInterface;
 import com.aix.mpagents.interfaces.EditProductInterface;
 import com.aix.mpagents.interfaces.VariantInterface;
 import com.aix.mpagents.models.Category;
@@ -241,6 +240,7 @@ public class AddServiceFragment extends BaseAddEditServiceItemFragment {
 
     @Override
     public void onImageRemove(String uri, int position) {
+        addProductPhotoViewAdapter.getItems().remove(position);
         addProductPhotoViewAdapter.notifyItemRemoved(position);
     }
 }

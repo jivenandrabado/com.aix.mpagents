@@ -218,6 +218,7 @@ public class EditProductFragment extends BaseAddEditProductItemFragment{
     @Override
     public void onImageRemove(String uri, int photoPosition) {
         deletePhotoList.add(uri);
+        editProductPhotoViewAdapter.getItems().remove(photoPosition);
         editProductPhotoViewAdapter.notifyItemRemoved(photoPosition);
     }
 

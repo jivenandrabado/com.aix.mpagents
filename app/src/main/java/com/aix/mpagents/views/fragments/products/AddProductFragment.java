@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.FragmentAddProductBinding;
-import com.aix.mpagents.interfaces.AddProductInterface;
 import com.aix.mpagents.interfaces.EditProductInterface;
 import com.aix.mpagents.interfaces.VariantInterface;
 import com.aix.mpagents.models.Category;
@@ -222,6 +221,7 @@ public class AddProductFragment extends BaseAddEditProductItemFragment {
 
     @Override
     public void onImageRemove(String uri, int position) {
+        addProductPhotoViewAdapter.getItems().remove(position);
         addProductPhotoViewAdapter.notifyItemRemoved(position);
     }
 

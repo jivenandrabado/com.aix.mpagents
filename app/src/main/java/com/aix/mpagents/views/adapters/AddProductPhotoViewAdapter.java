@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aix.mpagents.R;
 import com.aix.mpagents.databinding.ItemImageviewBinding;
-import com.aix.mpagents.interfaces.AddProductInterface;
 import com.aix.mpagents.interfaces.EditProductInterface;
 import com.bumptech.glide.Glide;
 

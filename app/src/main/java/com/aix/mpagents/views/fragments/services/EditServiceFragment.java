@@ -229,6 +229,8 @@ public class EditServiceFragment extends BaseAddEditServiceItemFragment {
 
         deletePhotoList.add(uri);
 
+        editProductPhotoViewAdapter.getItems().remove(position);
+
         editProductPhotoViewAdapter.notifyItemRemoved(position);
 
     }
