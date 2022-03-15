@@ -38,6 +38,7 @@ import com.aix.mpagents.views.fragments.base.BaseServiceFragment;
 import com.aix.mpagents.views.fragments.dialogs.AddProductsRequirementsDialog;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,8 +59,6 @@ public class ServiceListFragment extends BaseServiceFragment implements ServiceI
     private SearchView searchView = null;
 
     private AccountInfo accountInfo;
-
-    private HashMap<Integer,String> tabs = new HashMap<>();
 
     public ServiceListFragment() {
         super(R.layout.fragment_service_list);
@@ -112,25 +111,7 @@ public class ServiceListFragment extends BaseServiceFragment implements ServiceI
     }
 
     private void initTabs() {
-        tabs.put(R.id.draft, "Draft");
-        tabs.put(R.id.online, "Online");
-        tabs.put(R.id.inactive, "Inactive");
-
-        binding.tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        for(Map.Entry<Integer,String> tab: tabs.entrySet()){
-            TabLayout.Tab newTab = binding.tabLayout.newTab();
-            newTab.setId(tab.getKey());
-            newTab.setText(tab.getValue());
-            binding.tabLayout.addTab(newTab);
-        }
         binding.tabLayout.addOnTabSelectedListener(this);
-
-        for (int i = 0; i < tabs.size(); i++){
-            TabLayout.Tab currentTab = binding.tabLayout.getTabAt(i);
-            if(currentTab.getId() == R.id.online){
-                currentTab.select();
-            }
-        }
     }
 
     private void initListeners() {
@@ -235,14 +216,14 @@ public class ServiceListFragment extends BaseServiceFragment implements ServiceI
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        switch (tab.getId()){
-            case R.id.online:
+        switch (tab.getPosition()){
+            case 0:
                 serviceFirestoreAdapter.updateOptions(getServiceViewModel().getServiceRecyclerOptions());
                 break;
-            case R.id.draft:
+            case 2:
                 serviceFirestoreAdapter.updateOptions(getServiceViewModel().getServiceRecyclerOptions(ProductInfo.Status.DRAFT));
                 break;
-            case R.id.inactive:
+            case 1:
                 serviceFirestoreAdapter.updateOptions(getServiceViewModel().getServiceRecyclerOptions(ProductInfo.Status.INACTIVE));
                 break;
         }

@@ -69,8 +69,6 @@ public class ProductListFragment extends BaseProductFragment implements ProductI
 
     private ProductsBottomSheetDialog productsBottomSheetDialog;
 
-    private HashMap<Integer,String> tabs = new HashMap<>();
-
     private List<ProductInfo> products = new ArrayList<>();
 
     private ArrayAdapter<String> productNamesAdapter;
@@ -131,25 +129,7 @@ public class ProductListFragment extends BaseProductFragment implements ProductI
     }
 
     private void initTabs() {
-        tabs.put(R.id.draft, "Draft");
-        tabs.put(R.id.online, "Online");
-        tabs.put(R.id.inactive, "Inactive");
-
-        binding.tabLayout.setTabMode(TabLayout.MODE_FIXED);
-        for(Map.Entry<Integer,String> tab: tabs.entrySet()){
-            TabLayout.Tab newTab = binding.tabLayout.newTab();
-            newTab.setId(tab.getKey());
-            newTab.setText(tab.getValue());
-            binding.tabLayout.addTab(newTab);
-        }
         binding.tabLayout.addOnTabSelectedListener(this);
-
-        for (int i = 0; i < tabs.size(); i++){
-            TabLayout.Tab currentTab = binding.tabLayout.getTabAt(i);
-            if(currentTab.getId() == R.id.online){
-                currentTab.select();
-            }
-        }
     }
 
     private void initProductsRecyclerView(){
@@ -278,14 +258,14 @@ public class ProductListFragment extends BaseProductFragment implements ProductI
 
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        switch (tab.getId()){
-            case R.id.online:
+        switch (tab.getPosition()){
+            case 0:
                 productsFirestoreAdapter.updateOptions(getProductViewModel().getProductRecyclerOptions(ProductInfo.Status.ONLINE));
                 break;
-            case R.id.draft:
+            case 2:
                 productsFirestoreAdapter.updateOptions(getProductViewModel().getProductRecyclerOptions(ProductInfo.Status.DRAFT));
                 break;
-            case R.id.inactive:
+            case 1:
                 productsFirestoreAdapter.updateOptions(getProductViewModel().getProductRecyclerOptions(ProductInfo.Status.INACTIVE));
                 break;
         }

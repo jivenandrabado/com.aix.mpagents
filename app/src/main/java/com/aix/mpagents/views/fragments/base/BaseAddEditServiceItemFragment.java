@@ -122,6 +122,11 @@ public abstract class BaseAddEditServiceItemFragment extends BaseServiceFragment
 
 
     public boolean isEmptyFields(String product_name, String description, String category, String price, List<String> photoList, String product_type){
+        if(photoList == null){
+            showToast("No product photo");
+            return true;
+        }
+
         if (TextUtils.isEmpty(product_name)){
             showToast("Empty Product Name");
             return true;

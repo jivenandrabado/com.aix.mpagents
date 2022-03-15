@@ -18,6 +18,7 @@ import com.aix.mpagents.repositories.FirebaseVariantRepo;
 import com.aix.mpagents.utilities.FirestoreConstants;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductViewModel extends ViewModel {
@@ -27,7 +28,7 @@ public class ProductViewModel extends ViewModel {
     private MutableLiveData<Category> selectedCategory = new MutableLiveData<>();
     private MutableLiveData<ProductInfo> selectedProduct = new MutableLiveData<>();
     private MutableLiveData<ProductType> selectedProductType = new MutableLiveData<>();
-    private MutableLiveData<List<String>> pictureSelectedList = new MutableLiveData<>();
+    private MutableLiveData<List<String>> pictureSelectedList = new MutableLiveData<>(new ArrayList<>());
 
     public void addProduct(ProductInfo productInfo, List<String> photoList, List<Variant> variants){
         productRepo.addProduct(productInfo,photoList,variants);

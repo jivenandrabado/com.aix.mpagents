@@ -78,6 +78,7 @@ public abstract class BaseLoginFragment extends BaseFragment{
         loginViewModel.getErrorMessage().observe(getViewLifecycleOwner(), message -> {
 
             if(!message.isEmpty()){
+                showLoading(false);
 
                 showToast(message);
 

@@ -37,8 +37,6 @@ public class LoginFragment extends BaseLoginFragment implements LoginInterface {
 
     private FragmentLoginBinding binding;
 
-    private UserSharedViewModel userSharedViewModel;
-
     public LoginFragment() {
         super(R.layout.fragment_login);
     }
@@ -48,7 +46,6 @@ public class LoginFragment extends BaseLoginFragment implements LoginInterface {
         super.onViewCreated(view, savedInstanceState);
         binding = FragmentLoginBinding.bind(getView());
         binding.setLoginInterface(this);
-        userSharedViewModel = new ViewModelProvider(requireActivity()).get(UserSharedViewModel.class);
     }
 
     @Override

@@ -79,6 +79,7 @@
                     android:id="@+id/editTextPrice"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLength="9"
                     android:backgroundTint="@color/white"
                     android:inputType="numberDecimal"
                     android:hint="@string/price" />
@@ -120,6 +121,7 @@
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/white"
                     android:inputType="number"
+                    android:maxLength="9"
                     android:hint="@string/quantity" />
             </com.google.android.material.textfield.TextInputLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
