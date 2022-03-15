@@ -174,7 +174,13 @@ public class AddServiceFragment extends BaseAddEditServiceItemFragment {
         product_name = String.valueOf(binding.editTextProductName.getText()).trim();
 
         if(!String.valueOf(binding.editTextPrice.getText()).isEmpty()) {
-            product_price = Double.parseDouble(String.valueOf(binding.editTextPrice.getText()).trim());
+            try {
+                product_price = Double.parseDouble(String.valueOf(binding.editTextPrice.getText()).trim());
+            }catch (NumberFormatException e){
+                showLoading(false);
+                showToast("Invalid Price");
+                return;
+            }
         }
 
         description = String.valueOf(binding.editTextDescription.getText()).trim();

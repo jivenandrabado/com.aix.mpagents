@@ -53,6 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/white"
+            android:maxLength="9"
             android:hint="@string/variant_stock"
             android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>

@@ -14,6 +14,7 @@ import com.aix.mpagents.repositories.FirebaseVariantRepo;
 import com.aix.mpagents.utilities.FirestoreConstants;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class ServiceViewModel extends ViewModel {
     private FirebaseVariantRepo variantRepo = FirebaseVariantRepo.getInstance();
     private MutableLiveData<ServiceInfo> selectedService = new MutableLiveData<>();
     private MutableLiveData<Category> selectedCategory = new MutableLiveData<>();
-    private MutableLiveData<List<String>> pictureSelectedList = new MutableLiveData<>();
+    private MutableLiveData<List<String>> pictureSelectedList = new MutableLiveData<>(new ArrayList<>());
 
     public MutableLiveData<Boolean> isProductSaved() {
         return serviceRepo.getIsServiceSaved();

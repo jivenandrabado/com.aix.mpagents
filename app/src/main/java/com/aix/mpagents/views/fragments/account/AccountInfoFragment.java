@@ -109,7 +109,7 @@ public class AccountInfoFragment extends BaseFragment implements AccountInfoInte
             else {
                 AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
                 alert.setTitle("Government ID")
-                        .setMessage("It seems that you already submitted an ID,\n Do you want to submit new ID?")
+                        .setMessage("It seems that you already submitted an ID, Do you want to submit new ID?")
                         .setPositiveButton("Yes", (dialogInterface, i) -> {
                             navController.navigate(R.id.action_businessProfileFragment_to_addGovernmentIDFragment);
                         })
@@ -296,7 +296,8 @@ public class AccountInfoFragment extends BaseFragment implements AccountInfoInte
     private void chooseImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_PICK);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
         chooseImageActivityResult.launch(intent);
     }
 

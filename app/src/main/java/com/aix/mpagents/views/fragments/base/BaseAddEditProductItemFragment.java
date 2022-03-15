@@ -55,7 +55,7 @@ public abstract class BaseAddEditProductItemFragment extends BaseProductFragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        getProductViewModel().getProductType("Service").observe(getViewLifecycleOwner(), productType -> {
+        getProductViewModel().getProductType("Product").observe(getViewLifecycleOwner(), productType -> {
             if(productType != null) onProductTypeSet(productType);
         });
 
@@ -85,6 +85,7 @@ public abstract class BaseAddEditProductItemFragment extends BaseProductFragment
 
     public void onItemSaved(){
         showToast("Product Saved!");
+        getProductViewModel().getPictureSelectedList().setValue(new ArrayList<>());
         getProductViewModel().isProductSaved().setValue(false);
     }
 
